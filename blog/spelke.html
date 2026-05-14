@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discovering Spelke Segments — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../index.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="../blog.html" aria-current="page">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="../index.html#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">Jul 2025 · Segmentation · arXiv:2507.16038</p>
+          <h1 class="post__title">Discovering and Using Spelke Segments</h1>
+          <p class="post__authors">
+            Rahul Venkatesh, Klemen Kotar, Lilian Naing Chen, Seungwoo Kim, Luca Thomas
+            Wheeler, Jared Watrous, Ashley Xu, Gia Ancone, Wanhee Lee, Honglin Chen,
+            Daniel Bear, Stefan Stojanov, Daniel Yamins.
+          </p>
+        </header>
+
+        <div class="prose post__body">
+          <p>
+            Semantic categories are not the only way to slice a scene. Developmental
+            psychology suggests a more useful primitive for manipulation and planning —
+            the <strong>Spelke object</strong>: a grouping of physical things that
+            reliably move together when acted on by physical forces.
+          </p>
+
+          <h2>Two contributions</h2>
+          <ul>
+            <li>
+              <strong>SpelkeBench.</strong> A dataset of natural images with well-defined
+              Spelke segments, independent of semantic class labels.
+            </li>
+            <li>
+              <strong>SpelkeNet.</strong> A visual world model that predicts motion
+              distributions. It finds segments through
+              <em>statistical counterfactual probing</em> — virtual pokes whose induced
+              displacements identify what moves together.
+            </li>
+          </ul>
+
+          <h2>Results</h2>
+          <p>
+            SpelkeNet beats supervised alternatives like SegmentAnything on SpelkeBench
+            and improves downstream physical manipulation tasks — the kinds of tasks
+            where knowing what moves together actually matters.
+          </p>
+
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              Paper:
+              <a href="https://arxiv.org/abs/2507.16038" target="_blank" rel="noopener"
+                >arXiv:2507.16038</a
+              >
+            </li>
+          </ul>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>

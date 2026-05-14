@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Modeling with Probabilistic Structure Integration — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../index.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="../blog.html" aria-current="page">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="../index.html#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">Sep 2025 · World models · arXiv:2509.09737</p>
+          <h1 class="post__title">
+            World Modeling with Probabilistic Structure Integration
+          </h1>
+          <p class="post__authors">
+            Klemen Kotar, Wanhee Lee, Rahul Venkatesh, Honglin Chen, Daniel Bear, Jared
+            Watrous, Simon Kim, Khai Loong Aw, Lilian Naing Chen, Stefan Stojanov, Kevin
+            Feigelis, Imran Thobani, Alex Durango, Khaled Jedoui, Atlas Kazemian, Dan
+            Yamins.
+          </p>
+        </header>
+
+        <div class="prose post__body">
+          <p>
+            We present <strong>PSI</strong>, a system for building controllable and
+            promptable world models directly from data. PSI is trained on 1.4 trillion
+            tokens of internet video and organizes its learning as a three-step
+            iterative cycle.
+          </p>
+
+          <h2>The cycle</h2>
+          <ol>
+            <li>
+              <strong>Probabilistic prediction.</strong> A single model expresses
+              conditional distributions between arbitrary subsets of tokens, much like a
+              language model but extended to vision.
+            </li>
+            <li>
+              <strong>Structure extraction.</strong> Zero-shot causal probes pull out
+              low-dimensional properties of the world — optical flow, depth, object
+              segments, controllable pokes.
+            </li>
+            <li>
+              <strong>Integration.</strong> Those extracted structures are re-encoded as
+              new token types and folded back into the next training round.
+            </li>
+          </ol>
+
+          <h2>Why it matters</h2>
+          <p>
+            Each cycle compounds. The same network that predicts the next frame also
+            produces state-of-the-art optical flow, self-supervised depth, and object
+            segmentation, and it stays promptable — you can condition on any subset of
+            variables and sample any other subset.
+          </p>
+
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              Paper:
+              <a href="https://arxiv.org/abs/2509.09737" target="_blank" rel="noopener"
+                >arXiv:2509.09737</a
+              >
+            </li>
+            <li>Code and weights coming soon on GitHub and Hugging Face.</li>
+          </ul>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>

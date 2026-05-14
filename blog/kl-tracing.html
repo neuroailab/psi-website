@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zero-Shot Optical Flow via KL-Tracing — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../index.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="../blog.html" aria-current="page">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="../index.html#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">Jul 2025 · Optical flow · arXiv:2507.09082</p>
+          <h1 class="post__title">
+            Taming Generative Video Models for Zero-Shot Optical Flow Extraction
+          </h1>
+          <p class="post__authors">
+            Seungwoo Kim, Khai Loong Aw, Klemen Kotar, Cristobal Eyzaguirre, Wanhee Lee,
+            Yunong Liu, Jared Watrous, Stefan Stojanov, Juan Carlos Niebles, Jiajun Wu,
+            Daniel L. K. Yamins.
+          </p>
+        </header>
+
+        <div class="prose post__body">
+          <p>
+            Can a pre-trained video model give us optical flow without task-specific
+            training? We show yes — with a test-time trick we call
+            <strong>KL-tracing</strong>.
+          </p>
+
+          <h2>The idea</h2>
+          <p>
+            Inject a localized perturbation into the first frame, roll the model forward
+            one step, and compute the Kullback–Leibler divergence between the perturbed
+            and unperturbed predictive distributions. Pixels whose predictions shift the
+            most are the pixels the perturbation moved.
+          </p>
+
+          <h2>What the architecture needs</h2>
+          <ul>
+            <li><strong>Distributional predictions</strong> — so we can take KL divergences.</li>
+            <li><strong>Factorized latents</strong> — so local edits stay local.</li>
+            <li><strong>Random-access decoding</strong> — so we can query any pixel cheaply.</li>
+          </ul>
+          <p>
+            LRAS has all three, and KL-tracing on LRAS is competitive with specialized
+            flow models on standard benchmarks without any fine-tuning.
+          </p>
+
+          <h2>Resources</h2>
+          <ul>
+            <li>
+              Paper:
+              <a href="https://arxiv.org/abs/2507.09082" target="_blank" rel="noopener"
+                >arXiv:2507.09082</a
+              >
+            </li>
+          </ul>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>

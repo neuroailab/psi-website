@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PSI — Probabilistic Structure Integration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="index.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <h1 class="hero__title">psi</h1>
+        <p class="hero__subtitle">Probabilistic Structure Integration</p>
+      </section>
+
+      <section class="section" id="about">
+        <div class="section__inner">
+          <p class="section__eyebrow">What is PSI?</p>
+          <h2 class="section__title">
+            A richly promptable world model that lets us discover the underlying
+            structure of the world.
+          </h2>
+          <p class="section__lead">
+            PSI is a system organized around a three-step iterative cycle. At each
+            turn of the cycle it becomes a sharper predictor and a richer interface
+            onto the world it models.
+          </p>
+
+          <div class="cycle" aria-label="PSI three-step cycle">
+            <svg class="cycle__arrows" viewBox="0 0 600 520" aria-hidden="true">
+              <defs>
+                <marker
+                  id="arrow-head"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#8f4d3a" />
+                </marker>
+              </defs>
+              <path
+                d="M 400 120 Q 560 260 380 430"
+                fill="none"
+                stroke="#8f4d3a"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                marker-end="url(#arrow-head)"
+              />
+              <path
+                d="M 320 450 Q 150 450 140 300"
+                fill="none"
+                stroke="#8f4d3a"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                marker-end="url(#arrow-head)"
+              />
+              <path
+                d="M 160 220 Q 220 70 340 90"
+                fill="none"
+                stroke="#8f4d3a"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                marker-end="url(#arrow-head)"
+              />
+            </svg>
+
+            <article class="cycle__node cycle__node--top">
+              <span class="cycle__index">01</span>
+              <h3>Probabilistic Prediction</h3>
+              <p>
+                A single graphical model expresses conditional distributions between
+                any subset of tokens — an LLM-like prompting interface for video.
+              </p>
+            </article>
+
+            <article class="cycle__node cycle__node--right">
+              <span class="cycle__index">02</span>
+              <h3>Structure Extraction</h3>
+              <p>
+                Zero-shot causal inference pulls out low-dimensional properties of
+                the world: depth, flow, segments, control signals.
+              </p>
+            </article>
+
+            <article class="cycle__node cycle__node--left">
+              <span class="cycle__index">03</span>
+              <h3>Integration</h3>
+              <p>
+                Extracted structures are re-encoded as new token types and folded
+                back into training, so each cycle compounds.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="demo">
+        <div class="section__inner">
+          <p class="section__eyebrow">Inference engine</p>
+          <h2 class="section__title">Prompt it like an equation.</h2>
+          <p class="section__lead">
+            Drag tokens into the inputs and output slots. PSI treats every modality —
+            RGB frames, depth, dense features, control pokes — as a token, so any
+            subset can be a query and any other subset the answer.
+          </p>
+
+          <div class="demo">
+            <section class="visualizer" id="visualizer" aria-live="polite"></section>
+
+            <section class="builder" aria-label="Equation builder">
+              <div class="drop-zone" id="inputsZone" data-side="inputs"></div>
+              <div class="builder__arrow" aria-hidden="true">→</div>
+              <div class="drop-zone drop-zone--output" id="outputZone" data-side="output"></div>
+            </section>
+
+            <p class="equation-notation" id="equationNotation">... -&gt; ...</p>
+
+            <footer class="token-tray">
+              <div class="token-tray__head">
+                <span>Tokens</span>
+                <div class="token-tray__actions">
+                  <button class="text-button" type="button" data-action="refresh-assets">
+                    Refresh
+                  </button>
+                  <button class="text-button" type="button" data-action="clear-equation">
+                    Clear
+                  </button>
+                </div>
+              </div>
+              <div class="token-bank" id="tokenBank"></div>
+            </footer>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="quickstart">
+        <div class="section__inner">
+          <p class="section__eyebrow">Quick Start</p>
+          <h2 class="section__title">Run PSI in a few lines.</h2>
+          <p class="section__lead">
+            Run any causal inference with a unified interface.
+          </p>
+
+          <div class="code-block">
+            <div class="code-block__head">
+              <span class="code-block__file">quickstart.py</span>
+              <button class="text-button" type="button" data-action="copy-code">Copy</button>
+            </div>
+            <pre><code id="quickstart-code"><span class="tok-k">from</span> transformers <span class="tok-k">import</span> AutoModel
+<span class="tok-k">from</span> PIL <span class="tok-k">import</span> Image
+
+predictor = AutoModel.from_pretrained(
+    <span class="tok-s">"stanford-neuroai/psi"</span>,
+    trust_remote_code=<span class="tok-n">True</span>,
+).to(<span class="tok-s">"cuda"</span>)
+
+rgb0 = Image.open(<span class="tok-s">"frame0.png"</span>)
+
+rgb1, = predictor.generate(<span class="tok-s">"rgb0-&gt;rgb1"</span>, rgb0=rgb0)
+rgb1.save(<span class="tok-s">"frame1.png"</span>)</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="contribute">
+        <div class="section__inner">
+          <p class="section__eyebrow">Contribute</p>
+          <h2 class="section__title">Help build the next cycle.</h2>
+          <p class="section__lead">
+            PSI is a living project. We welcome new structure-extraction programs —
+            causal prompts that surface a fresh property of the world and become a
+            new token type in the next integration pass.
+          </p>
+          <div class="cta-row">
+            <a class="cta" href="https://github.com/" target="_blank" rel="noopener">GitHub →</a>
+            <a class="cta cta--ghost" href="https://huggingface.co/" target="_blank" rel="noopener"
+              >Hugging Face →</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>

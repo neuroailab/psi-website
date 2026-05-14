@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Every Structure of the World Is a Causal Inference — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../index.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="../blog.html" aria-current="page">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="../index.html#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">Essay · Section 3 of arXiv:2509.09737</p>
+          <h1 class="post__title">
+            Every Structure of the World Is a Causal Inference
+          </h1>
+          <p class="post__authors">
+            A walk through how PSI turns the classical primitives of vision — flow,
+            segments, depth — into counterfactual queries on a single probabilistic
+            world model.
+          </p>
+        </header>
+
+        <div class="prose post__body">
+          <p class="post__lede">
+            The central claim of PSI is simple, but it takes some unpacking:
+            <strong
+              >every meaningful structure of the visual world can be written as a
+              causal inference on a correctly formulated world model</strong
+            >. You do not need a separate network for optical flow, another for
+            segments, another for depth. If the model of the joint distribution over
+            the world is sharp enough, those structures are already latent inside it.
+            The job is to ask the right counterfactual question.
+          </p>
+
+          <h2>1. Properties are not labels. They are interventions.</h2>
+          <p>
+            A world model Ψ places a distribution over what could happen next given
+            what has happened so far. Once you have that distribution, you can ask
+            two kinds of questions:
+          </p>
+          <ul>
+            <li>
+              <strong>Factual:</strong> given these frames, what do I expect to see
+              next?
+            </li>
+            <li>
+              <strong>Counterfactual:</strong> if I changed one thing about the past,
+              what would the model now expect?
+            </li>
+          </ul>
+          <p>
+            A visual property — motion, shape, distance — is always a statement about
+            how the world would <em>respond</em> to some hypothetical. Motion is what
+            happens to appearance across time. Object identity is what moves together
+            under force. Depth is how disparity scales with viewpoint. These are
+            <em>interventional</em> descriptions. They are not features of a single
+            image; they are features of a pair: <em>what I see</em> and
+            <em>what would happen if</em>.
+          </p>
+          <p>
+            PSI's Section 3 formalizes this as a chain of equalities:
+          </p>
+          <blockquote>
+            Properties of interest = intermediate structures = structured prompts
+            comparing factual and counterfactual predictions from Ψ = causal
+            inferences from Ψ = generators of new token types.
+          </blockquote>
+          <p>
+            The rest of the section puts three of the most-studied visual structures
+            — flow, segments, depth — through this pipeline.
+          </p>
+
+          <h2>2. Optical flow as a tracer experiment</h2>
+          <figure class="post__figure">
+            <img
+              src="https://arxiv.org/html/2509.09737v1/x8.png"
+              alt="KL tracing procedure and flow extractions across diverse scenes"
+              loading="lazy"
+            />
+            <figcaption>
+              Figure 7 from the paper. Top: the KL-tracing procedure. A tiny
+              perturbation in the first frame is rolled forward under Ψ; the shift in
+              the predictive distribution on the next frame reveals where that patch
+              went. Bottom: flow fields extracted this way on diverse scenes, with no
+              flow-specific training.
+            </figcaption>
+          </figure>
+          <p>
+            Optical flow is, definitionally, the causal effect of appearance on
+            future position. So we write it as an intervention. Take frame f₀, drop
+            a small Gaussian bump on patch <em>i</em>, and ask: how did the predictive
+            distribution over f₁ change? Formally,
+          </p>
+          <p class="math">
+            j*(i) = arg max<sub>j</sub> KL( Ψ[ f̃₀<sup>(i)</sup>, f₁<sup>ℛ</sup> ] ∥
+            Ψ[ f₀, f₁<sup>ℛ</sup> ] ).
+          </p>
+          <p>
+            Wherever the distribution moves the most is where the tracer went. The
+            displacement from <em>i</em> to <em>j*(i)</em> is the flow vector at that
+            patch. This only works if the predictor is genuinely distributional — a
+            regression model would wash out multimodal flow (a windblown leaf that
+            could go either way) into the mean and destroy the signal.
+          </p>
+
+          <h2>3. Object segments as hypothetical motion</h2>
+          <figure class="post__figure">
+            <img
+              src="https://arxiv.org/html/2509.09737v1/x9.png"
+              alt="Object segments from motion hypotheticals"
+              loading="lazy"
+            />
+            <figcaption>
+              Figure 8 from the paper. A seed patch from f₀ is pasted into f₁ at a
+              displaced location. Ψ fills in the rest of f₁ <em>consistently</em> —
+              dragging the rest of the object along. The induced flow reveals the
+              segment; repeating across seeds gives instance masks.
+            </figcaption>
+          </figure>
+          <p>
+            A Spelke object, in the developmental-psychology sense used here, is a
+            set of pixels that move together under force. That is a
+            <em>hypothetical</em> statement: if I pushed this pixel, which others
+            would come along? Turning that into a prompt on Ψ is straightforward.
+            Copy a patch from f₀, paste it into f₁ displaced by some hypothetical
+            motion, and let the model fill in the rest of f₁.
+          </p>
+          <p>
+            Because Ψ is a trained predictor of consistent scenes, it will complete
+            f₁ by <em>also</em> moving the rest of the object. Running the flow
+            extractor from Section 3.2 between f₀ and this hallucinated f₁ lights up
+            exactly the patches that moved coherently with the seed. Sweep the seed
+            across the image and you get instance segmentation, entirely without
+            class labels.
+          </p>
+          <p>
+            This is where the multimodality of Ψ really matters again. A non-rigid
+            object — a hand, a cloth — can deform in many plausible ways under the
+            same hypothetical push. A deterministic model would average them out. Ψ
+            samples a coherent completion.
+          </p>
+
+          <h2>4. Depth as a viewpoint counterfactual</h2>
+          <figure class="post__figure">
+            <img
+              src="https://arxiv.org/html/2509.09737v1/x10.png"
+              alt="Depth from viewpoint hypotheticals"
+              loading="lazy"
+            />
+            <figcaption>
+              Figure 9 from the paper. A camera-pose counterfactual is appended to
+              the sequence; Ψ synthesizes the novel view; the magnitude of the flow
+              between the two views is (up to a baseline) the disparity. Bottom rows
+              show depth maps across varied camera motions.
+            </figcaption>
+          </figure>
+          <p>
+            Depth is what happens to apparent position as the camera moves. Again,
+            that's a counterfactual: <em>if I shifted the camera by b, where would
+            each pixel land?</em> PSI makes this literal. Append a Campose token
+            describing a small baseline translation, sample the resulting frame from
+            Ψ, and compute flow between the two. The flow magnitude at each pixel,
+            divided by the baseline, is disparity — and therefore depth — with no
+            stereo rig and no depth labels.
+          </p>
+
+          <h2>5. Why this composes into a bigger loop</h2>
+          <p>
+            Each of these extraction programs is a short prompt — not a new network,
+            not a new loss — whose outputs have the structure of a dense map over
+            the scene. PSI then treats those maps as <em>new token types</em>: they
+            can be serialized back into the model as discrete handles alongside RGB.
+            A flow token can be conditioned on, a depth token can be produced, a
+            segment token can be edited by a user.
+          </p>
+          <p>
+            Once a structure is a token, it is subject to the same interventional
+            grammar as everything else. You can run counterfactuals on it. You can
+            train against it. You can combine it with others. This is the mechanism
+            that lets the three-step cycle on the landing page actually close.
+          </p>
+
+          <h2>6. What this essay is really arguing</h2>
+          <p>
+            The slogan form of all this:
+          </p>
+          <blockquote>
+            If your predictive model of the world is good enough, you do not need
+            to design perception modules. The classical primitives of vision are
+            already latent in it, waiting to be unlocked by the right counterfactual
+            prompt.
+          </blockquote>
+          <p>
+            The converse is the more demanding claim, and the more interesting one:
+            if a structure of the world <em>cannot</em> be written this way, it is
+            probably a sign that your model is missing an axis of variation it
+            should have. The structure extraction pipeline is therefore not just a
+            way to get flow or depth. It is a diagnostic for whether the world model
+            is correctly formulated at all.
+          </p>
+
+          <h2>Further reading</h2>
+          <ul>
+            <li>
+              <a href="https://arxiv.org/abs/2509.09737" target="_blank" rel="noopener"
+                >World Modeling with Probabilistic Structure Integration (PSI)</a
+              >
+              — Section 3 is the source of everything above.
+            </li>
+            <li>
+              <a href="kl-tracing.html">Taming generative video models for zero-shot
+              optical flow</a> — the precursor work that introduces KL-tracing.
+            </li>
+            <li>
+              <a href="spelke.html">Discovering and using Spelke segments</a> — the
+              precursor work on motion-hypothetical segmentation.
+            </li>
+          </ul>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>
