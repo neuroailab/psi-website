@@ -14,11 +14,11 @@
   </head>
   <body>
     <nav class="site-nav">
-      <a class="site-nav__brand" href="index.html">Ψ</a>
+      <a class="site-nav__brand" href="blog.html">Ψ</a>
       <ul class="site-nav__links">
         <li><a href="blog.html" aria-current="page">Blog</a></li>
         <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
         <li><a href="index.html#contribute">Contribute</a></li>
       </ul>
     </nav>
@@ -33,8 +33,20 @@
         <div class="section__inner">
           <ul class="post-list">
             <li class="post-card post-card--featured">
+              <a class="post-card__link" href="blog/releasing-psiv0-5.html">
+                <p class="post-card__meta">May 20, 2026 · Model release</p>
+                <h2 class="post-card__title">Releasing PSIv0.5</h2>
+                <p class="post-card__excerpt">
+                  Introducing PSIv0.5, an 8B RGBCFD model for richly controllable
+                  world modeling across RGB, camera, flow, and depth tokens.
+                </p>
+                <p class="post-card__cta">Read release →</p>
+              </a>
+            </li>
+
+            <li class="post-card">
               <a class="post-card__link" href="blog/psi-generations.html">
-                <p class="post-card__meta">Draft · PSI release gallery</p>
+                <p class="post-card__meta">PSI release gallery</p>
                 <h2 class="post-card__title">
                   PSI: Richly Controllable Physical World Modeling
                 </h2>
@@ -44,64 +56,6 @@
                   and pulls, rotations, hand manipulation, and object interactions.
                 </p>
                 <p class="post-card__cta">Read gallery →</p>
-              </a>
-            </li>
-
-            <li class="post-card">
-              <a class="post-card__link" href="blog/structures-as-causal-inference.html">
-                <p class="post-card__meta">Featured · Essay</p>
-                <h2 class="post-card__title">
-                  Every Structure of the World Is a Causal Inference
-                </h2>
-                <p class="post-card__excerpt">
-                  If a world model is formulated correctly, the classical vision
-                  properties — flow, depth, segments, viewpoint — fall out of it as
-                  counterfactual queries. A walk through Section 3 of the PSI paper.
-                </p>
-                <p class="post-card__cta">Read essay →</p>
-              </a>
-            </li>
-
-            <li class="post-card">
-              <a class="post-card__link" href="blog/psi.html">
-                <p class="post-card__meta">Sep 2025 · World models</p>
-                <h2 class="post-card__title">
-                  World Modeling with Probabilistic Structure Integration
-                </h2>
-                <p class="post-card__excerpt">
-                  The flagship PSI paper. A three-step iterative cycle — predict, extract,
-                  integrate — produces a single promptable model with SOTA flow, depth,
-                  and segmentation.
-                </p>
-                <p class="post-card__cta">Read note →</p>
-              </a>
-            </li>
-
-            <li class="post-card">
-              <a class="post-card__link" href="blog/kl-tracing.html">
-                <p class="post-card__meta">Jul 2025 · Optical flow</p>
-                <h2 class="post-card__title">
-                  Taming Generative Video Models for Zero-Shot Optical Flow
-                </h2>
-                <p class="post-card__excerpt">
-                  KL-tracing perturbs a single frame and measures the KL divergence
-                  between predictive distributions. Competitive with specialized flow
-                  models, no fine-tuning.
-                </p>
-                <p class="post-card__cta">Read note →</p>
-              </a>
-            </li>
-
-            <li class="post-card">
-              <a class="post-card__link" href="blog/spelke.html">
-                <p class="post-card__meta">Jul 2025 · Segmentation</p>
-                <h2 class="post-card__title">Discovering and Using Spelke Segments</h2>
-                <p class="post-card__excerpt">
-                  Groupings of things that move together under physical force. SpelkeNet
-                  finds them via counterfactual motion probes and beats SegmentAnything
-                  on manipulation tasks.
-                </p>
-                <p class="post-card__cta">Read note →</p>
               </a>
             </li>
           </ul>

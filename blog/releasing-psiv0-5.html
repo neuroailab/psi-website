@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Releasing PSIv0.5 — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .post--release {
+        max-width: 1080px;
+      }
+
+      .post--release .prose {
+        max-width: 102ch;
+      }
+
+      .release-prompt-list {
+        display: grid;
+        gap: 0;
+        margin: 18px 0 30px;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .release-prompt-list li {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.88fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: baseline;
+        margin: 0;
+        padding: 15px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .release-prompt-list li:first-child {
+        border-top: 0;
+      }
+
+      .release-prompt-list code {
+        color: var(--ink);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+      }
+
+      .release-prompt-list span {
+        color: var(--ink-soft);
+      }
+
+      .release-token-demo {
+        --release-demo-duration: 17s;
+        margin: 12px 0 30px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+
+      .release-token-demo__rail {
+        display: grid;
+        grid-template-columns:
+          minmax(130px, 1fr)
+          minmax(130px, 1fr)
+          minmax(82px, 0.48fr)
+          minmax(130px, 1fr)
+          minmax(130px, 1fr);
+        gap: clamp(8px, 1.2vw, 14px);
+        align-items: center;
+      }
+
+      .release-token-demo__stage {
+        min-width: 0;
+      }
+
+      .release-token-demo__label {
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .release-token-demo__canvas {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+      }
+
+      .release-token-demo__canvas img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .release-token-demo__grid {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right, rgba(21, 115, 255, 0.22) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(21, 115, 255, 0.22) 1px, transparent 1px);
+        background-size: 6.25% 11.111%;
+      }
+
+      .release-token-demo__sparse {
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+          var(--surface-soft);
+      }
+
+      .release-token-demo__overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+      }
+
+      .release-token-demo__prompt-box {
+        fill: rgba(21, 115, 255, 0.16);
+        stroke: var(--accent-blue);
+        stroke-width: 0.75;
+      }
+
+      .release-token-demo__flow-cell {
+        stroke: rgba(255, 255, 255, 0.78);
+        stroke-width: 0.35;
+      }
+
+      .release-token-demo__flow-cell--right {
+        fill: #fc4b6d;
+      }
+
+      .release-token-demo__flow-cell--left {
+        fill: #5cd8ff;
+      }
+
+      .release-token-demo__flow-arrow {
+        fill: none;
+        stroke: #111111;
+        stroke-width: 1.32;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0.5px 1px rgba(255, 255, 255, 0.4));
+      }
+
+      .release-token-demo__bridge {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-width: 74px;
+        min-height: 74px;
+        transform: translateY(12px);
+      }
+
+      .release-token-demo__bridge-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        z-index: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--accent-blue);
+        transform: translateY(-50%);
+      }
+
+      .release-token-demo__bridge-line::after {
+        position: absolute;
+        top: 50%;
+        right: -1px;
+        width: 9px;
+        height: 9px;
+        border-top: 2px solid var(--accent-blue);
+        border-right: 2px solid var(--accent-blue);
+        content: "";
+        transform: translateY(-50%) rotate(45deg);
+      }
+
+      .release-token-demo__core {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+      }
+
+      .release-token-demo__core img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .release-token-demo__transformer {
+        position: relative;
+        height: 168px;
+        margin-top: 18px;
+      }
+
+      .release-token-demo__token {
+        position: absolute;
+        left: var(--from-x);
+        top: var(--from-y);
+        z-index: 2;
+        width: 16px;
+        height: 16px;
+        border: 1px solid rgba(17, 17, 17, 0.2);
+        border-radius: 3px;
+        opacity: 0;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset;
+        transform: translate(-50%, -50%) scale(0.78);
+      }
+
+      .release-token-demo__token--rgb-in {
+        background-image: url("../assets/generations/paper-tear-rgb0.png");
+        background-position: var(--pos);
+        background-size: 420% 240%;
+      }
+
+      .release-token-demo__token--flow-right {
+        background: #fc4b6d;
+      }
+
+      .release-token-demo__token--flow-left {
+        background: #5cd8ff;
+      }
+
+      .release-token-demo__token--flow-out {
+        background-image: url("../assets/generations/paper-tear-f01a.png");
+        background-position: var(--pos);
+        background-size: 420% 240%;
+      }
+
+      .release-token-demo__token--rgb-out {
+        background-image: url("../assets/generations/paper-tear-rgb1a.png");
+        background-position: var(--pos);
+        background-size: 420% 240%;
+      }
+
+      .release-token-demo__model-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 52px;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        height: 22px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background:
+          linear-gradient(90deg, rgba(21, 115, 255, 0.1), rgba(21, 115, 255, 0.22), rgba(21, 115, 255, 0.1)),
+          var(--surface-soft);
+        color: var(--ink);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.63rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .release-token-demo__token--input {
+        animation: release-token-input 2.6s ease-in-out forwards;
+        animation-delay: var(--delay);
+      }
+
+      .release-token-demo__token--sparse {
+        animation: release-token-sparse 2.35s ease-in-out forwards;
+        animation-delay: var(--delay);
+      }
+
+      .release-token-demo__token--flow-static {
+        animation: release-token-output-flow-static 1.2s ease-out forwards;
+        animation-delay: var(--delay);
+      }
+
+      .release-token-demo__token--rgb-static {
+        animation: release-token-output-rgb-static 1.2s ease-out forwards;
+        animation-delay: var(--delay);
+      }
+
+      .release-token-demo__token--flow-lift {
+        animation: release-token-output-flow 3.6s ease-in-out forwards;
+        animation-delay: calc(var(--delay) + 0.58s);
+      }
+
+      .release-token-demo__token--rgb-lift {
+        animation: release-token-output-rgb 3.6s ease-in-out forwards;
+        animation-delay: calc(var(--delay) + 0.58s);
+      }
+
+      .release-token-demo__output img {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+      }
+
+      .release-token-demo__output--flow img {
+        animation: release-token-fill-flow var(--release-demo-duration) ease-in-out forwards;
+      }
+
+      .release-token-demo__output--rgb img {
+        animation: release-token-fill-rgb var(--release-demo-duration) ease-in-out forwards;
+      }
+
+      .release-token-demo figcaption {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @keyframes release-token-input {
+        0% {
+          opacity: 0;
+          left: var(--from-x);
+          top: var(--from-y);
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        18% {
+          opacity: 1;
+          left: var(--from-x);
+          top: var(--from-y);
+          transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        72%,
+        100% {
+          opacity: 1;
+          left: var(--to-x);
+          top: 36px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      @keyframes release-token-sparse {
+        0% {
+          opacity: 0;
+          left: var(--from-x);
+          top: 6px;
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        18% {
+          opacity: 1;
+          left: var(--from-x);
+          top: 6px;
+          transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        74%,
+        100% {
+          opacity: 1;
+          left: var(--to-x);
+          top: 36px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      @keyframes release-token-output-flow-static {
+        0%,
+        10% {
+          opacity: 0;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        100% {
+          opacity: 1;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      @keyframes release-token-output-rgb-static {
+        0%,
+        10% {
+          opacity: 0;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        100% {
+          opacity: 1;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      @keyframes release-token-output-flow {
+        0%,
+        10% {
+          opacity: 0;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        24%,
+        62% {
+          opacity: 1;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+
+        92%,
+        100% {
+          opacity: 0;
+          left: var(--to-x);
+          top: -84px;
+          transform: translate(-50%, -50%) scale(0.82);
+        }
+      }
+
+      @keyframes release-token-output-rgb {
+        0%,
+        10% {
+          opacity: 0;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(0.72);
+        }
+
+        24%,
+        62% {
+          opacity: 1;
+          left: var(--from-x);
+          top: 112px;
+          transform: translate(-50%, -50%) scale(1);
+        }
+
+        92%,
+        100% {
+          opacity: 0;
+          left: var(--to-x);
+          top: -84px;
+          transform: translate(-50%, -50%) scale(0.82);
+        }
+      }
+
+      @keyframes release-token-fill-flow {
+        0%,
+        56% {
+          opacity: 0;
+          clip-path: inset(0 0 0 0);
+        }
+
+        66%,
+        100% {
+          opacity: 1;
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      @keyframes release-token-fill-rgb {
+        0%,
+        86% {
+          opacity: 0;
+          clip-path: inset(0 100% 0 0);
+        }
+
+        98%,
+        100% {
+          opacity: 1;
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      @media (max-width: 720px) {
+        .release-prompt-list li {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+
+        .release-token-demo__rail {
+          grid-template-columns: 1fr;
+        }
+
+        .release-token-demo__bridge {
+          grid-template-columns: minmax(80px, 0.36fr);
+          justify-content: center;
+          min-width: 0;
+          transform: none;
+        }
+
+        .release-token-demo__transformer {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../blog.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="../blog.html" aria-current="page">Blog</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="../index.html#contribute">Contribute</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post post--release">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">May 20, 2026 · Model release</p>
+          <h1 class="post__title">Releasing PSIv0.5</h1>
+        </header>
+
+        <div class="prose post__body">
+          <h2>What PSIv0.5 Is</h2>
+          <p>
+            A few months ago, we introduced
+            <a href="psi.html">Probabilistic Structure Integration (PSI)</a>,
+            an approach to richly controllable world modeling. Today, we're
+            releasing PSIv0.5, an 8B PSI instance.
+          </p>
+          <p>
+            PSIv0.5 is an <strong>RGBCFD</strong> model, meaning it integrates
+            the following modes: <strong>RGB</strong>, the standard pixel
+            description of video frames; <strong>C</strong>, camera motion
+            between frames; <strong>F</strong>, optical flow between adjacent
+            frames; and <strong>D</strong>, depth of a given frame. PSIv0.5 was
+            trained on a large dataset of real-world videos, similar to the one
+            described in the PSI paper.
+          </p>
+          <p>
+            PSIv0.5 treats visual reasoning tasks as sequence-completion
+            problems over visual tokens. A task is defined by a sequence of RGB,
+            camera, flow, and depth tokens, together with a choice of which
+            tokens are observed and which ones the model should predict. Under
+            this view, next-frame prediction, interpolation, motion estimation,
+            and controlled generation are not separate capabilities, but
+            different queries to the same autoregressive model. This lets us use
+            intermediate structure, such as flow and depth, as a control surface
+            for interacting with scenes: poking objects, opening doors, folding
+            paper, or asking how the world might evolve under a different
+            motion.
+          </p>
+          <figure
+            class="release-token-demo"
+            aria-label="Paper crush sequence showing sparse flow, dense flow, and RGB prediction"
+          >
+            <div class="release-token-demo__rail">
+              <div class="release-token-demo__stage">
+                <div class="release-token-demo__label">rgb0</div>
+                <div class="release-token-demo__canvas">
+                  <img
+                    src="../assets/generations/paper-tear-rgb0.png"
+                    alt="Initial paper frame"
+                  />
+                  <div class="release-token-demo__grid" aria-hidden="true"></div>
+                </div>
+              </div>
+
+              <div class="release-token-demo__stage">
+                <div class="release-token-demo__label">sparse f01</div>
+                <div class="release-token-demo__canvas release-token-demo__sparse">
+                  <div class="release-token-demo__grid" aria-hidden="true"></div>
+                  <svg
+                    class="release-token-demo__overlay"
+                    viewBox="0 0 100 56.25"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      <marker
+                        id="release-flow-arrowhead"
+                        viewBox="0 0 10 10"
+                        refX="8.2"
+                        refY="5"
+                        markerWidth="3.2"
+                        markerHeight="3.2"
+                        orient="auto"
+                      >
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#111111" />
+                      </marker>
+                    </defs>
+                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--right" x="25" y="37.5" width="6.25" height="6.25" />
+                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--left" x="62.5" y="37.5" width="6.25" height="6.25" />
+                    <path
+                      class="release-token-demo__flow-arrow"
+                      d="M 25.65 40.625 L 30.75 40.625"
+                      marker-end="url(#release-flow-arrowhead)"
+                    />
+                    <path
+                      class="release-token-demo__flow-arrow"
+                      d="M 68.15 40.625 L 63.05 40.625"
+                      marker-end="url(#release-flow-arrowhead)"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="release-token-demo__bridge" aria-hidden="true">
+                <div class="release-token-demo__bridge-line"></div>
+                <div class="release-token-demo__core">
+                  <img src="../assets/psi-logo.png" alt="" />
+                </div>
+              </div>
+
+              <div class="release-token-demo__stage">
+                <div class="release-token-demo__label">dense f01</div>
+                <div class="release-token-demo__canvas release-token-demo__output release-token-demo__output--flow">
+                  <div class="release-token-demo__grid" aria-hidden="true"></div>
+                  <img
+                    src="../assets/generations/paper-tear-f01a.png"
+                    alt="Dense optical flow prediction for paper crush"
+                  />
+                </div>
+              </div>
+
+              <div class="release-token-demo__stage">
+                <div class="release-token-demo__label">rgb1 prediction</div>
+                <div class="release-token-demo__canvas release-token-demo__output release-token-demo__output--rgb">
+                  <div class="release-token-demo__grid" aria-hidden="true"></div>
+                  <img
+                    src="../assets/generations/paper-tear-rgb1a.png"
+                    alt="Predicted paper crush frame"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="release-token-demo__transformer" aria-hidden="true">
+              <div class="release-token-demo__model-bar">PSI transformer</div>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 12%; --from-y: -62px; --to-x: 5%; --delay: 0s; --pos: 72% 52%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 7%; --from-y: -52px; --to-x: 8%; --delay: 0.14s; --pos: 18% 70%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 18%; --from-y: -70px; --to-x: 11%; --delay: 0.28s; --pos: 44% 28%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 14%; --from-y: -42px; --to-x: 14%; --delay: 0.42s; --pos: 86% 34%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 4%; --from-y: -72px; --to-x: 17%; --delay: 0.56s; --pos: 34% 82%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 21%; --from-y: -54px; --to-x: 20%; --delay: 0.7s; --pos: 58% 62%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 9%; --from-y: -78px; --to-x: 23%; --delay: 0.84s; --pos: 24% 42%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 17%; --from-y: -60px; --to-x: 25%; --delay: 0.98s; --pos: 68% 76%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 2%; --from-y: -48px; --to-x: 27%; --delay: 1.12s; --pos: 50% 46%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 19%; --from-y: -80px; --to-x: 29%; --delay: 1.26s; --pos: 78% 18%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 6%; --from-y: -38px; --to-x: 31%; --delay: 1.4s; --pos: 14% 86%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 22%; --from-y: -68px; --to-x: 33%; --delay: 1.54s; --pos: 88% 58%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-in release-token-demo__token--input" style="--from-x: 11%; --from-y: -44px; --to-x: 35%; --delay: 1.68s; --pos: 42% 90%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-right release-token-demo__token--sparse" style="--from-x: 33%; --to-x: 37%; --delay: 2.15s"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-left release-token-demo__token--sparse" style="--from-x: 38%; --to-x: 40%; --delay: 2.35s"></span>
+
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 43%; --to-x: 62%; --delay: 5.1s; --pos: 8% 72%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 46%; --to-x: 64%; --delay: 5.38s; --pos: 20% 62%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 49%; --to-x: 66%; --delay: 5.66s; --pos: 32% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 52%; --to-x: 68%; --delay: 5.94s; --pos: 44% 52%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 55%; --to-x: 70%; --delay: 6.22s; --pos: 56% 52%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 58%; --to-x: 72%; --delay: 6.5s; --pos: 68% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 61%; --to-x: 74%; --delay: 6.78s; --pos: 80% 62%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-static" style="--from-x: 64%; --to-x: 76%; --delay: 7.06s; --pos: 92% 72%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 43%; --to-x: 62%; --delay: 5.1s; --pos: 8% 72%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 46%; --to-x: 64%; --delay: 5.38s; --pos: 20% 62%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 49%; --to-x: 66%; --delay: 5.66s; --pos: 32% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 52%; --to-x: 68%; --delay: 5.94s; --pos: 44% 52%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 55%; --to-x: 70%; --delay: 6.22s; --pos: 56% 52%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 58%; --to-x: 72%; --delay: 6.5s; --pos: 68% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 61%; --to-x: 74%; --delay: 6.78s; --pos: 80% 62%"></span>
+              <span class="release-token-demo__token release-token-demo__token--flow-out release-token-demo__token--flow-lift" style="--from-x: 64%; --to-x: 76%; --delay: 7.06s; --pos: 92% 72%"></span>
+
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 67%; --to-x: 82%; --delay: 10.6s; --pos: 12% 74%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 70%; --to-x: 84%; --delay: 10.88s; --pos: 24% 64%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 73%; --to-x: 86%; --delay: 11.16s; --pos: 36% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 76%; --to-x: 88%; --delay: 11.44s; --pos: 48% 50%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 79%; --to-x: 90%; --delay: 11.72s; --pos: 60% 50%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 82%; --to-x: 92%; --delay: 12s; --pos: 72% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 85%; --to-x: 94%; --delay: 12.28s; --pos: 84% 64%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-static" style="--from-x: 88%; --to-x: 96%; --delay: 12.56s; --pos: 96% 74%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 67%; --to-x: 82%; --delay: 10.6s; --pos: 12% 74%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 70%; --to-x: 84%; --delay: 10.88s; --pos: 24% 64%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 73%; --to-x: 86%; --delay: 11.16s; --pos: 36% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 76%; --to-x: 88%; --delay: 11.44s; --pos: 48% 50%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 79%; --to-x: 90%; --delay: 11.72s; --pos: 60% 50%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 82%; --to-x: 92%; --delay: 12s; --pos: 72% 56%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 85%; --to-x: 94%; --delay: 12.28s; --pos: 84% 64%"></span>
+              <span class="release-token-demo__token release-token-demo__token--rgb-out release-token-demo__token--rgb-lift" style="--from-x: 88%; --to-x: 96%; --delay: 12.56s; --pos: 96% 74%"></span>
+            </div>
+            <figcaption>
+              A sparse flow prompt is densified into f01 and used to predict
+              rgb1.
+            </figcaption>
+          </figure>
+          <p>
+            Below are some of the token sequences that can be used to prompt the
+            model:
+          </p>
+
+          <ul class="release-prompt-list" aria-label="Supported prompt families">
+            <li>
+              <code>"rgb0-&gt;rgb1"</code>
+              <span>next-frame generation</span>
+            </li>
+            <li>
+              <code>"rgb0,c01-&gt;rgb1"</code>
+              <span>camera-conditioned next-frame prediction</span>
+            </li>
+            <li>
+              <code>"rgb0-&gt;f01"</code>
+              <span>motion prediction from visual context</span>
+            </li>
+            <li>
+              <code>"rgb0,f01-&gt;rgb1"</code>
+              <span>flow-conditioned next-frame generation</span>
+            </li>
+            <li>
+              <code>"rgb0,f01-&gt;f01,rgb1"</code>
+              <span>sparse flow conditioned generation</span>
+            </li>
+            <li>
+              <code>"rgb0,rgb2-&gt;rgb1"</code>
+              <span>rgb interpolation</span>
+            </li>
+            <li>
+              <code>"rgb0,d0,f01-&gt;f01,d1,rgb1"</code>
+              <span>depth- and partial-flow-conditioned next-frame prediction</span>
+            </li>
+          </ul>
+
+          <h2>What PSIv0.5 Is Good For</h2>
+          <p>
+            PSIv0.5 has some powerful capabilities. It is especially good at
+            <a href="psi-generations.html"
+              >fine-grained control for complex physical scenarios</a
+            >. It can also be used to estimate statistical properties of motion
+            in a scene; we'll share more on that in a later note.
+          </p>
+
+          <h2>What PSIv0.5 Is Not Intended For</h2>
+          <p>
+            Fast video rendering. PSIv0.5 is designed for structured prediction,
+            counterfactual prompting, and precise control, rather than for
+            high-throughput video generation.
+          </p>
+
+          <h2>Code</h2>
+          <p>
+            Check out the
+            <a
+              href="https://huggingface.co/StanfordNeuroAILab/psi0_5"
+              target="_blank"
+              rel="noopener"
+              >PSIv0.5 model page</a
+            >
+            for access to the model and instructions on how to use it.
+          </p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>

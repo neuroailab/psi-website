@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0; url=blog/releasing-psiv0-5.html" />
+    <link rel="canonical" href="blog/releasing-psiv0-5.html" />
     <title>PSI — Probabilistic Structure Integration</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,11 +16,11 @@
   </head>
   <body>
     <nav class="site-nav">
-      <a class="site-nav__brand" href="index.html">Ψ</a>
+      <a class="site-nav__brand" href="blog.html">Ψ</a>
       <ul class="site-nav__links">
         <li><a href="blog.html">Blog</a></li>
         <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://huggingface.co/" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
         <li><a href="#contribute">Contribute</a></li>
       </ul>
     </nav>
@@ -165,17 +167,18 @@
               <span class="code-block__file">quickstart.py</span>
               <button class="text-button" type="button" data-action="copy-code">Copy</button>
             </div>
-            <pre><code id="quickstart-code"><span class="tok-k">from</span> transformers <span class="tok-k">import</span> AutoModel
-<span class="tok-k">from</span> PIL <span class="tok-k">import</span> Image
+            <pre><code id="quickstart-code"><span class="tok-k">from</span> PIL <span class="tok-k">import</span> Image
+<span class="tok-k">from</span> transformers <span class="tok-k">import</span> AutoModel
 
 predictor = AutoModel.from_pretrained(
-    <span class="tok-s">"stanford-neuroai/psi"</span>,
-    trust_remote_code=<span class="tok-n">True</span>,
-).to(<span class="tok-s">"cuda"</span>)
+    <span class="tok-s">"StanfordNeuroAILab/psi0_5"</span>,
+    trust_remote_code=<span class="tok-c">True</span>,
+    device=<span class="tok-s">"cuda"</span>,
+)
 
 rgb0 = Image.open(<span class="tok-s">"frame0.png"</span>)
 
-rgb1, = predictor.generate(<span class="tok-s">"rgb0-&gt;rgb1"</span>, rgb0=rgb0)
+rgb1 = predictor.generate(<span class="tok-s">"rgb0-&gt;rgb1"</span>, rgb0=rgb0)
 rgb1.save(<span class="tok-s">"frame1.png"</span>)</code></pre>
           </div>
         </div>
@@ -192,7 +195,7 @@ rgb1.save(<span class="tok-s">"frame1.png"</span>)</code></pre>
           </p>
           <div class="cta-row">
             <a class="cta" href="https://github.com/" target="_blank" rel="noopener">GitHub →</a>
-            <a class="cta cta--ghost" href="https://huggingface.co/" target="_blank" rel="noopener"
+            <a class="cta cta--ghost" href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener"
               >Hugging Face →</a
             >
           </div>

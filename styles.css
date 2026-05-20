@@ -244,12 +244,15 @@ h6 {
 }
 
 .prose a {
-  color: var(--accent);
-  border-bottom: 1px solid var(--line-strong);
+  color: #4f9cff;
+  border-bottom: 1px solid rgba(79, 156, 255, 0.48);
+  text-decoration-color: rgba(79, 156, 255, 0.48);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
 }
 
 .prose a:hover {
-  border-bottom-color: var(--accent);
+  border-bottom-color: #4f9cff;
 }
 
 .prose__meta {
