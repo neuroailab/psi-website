@@ -3506,7 +3506,7 @@ rgb1 = predictor.generate(
                     tabindex="0"
                     aria-label="Replay car driving unconditional RGB prediction animation"
                   >
-                    <div class="block-slide-autoreg block-slide-autoreg--wide block-slide-autoreg--car-rollout" aria-label="Car Driving autoregressive unconditional prediction animation">
+                    <div class="block-slide-autoreg block-slide-autoreg--wide block-slide-autoreg--rgb4 block-slide-autoreg--car-rollout" aria-label="Car Driving autoregressive unconditional prediction animation">
                       <div class="block-slide-autoreg__context">
                         <div class="block-slide-autoreg__term">
                           <div class="psi-mechanism__label">RGB0 <span>context</span></div>
@@ -3524,7 +3524,6 @@ rgb1 = predictor.generate(
                               <span class="is-rgb1">empty</span>
                               <span class="is-rgb12">RGB1</span>
                               <span class="is-rgb123">RGB1, RGB2</span>
-                              <span class="is-rgb1234">RGB1, RGB2, RGB3</span>
                             </div>
                             <span>future stack</span>
                           </div>
@@ -3539,10 +3538,6 @@ rgb1 = predictor.generate(
                             </div>
                             <div class="block-slide-card block-slide-autoreg__stack-card block-slide-autoreg__stack-card--rgb3">
                               <img src="../assets/generations/car-driving-rgb2.png" alt="" />
-                              <div class="psi-mechanism__grid" aria-hidden="true"></div>
-                            </div>
-                            <div class="block-slide-card block-slide-autoreg__stack-card block-slide-autoreg__stack-card--rgb4">
-                              <img src="../assets/generations/car-driving-rgb3.png" alt="" />
                               <div class="psi-mechanism__grid" aria-hidden="true"></div>
                             </div>
                           </div>
@@ -3562,7 +3557,6 @@ rgb1 = predictor.generate(
                             <span class="is-rgb2">RGB1</span>
                             <span class="is-rgb3">RGB2</span>
                             <span class="is-rgb4">RGB3</span>
-                            <span class="is-rgb5">RGB4</span>
                           </div>
                           <span>predicted RGB</span>
                         </div>
@@ -3576,11 +3570,7 @@ rgb1 = predictor.generate(
                             <img src="../assets/generations/car-driving-rgb2.png" alt="" />
                             <div class="psi-mechanism__grid" aria-hidden="true"></div>
                           </div>
-                          <div class="block-slide-autoreg__output-card block-slide-autoreg__output-card--rgb4" aria-hidden="true">
-                            <img src="../assets/generations/car-driving-rgb3.png" alt="" />
-                            <div class="psi-mechanism__grid" aria-hidden="true"></div>
-                          </div>
-                          <img class="block-slide-autoreg__output-frame--rgb5" src="../assets/generations/car-driving-rgb4.png" alt="Car driving generated RGB4" />
+                          <img class="block-slide-autoreg__output-frame--rgb4-final" src="../assets/generations/car-driving-rgb3.png" alt="Car driving generated RGB3" />
                         </div>
                       </div>
                     </div>
@@ -3597,8 +3587,8 @@ rgb1 = predictor.generate(
                     <div class="code-block__head">
                       <span class="code-block__file">Car Driving</span>
                     </div>
-                    <pre><code>rgb1, rgb2, rgb3, rgb4 = predictor.generate(
-    <span class="tok-s">"rgb0-&gt;rgb1,rgb2,rgb3,rgb4"</span>,
+                    <pre><code>rgb1, rgb2, rgb3 = predictor.generate(
+    <span class="tok-s">"rgb0-&gt;rgb1,rgb2,rgb3"</span>,
     rgb0=Image.open(<span class="tok-s">"car_roundabout.png"</span>),
 )</code></pre>
                   </div>
