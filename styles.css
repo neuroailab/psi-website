@@ -167,6 +167,12 @@ h6 {
   padding: clamp(52px, 9vh, 82px) 0 clamp(30px, 6vh, 52px);
 }
 
+.blog-hero {
+  gap: 8px;
+  width: min(1240px, calc(100% - clamp(40px, 8vw, 96px)));
+  padding-bottom: clamp(14px, 2.4vh, 22px);
+}
+
 .hero__title {
   max-width: 980px;
   font-size: clamp(4.2rem, 14vw, 9.5rem);
@@ -194,6 +200,10 @@ h6 {
 
 .section {
   padding: clamp(46px, 8vh, 84px) clamp(20px, 4vw, 48px);
+}
+
+.blog-index {
+  padding-top: clamp(20px, 3vh, 30px);
 }
 
 .section--alt {

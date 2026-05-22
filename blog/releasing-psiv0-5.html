@@ -140,6 +140,8 @@
       .release-token-demo__flow-cell {
         stroke: rgba(255, 255, 255, 0.78);
         stroke-width: 0.35;
+        shape-rendering: geometricPrecision;
+        vector-effect: non-scaling-stroke;
       }
 
       .release-token-demo__flow-cell--right {
@@ -153,7 +155,7 @@
       .release-token-demo__flow-arrow {
         fill: none;
         stroke: #111111;
-        stroke-width: 1.32;
+        stroke-width: 0.82;
         stroke-linecap: round;
         stroke-linejoin: round;
         filter: drop-shadow(0 0.5px 1px rgba(255, 255, 255, 0.4));
@@ -492,7 +494,11 @@
         }
       }
 
-      @media (max-width: 720px) {
+      @media (max-width: 720px), (max-aspect-ratio: 3 / 4) {
+        .release-token-demo {
+          --release-demo-duration: 5s;
+        }
+
         .release-prompt-list li {
           grid-template-columns: 1fr;
           gap: 6px;
@@ -506,7 +512,38 @@
           grid-template-columns: minmax(80px, 0.36fr);
           justify-content: center;
           min-width: 0;
+          width: 92px;
+          height: 96px;
+          margin: 0 auto 10px;
           transform: none;
+        }
+
+        .release-token-demo__bridge-line {
+          left: 50%;
+          right: auto;
+          top: 12px;
+          bottom: 0;
+          width: 2px;
+          height: auto;
+          transform: translateX(-50%);
+        }
+
+        .release-token-demo__bridge-line::after {
+          top: auto;
+          right: auto;
+          bottom: -2px;
+          left: 50%;
+          transform: translateX(-50%) rotate(135deg);
+        }
+
+        .release-token-demo__core {
+          width: 72px;
+          height: 72px;
+        }
+
+        .release-token-demo__core img {
+          width: 64px;
+          height: 64px;
         }
 
         .release-token-demo__transformer {
@@ -551,16 +588,17 @@
           </p>
           <p>
             PSIv0.5 treats visual reasoning tasks as sequence-completion
-            problems over visual tokens. A task is defined by a sequence of RGB,
-            camera, flow, and depth tokens, together with a choice of which
-            tokens are observed and which ones the model should predict. Under
-            this view, next-frame prediction, interpolation, motion estimation,
-            and controlled generation are not separate capabilities, but
-            different queries to the same autoregressive model. This lets us use
-            intermediate structure, such as flow and depth, as a control surface
-            for interacting with scenes: poking objects, opening doors, folding
-            paper, or asking how the world might evolve under a different
-            motion.
+            problems over visual tokens. A task is defined by a sequence of
+            <strong>RGB</strong>, <strong>C</strong>, <strong>F</strong>, and
+            <strong>D</strong> tokens,
+            together with a choice of which tokens are observed and which ones
+            the model should predict. Under this view, next-frame prediction,
+            interpolation, motion estimation, and controlled generation are not
+            separate capabilities, but different queries to the same
+            autoregressive model. This lets us use intermediate structure, such
+            as flow and depth, as a control surface for interacting with scenes:
+            poking objects, opening doors, folding paper, or asking how the
+            world might evolve under a different motion.
           </p>
           <figure
             class="release-token-demo"
@@ -594,23 +632,23 @@
                         viewBox="0 0 10 10"
                         refX="8.2"
                         refY="5"
-                        markerWidth="3.2"
-                        markerHeight="3.2"
+                        markerWidth="2.8"
+                        markerHeight="2.8"
                         orient="auto"
                       >
                         <path d="M 0 0 L 10 5 L 0 10 z" fill="#111111" />
                       </marker>
                     </defs>
-                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--right" x="25" y="37.5" width="6.25" height="6.25" />
-                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--left" x="62.5" y="37.5" width="6.25" height="6.25" />
+                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--right" x="25.3125" y="37.8125" width="5.625" height="5.625" />
+                    <rect class="release-token-demo__flow-cell release-token-demo__flow-cell--left" x="62.8125" y="37.8125" width="5.625" height="5.625" />
                     <path
                       class="release-token-demo__flow-arrow"
-                      d="M 25.65 40.625 L 30.75 40.625"
+                      d="M 28.125 40.625 L 41.225 40.625"
                       marker-end="url(#release-flow-arrowhead)"
                     />
                     <path
                       class="release-token-demo__flow-arrow"
-                      d="M 68.15 40.625 L 63.05 40.625"
+                      d="M 65.625 40.625 L 52.525 40.625"
                       marker-end="url(#release-flow-arrowhead)"
                     />
                   </svg>
