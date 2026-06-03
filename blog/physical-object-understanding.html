@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Physical Object Understanding — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <!-- KaTeX for LaTeX equation rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+      onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+    <style>
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2em 0 1.8em;
+        font-size: 0.92rem;
+      }
+      .results-table th,
+      .results-table td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+      }
+      .results-table th {
+        font-weight: 600;
+        color: var(--ink);
+        border-bottom: 2px solid var(--line);
+      }
+      .results-table td {
+        color: var(--ink-soft);
+      }
+      .results-table .best {
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      /* Gallery carousel */
+      .gallery {
+        position: relative;
+        margin: 1.4em 0 1.8em;
+        border: 1px solid var(--line, #e0e0e0);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--surface, #f8f8f8);
+      }
+      .gallery__track {
+        display: flex;
+        transition: transform 0.4s ease;
+      }
+      .gallery__slide {
+        flex: 0 0 100%;
+        min-width: 0;
+        display: grid;
+        gap: 2px;
+        padding: 16px;
+        box-sizing: border-box;
+      }
+      .gallery__slide--2col { grid-template-columns: 1fr 1fr; }
+      .gallery__slide--3col { grid-template-columns: 1fr 1fr 1fr; }
+      .gallery__cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .gallery__cell img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .gallery__cell__label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink-soft, #555);
+        text-align: center;
+      }
+      .gallery__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 10px 16px;
+        border-top: 1px solid var(--line, #e0e0e0);
+        background: var(--surface, #f8f8f8);
+      }
+      .gallery__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--line, #ccc);
+        border-radius: 6px;
+        background: var(--bg, #fff);
+        color: var(--ink, #222);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        user-select: none;
+      }
+      .gallery__btn:hover {
+        background: var(--line, #e0e0e0);
+      }
+      .gallery__btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .gallery__counter {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--ink-soft, #555);
+        min-width: 3.5em;
+        text-align: center;
+      }
+      @media (max-width: 520px) {
+        .gallery__slide { padding: 10px; }
+        .gallery__slide--3col { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* Seed cycling: 3 images stacked, cycle through them */
+      .seed-stack {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+      }
+      .seed-stack img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 6px;
+        opacity: 0;
+        animation: seed3 6s ease-in-out infinite;
+      }
+      .seed-stack img:nth-child(1) { animation-delay: 0s; }
+      .seed-stack img:nth-child(2) { animation-delay: 2s; }
+      .seed-stack img:nth-child(3) { animation-delay: 4s; }
+      @keyframes seed3 {
+        0%, 5%    { opacity: 0; }
+        10%, 28%  { opacity: 1; }
+        38%, 100% { opacity: 0; }
+      }
+      .seed-label {
+        display: inline-block;
+        position: relative;
+        height: 1.2em;
+      }
+      .seed-label span {
+        position: absolute;
+        left: 0;
+        white-space: nowrap;
+        opacity: 0;
+        animation: seed3 6s ease-in-out infinite;
+      }
+      .seed-label span:nth-child(1) { animation-delay: 0s; }
+      .seed-label span:nth-child(2) { animation-delay: 2s; }
+      .seed-label span:nth-child(3) { animation-delay: 4s; }
+
+      /* Auto-animated pipeline figure */
+      .pipeline {
+        margin: 1.4em 0 1.8em;
+        border: 1px solid var(--line, #e0e0e0);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--surface, #f8f8f8);
+        padding: 16px;
+      }
+      .pipeline__view {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .pipeline__step {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+      .pipeline__step img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 0;
+      }
+      .pipeline__step__label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink-soft, #555);
+        text-align: center;
+      }
+      /* 6-step staggered reveal: 12s total cycle */
+      .pipeline__step {
+        animation: pipe-reveal 0.5s ease forwards;
+        opacity: 0;
+      }
+      .pipeline__step:nth-child(1) { animation-delay: 0s; }
+      .pipeline__step:nth-child(2) { animation-delay: 1.8s; }
+      .pipeline__step:nth-child(3) { animation-delay: 3.6s; }
+      .pipeline__step:nth-child(4) { animation-delay: 5.4s; }
+      @keyframes pipe-reveal {
+        0%   { opacity: 0; transform: translateY(6px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @media (max-width: 520px) {
+        .pipeline { padding: 10px; }
+      }
+
+      /* Manipulation comparison: two-row animated layout */
+      .manip-compare {
+        margin: 1.4em 0 1.8em;
+        border: 1px solid var(--line, #e0e0e0);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--surface, #f8f8f8);
+        padding: 16px;
+      }
+      .manip-compare__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 4px 12px;
+      }
+      .manip-compare__cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        opacity: 0;
+        animation: pipe-reveal 0.5s ease forwards;
+      }
+      /* PSI row: stagger left to right */
+      .manip-compare__row--psi .manip-compare__cell:nth-child(1) { animation-delay: 0s; }
+      .manip-compare__row--psi .manip-compare__cell:nth-child(2) { animation-delay: 0.9s; }
+      .manip-compare__row--psi .manip-compare__cell:nth-child(3) { animation-delay: 1.8s; }
+      .manip-compare__row--psi .manip-compare__cell:nth-child(4) { animation-delay: 2.7s; }
+      /* SAM row: stagger left to right, after PSI row finishes */
+      .manip-compare__row--sam .manip-compare__cell:nth-child(1) { animation-delay: 4.0s; }
+      .manip-compare__row--sam .manip-compare__cell:nth-child(2) { animation-delay: 4.9s; }
+      .manip-compare__row--sam .manip-compare__cell:nth-child(3) { animation-delay: 5.8s; }
+      .manip-compare__row--sam .manip-compare__cell:nth-child(4) { animation-delay: 6.7s; }
+      .manip-compare__cell img {
+        width: 100%;
+        border-radius: 0;
+      }
+      /* Methods comparison: 3-col top + 4-col bottom */
+      .manip-methods {
+        margin: 1.4em 0 1.8em;
+        border: 1px solid var(--line, #e0e0e0);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--surface, #f8f8f8);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .manip-methods__row {
+        display: grid;
+        gap: 4px 12px;
+      }
+      .manip-methods__row--top {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .manip-methods__row--top::after {
+        content: '';
+      }
+      .manip-methods__row--bottom { grid-template-columns: repeat(4, 1fr); }
+      .manip-methods__cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .manip-methods__cell img {
+        width: 100%;
+        border-radius: 6px;
+      }
+      @media (max-width: 520px) {
+        .manip-compare { padding: 10px; }
+        .manip-compare__row { grid-template-columns: repeat(2, 1fr); }
+        .manip-methods { padding: 10px; }
+        .manip-methods__row--top { grid-template-columns: repeat(3, 1fr); }
+        .manip-methods__row--bottom { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../blog.html">&Psi;</a>
+      <ul class="site-nav__links">
+        <li><a href="https://github.com/neuroailab/psi-demos" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">&larr; All posts</a>
+          <p class="post__meta">CVPR 2026 Highlight &middot; Physical world models</p>
+          <h1 class="post__title">
+            Physical Object Understanding with a Physically Controllable World Model
+          </h1>
+          <p class="post__authors">
+            Rahul Venkatesh
+          </p>
+        </header>
+
+        <div class="prose post__body">
+          <p class="post__lede">
+            How do we learn what objects are, how they move, and how they
+            relate to each other&mdash;without any labels? This blog shows
+            how the <a href="psi.html">PSI world model</a> answers these
+            questions by treating them all as probabilistic queries on a
+            single learned model of scene dynamics. From one model we get
+            object discovery, 3D manipulation, and physical relationship
+            reasoning&mdash;including a Visual Jenga application. For details
+            on the PSI architecture and training, see our
+            <a href="releasing-psiv0-5.html">PSIv0.5 release post</a>.
+          </p>
+
+          <h2>The need for a &ldquo;native prompting&rdquo; mechanism</h2>
+          <p>
+            A key challenge in visual intelligence is developing models that
+            can be queried naturally about the world they perceive. Current
+            vision foundation models such as DINO, JEPA, and related
+            self-supervised approaches learn rich visual representations, but
+            these representations are typically accessed through task-specific
+            supervised probes. To answer questions about objects, actions, or
+            future outcomes, one often needs to train additional classifiers
+            or regressors on top of the learned features, limiting their
+            flexibility as general-purpose reasoning systems.
+          </p>
+          <p>
+            In contrast, natural language has emerged as a powerful interface
+            for interacting with visual models. Multimodal systems such as
+            GPT-4V can answer a wide range of questions about scenes using
+            free-form language prompts. However, language alone is often an
+            insufficient interface for embodied reasoning. Consider the
+            example shown below, where GPT-4V is asked to predict the outcome
+            of a physical interaction with a scene. While the model can
+            describe what it sees, it struggles to reason accurately about the
+            consequences of interventions.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/objects-paper/fig_motivation_left.png"
+              alt="GPT-4V struggles with physical reasoning about interventions"
+              loading="lazy"
+              style="max-width: 85%; display: block; margin: 0 auto;"
+            />
+            <figcaption style="text-align:center; font-size:0.85rem; color:var(--ink-soft, #555); margin-top:8px; font-style:italic;">
+              Query: &ldquo;What will happen if I apply a force specified by the red arrow at the location of the red dot? Answer with a yellow outline.&rdquo;
+            </figcaption>
+          </figure>
+          <p>
+            This limitation becomes particularly important in domains such as
+            robotics, where agents must reason not only about what is present
+            in a scene, but also about what would happen under hypothetical
+            actions. Before executing a manipulation, a robot should be able
+            to ask questions such as: <em>What would happen if I push this
+            object?</em>, <em>What if I grasp it from a different
+            location?</em>, or <em>What objects would move if I apply a force
+            here?</em> Answering such questions requires a model that supports
+            causal reasoning and intervention-based simulation rather than
+            passive scene description alone.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/objects-paper/fig_motivation_right.png"
+              alt="A robot needs to reason about physical consequences of actions"
+              loading="lazy"
+              style="max-width: 55%; display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <h2>Probabilistic world model formulation</h2>
+          <p>
+            To make progress toward these capabilities, we introduce
+            probabilistic world models&mdash;a class of visual world models
+            equipped with a native querying mechanism for causal inference.
+            Given an input datum \(\mathbf{X}\), consisting of observations
+            from the visual world across space and time, and an arbitrary
+            query location \(p\), the model produces a probability
+            distribution over latent and observable variables describing the
+            state of the world. These variables may include appearance (RGB),
+            geometry (depth), motion, segmentation, object properties, or
+            other structured representations. We construct a probabilistic
+            world model \(\Psi\) that can predict the probability of any
+            visual variable&mdash;appearance, motion, depth&mdash;conditioned
+            on any subset of other observed variables. Given a partial
+            observation \(\mathbf{X}\) of the scene (e.g. an image, a sparse
+            set of flow vectors, a camera pose) and an unobserved query
+            location \(p\), the model returns a full probability distribution
+            over what could be there:
+          </p>
+          $$
+          \Psi(\mathbf{X},\; p)
+          \;\longmapsto\;
+          \Pr[v \mid \mathbf{X}, p]
+          $$
+          <p>
+            We implement \(\Psi\) as an autoregressive transformer trained on
+            sequences of interleaved <em>pointer</em> tokens (spatial locations)
+            and <em>content</em> tokens (RGB appearance, optical flow, camera
+            motion). A training sequence encodes two video frames with their
+            inter-frame flow and camera pose, and standard next-token prediction
+            recovers the conditional distributions above. Because \(\Psi\)
+            outputs distributions rather than point estimates, we can sample
+            multiple plausible futures from the same observation&mdash;a
+            property that turns out to be critical for discovering objects and
+            their physical structure.
+          </p>
+
+          <h2>Applications</h2>
+          <p>
+            Because \(\Psi\) can answer probabilistic questions about any part
+            of the scene, a single model supports a wide range of
+            object-understanding tasks without task-specific training. Below we
+            show how querying the model in different ways yields motion maps,
+            plausible future rollouts, object segments, 3D manipulation, and
+            physical relationship reasoning.
+          </p>
+
+          <h3>Motion probability maps</h3>
+          <p>
+            A natural first question to ask is: which parts of the scene are
+            movable? For each spatial location we query \(\Psi\) for the
+            probability that the flow there exceeds a small threshold&mdash;in
+            other words, the probability that the point would move. Because
+            the model can answer these queries in parallel across all
+            locations, we obtain a dense <strong>motion probability
+            map</strong> in a single forward pass.
+            We condition on zero camera motion so that the map reflects only
+            physical interaction, not camera effects.
+          </p>
+
+          <div class="gallery" id="gallery-pmotion">
+            <div class="gallery__track">
+              <div class="gallery__slide gallery__slide--2col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a1_rgb.png" alt="Jenga tower — RGB" />
+                  <span class="gallery__cell__label">RGB image</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a1_pmotion.png" alt="Jenga tower — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+              </div>
+              <div class="gallery__slide gallery__slide--2col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a2_rgb.png" alt="Toy horse — RGB" />
+                  <span class="gallery__cell__label">RGB image</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a2_pmotion.png" alt="Toy horse — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+              </div>
+              <div class="gallery__slide gallery__slide--2col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a3_rgb.png" alt="Stacked items — RGB" />
+                  <span class="gallery__cell__label">RGB image</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a3_pmotion.png" alt="Stacked items — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+              </div>
+              <div class="gallery__slide gallery__slide--2col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a4_rgb.png" alt="Dog — RGB" />
+                  <span class="gallery__cell__label">RGB image</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/a4_pmotion.png" alt="Dog — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+              </div>
+            </div>
+            <div class="gallery__controls">
+              <button class="gallery__btn" data-dir="-1" aria-label="Previous">&larr;</button>
+              <span class="gallery__counter">1 / 4</span>
+              <button class="gallery__btn" data-dir="1" aria-label="Next">&rarr;</button>
+            </div>
+          </div>
+
+          <h3>Expected motion maps</h3>
+          <p>
+            While the motion probability map tells us <em>which</em> parts of
+            the scene will move, we often want to know <em>where</em> they
+            move. For this we compute the <strong>expected motion</strong> at
+            each location: the probability-weighted average of all possible
+            flow vectors predicted by \(\Psi\). This produces a dense
+            displacement field that reveals both the extent of motion and
+            material properties&mdash;rigid objects show uniform responses
+            across their extent, while deformable objects like cloth show
+            highly localized responses near the poke point.
+          </p>
+
+          <div class="gallery" id="gallery-emotion">
+            <div class="gallery__track">
+              <div class="gallery__slide gallery__slide--3col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b1_rgb.png" alt="Bottles — RGB + poke" />
+                  <span class="gallery__cell__label">RGB + virtual poke</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b1_pmotion.png" alt="Bottles — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b1_emotion.png" alt="Bottles — Expected motion" />
+                  <span class="gallery__cell__label">Expected motion</span>
+                </div>
+              </div>
+              <div class="gallery__slide gallery__slide--3col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b2_rgb.png" alt="Cloth — RGB + poke" />
+                  <span class="gallery__cell__label">RGB + virtual poke</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b2_pmotion.png" alt="Cloth — Motion probability" />
+                  <span class="gallery__cell__label">Motion probability</span>
+                </div>
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/motion/b2_emotion.png" alt="Cloth — Expected motion" />
+                  <span class="gallery__cell__label">Expected motion</span>
+                </div>
+              </div>
+            </div>
+            <div class="gallery__controls">
+              <button class="gallery__btn" data-dir="-1" aria-label="Previous">&larr;</button>
+              <span class="gallery__counter">1 / 2</span>
+              <button class="gallery__btn" data-dir="1" aria-label="Next">&rarr;</button>
+            </div>
+          </div>
+
+          <h3>Sequential generation of plausible futures</h3>
+          <p>
+            The parallel motion statistics above treat each location
+            independently. To capture how different parts of the scene move
+            <em>together</em>&mdash;for example, how the legs of an animal
+            follow when its body turns&mdash;we switch to
+            <strong>sequential generation</strong>. Here, \(\Psi\) samples
+            tokens one at a time, conditioning each on everything generated so
+            far. This produces full flow fields that respect the spatial
+            dependencies of complex objects. From each sampled flow, the model
+            can then render the resulting appearance, giving us a complete
+            imagined future of the scene. By sampling with different random
+            seeds, we obtain multiple diverse yet physically plausible futures
+            from the same input image.
+          </p>
+
+          <div class="gallery" id="gallery-seqgen">
+            <div class="gallery__track">
+              <div class="gallery__slide gallery__slide--3col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/seqgen/horse_input.png" alt="Horse — input" />
+                  <span class="gallery__cell__label">Input image</span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/horse_flow_s0.png" alt="Horse — flow seed 0" />
+                    <img src="../assets/objects-paper/seqgen/horse_flow_s1.png" alt="Horse — flow seed 1" />
+                    <img src="../assets/objects-paper/seqgen/horse_flow_s2.png" alt="Horse — flow seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated flow <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/horse_rgb_s0.png" alt="Horse — RGB seed 0" />
+                    <img src="../assets/objects-paper/seqgen/horse_rgb_s1.png" alt="Horse — RGB seed 1" />
+                    <img src="../assets/objects-paper/seqgen/horse_rgb_s2.png" alt="Horse — RGB seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated RGB <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+              </div>
+              <div class="gallery__slide gallery__slide--3col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/seqgen/robot_input.png" alt="Robot arm — input" />
+                  <span class="gallery__cell__label">Input image</span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/robot_flow_s0.png" alt="Robot arm — flow seed 0" />
+                    <img src="../assets/objects-paper/seqgen/robot_flow_s1.png" alt="Robot arm — flow seed 1" />
+                    <img src="../assets/objects-paper/seqgen/robot_flow_s2.png" alt="Robot arm — flow seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated flow <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/robot_rgb_s0.png" alt="Robot arm — RGB seed 0" />
+                    <img src="../assets/objects-paper/seqgen/robot_rgb_s1.png" alt="Robot arm — RGB seed 1" />
+                    <img src="../assets/objects-paper/seqgen/robot_rgb_s2.png" alt="Robot arm — RGB seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated RGB <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+              </div>
+            </div>
+            <div class="gallery__controls">
+              <button class="gallery__btn" data-dir="-1" aria-label="Previous">&larr;</button>
+              <span class="gallery__counter">1 / 2</span>
+              <button class="gallery__btn" data-dir="1" aria-label="Next">&rarr;</button>
+            </div>
+          </div>
+
+          <h3>Poke-conditioned sequential generation</h3>
+          <p>
+            When a motion is specified for a part of the object (a virtual
+            poke), PSI generates diverse yet physically consistent responses
+            for the rest of the body. Below, a poke is applied to the head of
+            the bear, and the model completes the flow field&mdash;each seed
+            producing a different plausible whole-body motion.
+          </p>
+
+          <div class="gallery" id="gallery-pokegen">
+            <div class="gallery__track">
+              <div class="gallery__slide gallery__slide--3col">
+                <div class="gallery__cell">
+                  <img src="../assets/objects-paper/seqgen/bear_input.png" alt="Bear — input with poke" />
+                  <span class="gallery__cell__label">Input + virtual poke</span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/bear_flow_s0.png" alt="Bear — flow seed 0" />
+                    <img src="../assets/objects-paper/seqgen/bear_flow_s1.png" alt="Bear — flow seed 1" />
+                    <img src="../assets/objects-paper/seqgen/bear_flow_s2.png" alt="Bear — flow seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated flow <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+                <div class="gallery__cell">
+                  <div class="seed-stack">
+                    <img src="../assets/objects-paper/seqgen/bear_rgb_s0.png" alt="Bear — RGB seed 0" />
+                    <img src="../assets/objects-paper/seqgen/bear_rgb_s1.png" alt="Bear — RGB seed 1" />
+                    <img src="../assets/objects-paper/seqgen/bear_rgb_s2.png" alt="Bear — RGB seed 2" />
+                  </div>
+                  <span class="gallery__cell__label">Generated RGB <span class="seed-label"><span>seed 0</span><span>seed 1</span><span>seed 2</span></span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Movable object discovery</h3>
+          <p>
+            These diverse motion samples let us probe the causal structure of
+            the scene. The key idea: if we apply a virtual poke at a point and
+            ask \(\Psi\) to complete the flow field, the regions that
+            consistently move in the same direction as the poke belong to the
+            same physical object. By repeating this with multiple poke
+            directions and averaging the motion correlations, we obtain a
+            clean segmentation of the movable object&mdash;no labels or
+            class-specific training required.
+          </p>
+
+          <div class="pipeline">
+            <div class="pipeline__view">
+              <div class="pipeline__step">
+                <img src="../assets/objects-paper/segpipe/1_input.png" alt="Input image" />
+                <span class="pipeline__step__label">Input image</span>
+              </div>
+
+              <div class="pipeline__step">
+                <img src="../assets/objects-paper/segpipe/3_poke.png" alt="Virtual poke" />
+                <span class="pipeline__step__label">Sample &amp; poke</span>
+              </div>
+
+              <div class="pipeline__step">
+                <img src="../assets/objects-paper/segpipe/4_flowgen.png" alt="Flow generation" />
+                <span class="pipeline__step__label">Flow completion</span>
+              </div>
+
+              <div class="pipeline__step">
+                <img src="../assets/objects-paper/segpipe/6_segment.png" alt="Extracted segment" />
+                <span class="pipeline__step__label">Threshold &rarr; segment</span>
+              </div>
+            </div>
+          </div>
+
+          <figure class="post__figure">
+            <div style="max-width: 93%; margin: 0 auto;">
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 0 2px; margin-bottom: 4px;">
+                <span class="gallery__cell__label">Image &amp; point</span>
+                <span class="gallery__cell__label">SAM2</span>
+                <span class="gallery__cell__label">PSI</span>
+                <span class="gallery__cell__label">GT</span>
+              </div>
+              <img
+                src="../assets/objects-paper/point_seg.png"
+                alt="Point-prompted movable object segmentation comparisons"
+                loading="lazy"
+                style="width: 100%;"
+              />
+            </div>
+          </figure>
+          <p>
+            SAM2 often segments object subparts based on texture that do not
+            move independently. PSI obtains segments that align better with
+            the notion of what moves together in the physical world.
+          </p>
+
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Average Recall</th>
+                <th>mIoU</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>CutLER</td><td>0.321</td><td>0.446</td></tr>
+              <tr><td>ProMerge</td><td>0.342</td><td>0.449</td></tr>
+              <tr><td>Counterfactual World Models (CWM)</td><td>0.327</td><td>0.481</td></tr>
+              <tr><td>MaskFormer</td><td>0.439</td><td>0.506</td></tr>
+              <tr><td>Flow Poke Transformer (FPT)</td><td>0.368</td><td>0.566</td></tr>
+              <tr><td>SAM2</td><td>0.482</td><td>0.623</td></tr>
+              <tr class="best"><td>PSI (ours)</td><td>0.541</td><td>0.681</td></tr>
+            </tbody>
+          </table>
+          <p>
+            We evaluate on SpelkeBench, a benchmark for movable object
+            segmentation. PSI achieves state-of-the-art results, outperforming
+            both supervised methods like SAM2 and self-supervised baselines
+            including CWM and FPT.
+          </p>
+
+          <h3>3D object manipulation</h3>
+          <p>
+            Having discovered movable objects, we can manipulate them in 3D.
+            The pipeline extracts a segment with a point prompt, computes a
+            dense flow field from a 3D edit command, and renders the result
+            using PSI. We find that our segments yield better physical
+            manipulation compared to those from SAM, which often segments
+            subparts of objects that do not move independently.
+          </p>
+
+          <div class="manip-compare">
+            <div class="manip-compare__row" style="grid-template-columns: repeat(4, 1fr); gap: 4px 12px; opacity:1;">
+              <span class="gallery__cell__label">PSI Segment</span>
+              <span class="gallery__cell__label">3D Edit Command</span>
+              <span class="gallery__cell__label">Dense Flow</span>
+              <span class="gallery__cell__label">3D Edit w/ PSI</span>
+            </div>
+            <div class="manip-compare__row manip-compare__row--psi">
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/psi_seg.png" alt="PSI segment" />
+              </div>
+              <div class="manip-compare__cell" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+                <span style="font-size:1.2rem; color:var(--ink, #222);">&darr;</span>
+                <div style="text-align:center; font-size:0.88rem; font-weight:600; color:var(--ink, #222); line-height:1.5; border:1px solid var(--ink, #222); border-radius:6px; padding:10px 14px;">
+                  Construct<br>&ldquo;Imagined&rdquo; Flow Map
+                </div>
+                <span style="font-size:1.1rem; color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
+              </div>
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/psi_flow.png" alt="Dense flow — PSI" />
+              </div>
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/psi_result.png" alt="3D edit result — PSI" />
+              </div>
+            </div>
+
+            <div class="manip-compare__row" style="grid-template-columns: repeat(4, 1fr); gap: 4px 12px; opacity:1; margin-top: 8px;">
+              <span class="gallery__cell__label">SAM Segment</span>
+              <span class="gallery__cell__label">3D Edit Command</span>
+              <span class="gallery__cell__label">Dense Flow</span>
+              <span class="gallery__cell__label">3D Edit w/ SAM</span>
+            </div>
+            <div class="manip-compare__row manip-compare__row--sam">
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/sam_seg.png" alt="SAM segment" />
+              </div>
+              <div class="manip-compare__cell" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+                <span style="font-size:1.2rem; color:var(--ink, #222);">&darr;</span>
+                <div style="text-align:center; font-size:0.88rem; font-weight:600; color:var(--ink, #222); line-height:1.5; border:1px solid var(--ink, #222); border-radius:6px; padding:10px 14px;">
+                  Construct<br>&ldquo;Imagined&rdquo; Flow Map
+                </div>
+                <span style="font-size:1.1rem; color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
+              </div>
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/sam_flow.png" alt="Dense flow — SAM" />
+              </div>
+              <div class="manip-compare__cell">
+                <img src="../assets/objects-paper/manip/sam_result.png" alt="3D edit result — SAM" />
+              </div>
+            </div>
+          </div>
+
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>LPIPS &darr;</th>
+                <th>SSIM &uarr;</th>
+                <th>EA &uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>PerceptionAsControl (PasC)</td><td>0.195</td><td>0.672</td><td>0.679</td></tr>
+              <tr><td>DiffusionHandles</td><td>0.364</td><td>0.555</td><td>0.576</td></tr>
+              <tr><td>DiffusionAsShader</td><td>0.194</td><td>0.707</td><td>0.640</td></tr>
+              <tr class="best"><td>PSI</td><td>0.161</td><td>0.736</td><td>0.776</td></tr>
+            </tbody>
+          </table>
+          <div class="manip-methods">
+            <div class="manip-methods__row manip-methods__row--top">
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">Image + query</span>
+                <img src="../assets/objects-paper/manip/r2_image_query.png" alt="Image + query" />
+              </div>
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">Edit command</span>
+                <img src="../assets/objects-paper/manip/r2_edit_cmd.png" alt="Edit command" />
+              </div>
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">Ground truth</span>
+                <img src="../assets/objects-paper/manip/r2_gt.png" alt="Ground truth" />
+              </div>
+            </div>
+            <div class="manip-methods__row manip-methods__row--bottom">
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">DiffusionHandles</span>
+                <img src="../assets/objects-paper/manip/r2_diffhandles.png" alt="DiffusionHandles" />
+              </div>
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">DiffusionAsShader</span>
+                <img src="../assets/objects-paper/manip/r2_diffshader.png" alt="DiffusionAsShader" />
+              </div>
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">PasC</span>
+                <img src="../assets/objects-paper/manip/r2_pasc.png" alt="PasC" />
+              </div>
+              <div class="manip-methods__cell">
+                <span class="gallery__cell__label">PSI</span>
+                <img src="../assets/objects-paper/manip/r2_psi.png" alt="PSI" />
+              </div>
+            </div>
+          </div>
+
+          <p>
+            PSI achieves state-of-the-art object manipulation performance
+            on 3DEditBench. More importantly, the segments extracted from PSI
+            consistently outperform SAM, improving realism when used across
+            diverse image editing models (PerceptionAsControl,
+            DiffusionHandles, Diffusion-as-Shader). SAM-generated masks capture
+            only sub-parts of objects, resulting in fragmented or implausible
+            edits.
+          </p>
+
+          <h3>Reasoning about physical relationships</h3>
+          <p>
+            Finally, we show that our world model can reason about physical
+            relationships between objects. Expected displacement maps computed
+            with virtual poke conditioning reveal information about support
+            hierarchies within the scene, where we find that poking the
+            supporting object moves the supported object.
+          </p>
+          <div class="manip-compare" style="gap: 8px;">
+            <div class="manip-compare__row" style="grid-template-columns: repeat(3, 1fr); gap: 4px 12px;">
+              <div class="manip-compare__cell" style="opacity:1; animation:none;">
+                <span class="gallery__cell__label">Input image</span>
+                <img src="../assets/objects-paper/support_input.png" alt="Input image" />
+              </div>
+              <div class="manip-compare__cell" style="animation-delay: 0.9s;">
+                <span class="gallery__cell__label">Poke supported object</span>
+                <img src="../assets/objects-paper/support_poke_supported.png" alt="Poke supported object" />
+              </div>
+              <div class="manip-compare__cell" style="animation-delay: 1.8s;">
+                <span class="gallery__cell__label">Poke supporting object</span>
+                <img src="../assets/objects-paper/support_poke_supporting.png" alt="Poke supporting object" />
+              </div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 32px; padding: 6px 0 2px; font-size: 0.8rem; font-weight: 600; color: var(--ink-soft, #555);">
+              <span><span style="color: red;">&#9679;</span><span style="color: red;">&larr;</span> Virtual Poke</span>
+              <span><span style="color: #3366ff;">&larr;</span> Expected Motion</span>
+            </div>
+          </div>
+
+          <p>
+            By repeating this analysis for every pair of objects in the scene,
+            we build a directed <strong>support graph</strong> where each edge
+            captures how much one object's motion influences another. This
+            enables <strong>Visual Jenga</strong>: we iteratively select the
+            object that influences the fewest others (i.e. the safest to
+            remove), apply a large virtual poke to remove it, and update the
+            graph. The model thus discovers the physical support hierarchy of
+            the scene entirely from its learned dynamics.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/objects-paper/support_b.png"
+              alt="Visual Jenga by iteratively pruning motion affinity graphs"
+              loading="lazy"
+              style="max-width: 93%; display: block; margin: 1.5em auto;"
+            />
+          </figure>
+
+          <h2>Conclusion</h2>
+          <p>
+            This work demonstrates a recipe to build a generic self-supervised,
+            physically promptable visual world model and defines simple
+            procedures to extract various forms of rich object understanding in
+            a zero-shot manner, laying the groundwork for general-purpose scene
+            understanding. Though our focus has been on human-centric
+            macroscopic physical scenes, the underlying philosophy of using
+            predictive models to uncover causal and structural patterns through
+            probing could open new avenues for data-driven structure discovery
+            in other domains&mdash;such as medical imaging, astrophysics, or
+            materials science.
+          </p>
+
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>&copy; Stanford NeuroAI</span>
+      <span>&Psi; Probabilistic Structure Integration</span>
+    </footer>
+
+    <script>
+    /* Gallery carousel navigation */
+    document.querySelectorAll('.gallery').forEach(gallery => {
+      const track = gallery.querySelector('.gallery__track');
+      const slides = track.querySelectorAll('.gallery__slide');
+      const counter = gallery.querySelector('.gallery__counter');
+      const btns = gallery.querySelectorAll('.gallery__btn');
+      let idx = 0;
+      const total = slides.length;
+
+      function update() {
+        track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+        counter.textContent = (idx + 1) + ' / ' + total;
+        btns[0].disabled = idx === 0;
+        btns[1].disabled = idx === total - 1;
+      }
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          idx = Math.max(0, Math.min(total - 1, idx + parseInt(btn.dataset.dir)));
+          update();
+        });
+      });
+
+      update();
+    });
+
+
+    </script>
+  </body>
+</html>
