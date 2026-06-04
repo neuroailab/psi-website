@@ -140,11 +140,13 @@
         object-fit: cover;
         border-radius: 6px;
         opacity: 0;
+      }
+      .animated .seed-stack img {
         animation: seed3 6s ease-in-out infinite;
       }
-      .seed-stack img:nth-child(1) { animation-delay: 0s; }
-      .seed-stack img:nth-child(2) { animation-delay: 2s; }
-      .seed-stack img:nth-child(3) { animation-delay: 4s; }
+      .animated .seed-stack img:nth-child(1) { animation-delay: 0s; }
+      .animated .seed-stack img:nth-child(2) { animation-delay: 2s; }
+      .animated .seed-stack img:nth-child(3) { animation-delay: 4s; }
       @keyframes seed3 {
         0%, 5%    { opacity: 0; }
         10%, 28%  { opacity: 1; }
@@ -160,11 +162,13 @@
         left: 0;
         white-space: nowrap;
         opacity: 0;
+      }
+      .animated .seed-label span {
         animation: seed3 6s ease-in-out infinite;
       }
-      .seed-label span:nth-child(1) { animation-delay: 0s; }
-      .seed-label span:nth-child(2) { animation-delay: 2s; }
-      .seed-label span:nth-child(3) { animation-delay: 4s; }
+      .animated .seed-label span:nth-child(1) { animation-delay: 0s; }
+      .animated .seed-label span:nth-child(2) { animation-delay: 2s; }
+      .animated .seed-label span:nth-child(3) { animation-delay: 4s; }
 
       /* Auto-animated pipeline figure */
       .pipeline {
@@ -200,15 +204,16 @@
         color: var(--ink-soft, #555);
         text-align: center;
       }
-      /* 6-step staggered reveal: 12s total cycle */
       .pipeline__step {
-        animation: pipe-reveal 0.5s ease forwards;
         opacity: 0;
       }
-      .pipeline__step:nth-child(1) { animation-delay: 0s; }
-      .pipeline__step:nth-child(2) { animation-delay: 1.8s; }
-      .pipeline__step:nth-child(3) { animation-delay: 3.6s; }
-      .pipeline__step:nth-child(4) { animation-delay: 5.4s; }
+      .animated .pipeline__step {
+        animation: pipe-reveal 0.5s ease forwards;
+      }
+      .animated .pipeline__step:nth-child(1) { animation-delay: 0s; }
+      .animated .pipeline__step:nth-child(2) { animation-delay: 1.8s; }
+      .animated .pipeline__step:nth-child(3) { animation-delay: 3.6s; }
+      .animated .pipeline__step:nth-child(4) { animation-delay: 5.4s; }
       @keyframes pipe-reveal {
         0%   { opacity: 0; transform: translateY(6px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -237,18 +242,29 @@
         align-items: center;
         gap: 6px;
         opacity: 0;
+      }
+      /* Always-visible cell (no animation needed) */
+      .manip-compare__cell--visible { opacity: 1; }
+      /* Animated cells — only animate when container has .animated */
+      .animated .manip-compare__cell {
         animation: pipe-reveal 0.5s ease forwards;
       }
+      .animated .manip-compare__cell--visible {
+        animation: none;
+        opacity: 1;
+      }
+      .animated .manip-compare__cell--delay1 { animation-delay: 0.9s; }
+      .animated .manip-compare__cell--delay2 { animation-delay: 1.8s; }
       /* PSI row: stagger left to right */
-      .manip-compare__row--psi .manip-compare__cell:nth-child(1) { animation-delay: 0s; }
-      .manip-compare__row--psi .manip-compare__cell:nth-child(2) { animation-delay: 0.9s; }
-      .manip-compare__row--psi .manip-compare__cell:nth-child(3) { animation-delay: 1.8s; }
-      .manip-compare__row--psi .manip-compare__cell:nth-child(4) { animation-delay: 2.7s; }
-      /* SAM row: stagger left to right, after PSI row finishes */
-      .manip-compare__row--sam .manip-compare__cell:nth-child(1) { animation-delay: 4.0s; }
-      .manip-compare__row--sam .manip-compare__cell:nth-child(2) { animation-delay: 4.9s; }
-      .manip-compare__row--sam .manip-compare__cell:nth-child(3) { animation-delay: 5.8s; }
-      .manip-compare__row--sam .manip-compare__cell:nth-child(4) { animation-delay: 6.7s; }
+      .animated .manip-compare__row--psi .manip-compare__cell:nth-child(1) { animation-delay: 0s; }
+      .animated .manip-compare__row--psi .manip-compare__cell:nth-child(2) { animation-delay: 0.9s; }
+      .animated .manip-compare__row--psi .manip-compare__cell:nth-child(3) { animation-delay: 1.8s; }
+      .animated .manip-compare__row--psi .manip-compare__cell:nth-child(4) { animation-delay: 2.7s; }
+      /* SAM row */
+      .animated .manip-compare__row--sam .manip-compare__cell:nth-child(1) { animation-delay: 4.0s; }
+      .animated .manip-compare__row--sam .manip-compare__cell:nth-child(2) { animation-delay: 4.9s; }
+      .animated .manip-compare__row--sam .manip-compare__cell:nth-child(3) { animation-delay: 5.8s; }
+      .animated .manip-compare__row--sam .manip-compare__cell:nth-child(4) { animation-delay: 6.7s; }
       .manip-compare__cell img {
         width: 100%;
         border-radius: 0;
@@ -323,39 +339,33 @@
 
         <div class="prose post__body">
           <p class="post__lede">
-            How do we learn what objects are, how they move, and how they
-            relate to each other&mdash;without any labels? This blog shows
-            how the <a href="psi.html">PSI world model</a> answers these
-            questions by treating them all as probabilistic queries on a
-            single learned model of scene dynamics. From one model we get
-            object discovery, 3D manipulation, and physical relationship
-            reasoning&mdash;including a Visual Jenga application. For details
-            on the PSI architecture and training, see our
-            <a href="releasing-psiv0-5.html">PSIv0.5 release post</a>.
+            We present a visual world model, learned from raw
+            video, that can be natively prompted with physical interactions.
+            This physical prompting interface turns out to be
+            surprisingly powerful: from a single model, a broad spectrum of
+            object understanding capabilities emerges zero-shot, spanning
+            object discovery, 3D manipulation, articulated part
+            segmentation, and reasoning about physical support
+            relationships. For details on the architecture and training,
+            see our <a href="releasing-psiv0-5.html">PSIv0.5 release post</a>.
           </p>
 
-          <h2>The need for a &ldquo;native prompting&rdquo; mechanism</h2>
+          <h2>The need for a &ldquo;native prompting&rdquo; mechanism for vision</h2>
           <p>
-            A key challenge in visual intelligence is developing models that
-            can be queried naturally about the world they perceive. Current
-            vision foundation models such as DINO, JEPA, and related
-            self-supervised approaches learn rich visual representations, but
-            these representations are typically accessed through task-specific
-            supervised probes. To answer questions about objects, actions, or
-            future outcomes, one often needs to train additional classifiers
-            or regressors on top of the learned features, limiting their
-            flexibility as general-purpose reasoning systems.
-          </p>
-          <p>
-            In contrast, natural language has emerged as a powerful interface
-            for interacting with visual models. Multimodal systems such as
-            GPT-4V can answer a wide range of questions about scenes using
-            free-form language prompts. However, language alone is often an
-            insufficient interface for embodied reasoning. Consider the
-            example shown below, where GPT-4V is asked to predict the outcome
-            of a physical interaction with a scene. While the model can
-            describe what it sees, it struggles to reason accurately about the
-            consequences of interventions.
+            <strong>Large foundation models learn rich visual representations, but
+            how do you query them?</strong>
+            In NLP, the answer is straightforward: you prompt in natural
+            language. But for vision, it is far less clear. Vision models like
+            DINO, JEPA, and MAE instead require task-specific supervised
+            probes, and multimodal systems like GPT-4V, Cosmos, and Sora can accept language
+            prompts but struggle with physical reasoning&mdash;as shown
+            below, GPT-4V cannot reliably predict what happens when you push
+            an object. What is needed is a &ldquo;native&rdquo;
+            interface: the ability to query a model in its own
+            modalities&mdash;images, motions, forces&mdash;so you can ask
+            <em>what would happen if I pushed here?</em> by showing it a
+            push and reading off the answer in pixels, with no additional
+            training.
           </p>
           <figure class="post__figure">
             <img
@@ -368,9 +378,18 @@
               Query: &ldquo;What will happen if I apply a force specified by the red arrow at the location of the red dot? Answer with a yellow outline.&rdquo;
             </figcaption>
           </figure>
+          <div style="float:right; width:38%; max-width:280px; margin:0 0 1em 1.5em; border:1px solid var(--line, #e0e0e0); border-radius:10px; overflow:hidden; background:var(--surface, #f8f8f8); padding:12px;">
+            <img
+              src="../assets/objects-paper/fig_motivation_right.png"
+              alt="A robot needs to reason about physical consequences of actions"
+              loading="lazy"
+              style="width:100%; border-radius:6px;"
+            />
+          </div>
           <p>
-            This limitation becomes particularly important in domains such as
-            robotics, where agents must reason not only about what is present
+            <strong>Embodied agents need causal reasoning about
+            interventions, not just scene descriptions.</strong>
+            In robotics, agents must reason not only about what is present
             in a scene, but also about what would happen under hypothetical
             actions. Before executing a manipulation, a robot should be able
             to ask questions such as: <em>What would happen if I push this
@@ -380,64 +399,72 @@
             causal reasoning and intervention-based simulation rather than
             passive scene description alone.
           </p>
-          <figure class="post__figure">
+          <div style="float:left; width:38%; max-width:300px; margin:0 1.5em 1em 0; border:1px solid var(--line, #e0e0e0); border-radius:10px; overflow:hidden; background:var(--surface, #f8f8f8); padding:12px;">
             <img
-              src="../assets/objects-paper/fig_motivation_right.png"
-              alt="A robot needs to reason about physical consequences of actions"
+              src="../assets/objects-paper/baby_macaque.png"
+              alt="Human infants and non-human primates develop rich physical understanding without language"
               loading="lazy"
-              style="max-width: 55%; display: block; margin: 0 auto;"
+              style="width:100%; border-radius:6px;"
             />
+          </div>
+          <p>
+            <strong>Biological organisms already solve this problem&mdash;without
+            language.</strong> Human infants and non-human primates develop a remarkably
+            rich understanding of the physical world&mdash;recognizing
+            objects, predicting the consequences of actions, and performing a
+            wide variety of real-world tasks&mdash;all without access to
+            natural language.
+            Understanding how this kind of physical intelligence emerges from
+            purely sensorimotor experience is a fundamental question in
+            cognitive science and neuroscience. Building computational models
+            that exhibit similar capabilities&mdash;learning about objects and
+            their physics through vision and interaction rather than
+            language&mdash;can help answer some of these questions while also
+            advancing AI systems that reason natively about the physical
+            world.
+          </p>
+
+          <h2>Building a physically controllable visual world model</h2>
+          <figure class="post__figure" style="margin-bottom:1.5em;">
+            <img
+              src="../assets/objects-paper/img_phywm.png"
+              alt="Physical world model: token sequence and inference pathways"
+              loading="lazy"
+              style="max-width: 90%; display: block; margin: 0 auto;"
+            />
+            <figcaption style="text-align:center; font-size:0.85rem; color:var(--ink-soft, #555); margin-top:8px; font-style:italic;">
+              Different inference pathways enable different physical controls.
+            </figcaption>
           </figure>
-
-          <h2>Probabilistic world model formulation</h2>
           <p>
-            To make progress toward these capabilities, we introduce
-            probabilistic world models&mdash;a class of visual world models
-            equipped with a native querying mechanism for causal inference.
-            Given an input datum \(\mathbf{X}\), consisting of observations
-            from the visual world across space and time, and an arbitrary
-            query location \(p\), the model produces a probability
-            distribution over latent and observable variables describing the
-            state of the world. These variables may include appearance (RGB),
-            geometry (depth), motion, segmentation, object properties, or
-            other structured representations. We construct a probabilistic
-            world model \(\Psi\) that can predict the probability of any
-            visual variable&mdash;appearance, motion, depth&mdash;conditioned
-            on any subset of other observed variables. Given a partial
-            observation \(\mathbf{X}\) of the scene (e.g. an image, a sparse
-            set of flow vectors, a camera pose) and an unobserved query
-            location \(p\), the model returns a full probability distribution
-            over what could be there:
+            Our world model is an autoregressive transformer trained on
+            video. Each training sequence is laid out as: Frame 0 RGB
+            tokens, followed by camera tokens, then flow tokens, and
+            finally Frame 1 RGB tokens. The model learns to predict the
+            next token in this sequence, and a model trained this way
+            naturally supports various inference pathways for physical
+            control:
           </p>
-          $$
-          \Psi(\mathbf{X},\; p)
-          \;\longmapsto\;
-          \Pr[v \mid \mathbf{X}, p]
-          $$
+          <ul>
+            <li><strong>Generate object dynamics:</strong> Provide the
+            input frame and set camera motion to zero. The model generates
+            plausible flow and a future RGB frame, revealing how objects
+            might naturally move in the scene.</li>
+            <li><strong>Poke-conditioned generation:</strong> Additionally
+            provide a sparse &ldquo;virtual poke&rdquo;&mdash;a few flow
+            vectors specifying where and how you want to push. The model
+            completes the dense flow field and generates the resulting
+            future frame, simulating the effect of that physical
+            interaction.</li>
+          </ul>
           <p>
-            We implement \(\Psi\) as an autoregressive transformer trained on
-            sequences of interleaved <em>pointer</em> tokens (spatial locations)
-            and <em>content</em> tokens (RGB appearance, optical flow, camera
-            motion). A training sequence encodes two video frames with their
-            inter-frame flow and camera pose, and standard next-token prediction
-            recovers the conditional distributions above. Because \(\Psi\)
-            outputs distributions rather than point estimates, we can sample
-            multiple plausible futures from the same observation&mdash;a
-            property that turns out to be critical for discovering objects and
-            their physical structure.
+            Because the model outputs distributions rather than point
+            estimates, we can sample multiple plausible futures from the
+            same observation&mdash;a property that turns out to be critical
+            for discovering objects and their physical structure.
           </p>
 
-          <h2>Applications</h2>
-          <p>
-            Because \(\Psi\) can answer probabilistic questions about any part
-            of the scene, a single model supports a wide range of
-            object-understanding tasks without task-specific training. Below we
-            show how querying the model in different ways yields motion maps,
-            plausible future rollouts, object segments, 3D manipulation, and
-            physical relationship reasoning.
-          </p>
-
-          <h3>Motion probability maps</h3>
+          <h3>Application 1: Motion probability maps</h3>
           <p>
             A natural first question to ask is: which parts of the scene are
             movable? For each spatial location we query \(\Psi\) for the
@@ -500,13 +527,13 @@
             </div>
           </div>
 
-          <h3>Expected motion maps</h3>
+          <h3>Application 2: Expected motion maps</h3>
           <p>
             While the motion probability map tells us <em>which</em> parts of
             the scene will move, we often want to know <em>where</em> they
             move. For this we compute the <strong>expected motion</strong> at
             each location: the probability-weighted average of all possible
-            flow vectors predicted by \(\Psi\). This produces a dense
+            flow vectors. This produces a dense
             displacement field that reveals both the extent of motion and
             material properties&mdash;rigid objects show uniform responses
             across their extent, while deformable objects like cloth show
@@ -551,7 +578,7 @@
             </div>
           </div>
 
-          <h3>Sequential generation of plausible futures</h3>
+          <h3>Application 3: Sequential generation of plausible futures</h3>
           <p>
             The parallel motion statistics above treat each location
             independently. To capture how different parts of the scene move
@@ -621,7 +648,7 @@
             </div>
           </div>
 
-          <h3>Poke-conditioned sequential generation</h3>
+          <h3>Application 4: Poke-conditioned sequential generation</h3>
           <p>
             When a motion is specified for a part of the object (a virtual
             poke), PSI generates diverse yet physically consistent responses
@@ -657,7 +684,7 @@
             </div>
           </div>
 
-          <h3>Movable object discovery</h3>
+          <h3>Application 5: Movable object discovery</h3>
           <p>
             These diverse motion samples let us probe the causal structure of
             the scene. The key idea: if we apply a virtual poke at a point and
@@ -740,7 +767,7 @@
             including CWM and FPT.
           </p>
 
-          <h3>3D object manipulation</h3>
+          <h3>Application 6: 3D object manipulation</h3>
           <p>
             Having discovered movable objects, we can manipulate them in 3D.
             The pipeline extracts a segment with a point prompt, computes a
@@ -780,7 +807,7 @@
               <span class="gallery__cell__label">SAM Segment</span>
               <span class="gallery__cell__label">3D Edit Command</span>
               <span class="gallery__cell__label">Dense Flow</span>
-              <span class="gallery__cell__label">3D Edit w/ SAM</span>
+              <span class="gallery__cell__label">3D Edit w/ PSI</span>
             </div>
             <div class="manip-compare__row manip-compare__row--sam">
               <div class="manip-compare__cell">
@@ -863,7 +890,7 @@
             edits.
           </p>
 
-          <h3>Reasoning about physical relationships</h3>
+          <h3>Application 7: Reasoning about physical relationships</h3>
           <p>
             Finally, we show that our world model can reason about physical
             relationships between objects. Expected displacement maps computed
@@ -873,15 +900,15 @@
           </p>
           <div class="manip-compare" style="gap: 8px;">
             <div class="manip-compare__row" style="grid-template-columns: repeat(3, 1fr); gap: 4px 12px;">
-              <div class="manip-compare__cell" style="opacity:1; animation:none;">
+              <div class="manip-compare__cell manip-compare__cell--visible">
                 <span class="gallery__cell__label">Input image</span>
                 <img src="../assets/objects-paper/support_input.png" alt="Input image" />
               </div>
-              <div class="manip-compare__cell" style="animation-delay: 0.9s;">
+              <div class="manip-compare__cell manip-compare__cell--delay1">
                 <span class="gallery__cell__label">Poke supported object</span>
                 <img src="../assets/objects-paper/support_poke_supported.png" alt="Poke supported object" />
               </div>
-              <div class="manip-compare__cell" style="animation-delay: 1.8s;">
+              <div class="manip-compare__cell manip-compare__cell--delay2">
                 <span class="gallery__cell__label">Poke supporting object</span>
                 <img src="../assets/objects-paper/support_poke_supporting.png" alt="Poke supporting object" />
               </div>
@@ -911,18 +938,32 @@
             />
           </figure>
 
-          <h2>Conclusion</h2>
+          <h2>Looking ahead</h2>
           <p>
-            This work demonstrates a recipe to build a generic self-supervised,
-            physically promptable visual world model and defines simple
-            procedures to extract various forms of rich object understanding in
-            a zero-shot manner, laying the groundwork for general-purpose scene
-            understanding. Though our focus has been on human-centric
-            macroscopic physical scenes, the underlying philosophy of using
-            predictive models to uncover causal and structural patterns through
-            probing could open new avenues for data-driven structure discovery
-            in other domains&mdash;such as medical imaging, astrophysics, or
-            materials science.
+            We can think of the applications shown above as a first glimpse
+            of what becomes possible when a world model speaks the language
+            of physics rather than words. This lays the groundwork for
+            physically controllable world models, and the potential
+            applications extend well beyond what we have demonstrated.
+          </p>
+          <p>
+            In robotics, such a model could serve as a physical imagination
+            engine for planning: before executing a grasp or a push, a robot
+            could mentally simulate the outcome, predict which objects will
+            move, and choose actions accordingly. Task planning in cluttered
+            environments could leverage motion probability maps to identify
+            which objects need to be cleared, and poke-conditioned generation
+            to evaluate candidate manipulation strategies. The model&rsquo;s
+            ability to discover movable objects and reason about support
+            relationships could enable robots to perform multi-step
+            rearrangement tasks&mdash;such as unstacking, sorting, or
+            assembling&mdash;without needing object-specific training.
+          </p>
+          <p>
+            More broadly, physically controllable world models open a path
+            toward embodied agents that learn about objects the way biological
+            organisms do: not through labels or language, but through
+            interaction and observation.
           </p>
 
           <h2>Citation</h2>
@@ -952,6 +993,7 @@
       const slides = track.querySelectorAll('.gallery__slide');
       const counter = gallery.querySelector('.gallery__counter');
       const btns = gallery.querySelectorAll('.gallery__btn');
+      if (!counter || btns.length < 2) return; // skip single-slide galleries
       let idx = 0;
       const total = slides.length;
 
@@ -972,6 +1014,20 @@
       update();
     });
 
+    /* Scroll-triggered: add .animated class when element enters viewport */
+    var animObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+        } else if (entry.target.querySelector('.seed-stack')) {
+          entry.target.classList.remove('animated');
+        }
+      });
+    }, { threshold: 0.0 });
+
+    document.querySelectorAll('.pipeline, .manip-compare, .gallery').forEach(function(el) {
+      animObserver.observe(el);
+    });
 
     </script>
   </body>
