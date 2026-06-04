@@ -243,6 +243,11 @@
         gap: 6px;
         opacity: 0;
       }
+      .manip-compare__cell .gallery__cell__label {
+        min-height: 2.4em;
+        display: flex;
+        align-items: flex-end;
+      }
       /* Always-visible cell (no animation needed) */
       .manip-compare__cell--visible { opacity: 1; }
       /* Animated cells — only animate when container has .animated */
@@ -269,6 +274,7 @@
         width: 100%;
         border-radius: 0;
       }
+      .manip-compare__row { align-items: center; }
       /* Methods comparison: 3-col top + 4-col bottom */
       .manip-methods {
         margin: 1.4em 0 1.8em;
@@ -788,11 +794,11 @@
                 <img src="../assets/objects-paper/manip/psi_seg.png" alt="PSI segment" />
               </div>
               <div class="manip-compare__cell" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
-                <span style="font-size:1.2rem; color:var(--ink, #222);">&darr;</span>
-                <div style="text-align:center; font-size:0.88rem; font-weight:600; color:var(--ink, #222); line-height:1.5; border:1px solid var(--ink, #222); border-radius:6px; padding:10px 14px;">
+                <span style="font-size:clamp(0.7rem, 2vw, 1.2rem); color:var(--ink, #222);">&darr;</span>
+                <div style="text-align:center; font-size:clamp(0.55rem, 2vw, 0.88rem); font-weight:600; color:var(--ink, #222); line-height:1.4; border:1px solid var(--ink, #222); border-radius:6px; padding:clamp(4px, 1.5vw, 10px) clamp(6px, 2vw, 14px);">
                   Construct<br>&ldquo;Imagined&rdquo; Flow Map
                 </div>
-                <span style="font-size:1.1rem; color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
+                <span style="font-size:clamp(0.65rem, 2vw, 1.1rem); color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
               </div>
               <div class="manip-compare__cell">
                 <img src="../assets/objects-paper/manip/psi_flow.png" alt="Dense flow — PSI" />
@@ -813,11 +819,11 @@
                 <img src="../assets/objects-paper/manip/sam_seg.png" alt="SAM segment" />
               </div>
               <div class="manip-compare__cell" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
-                <span style="font-size:1.2rem; color:var(--ink, #222);">&darr;</span>
-                <div style="text-align:center; font-size:0.88rem; font-weight:600; color:var(--ink, #222); line-height:1.5; border:1px solid var(--ink, #222); border-radius:6px; padding:10px 14px;">
+                <span style="font-size:clamp(0.7rem, 2vw, 1.2rem); color:var(--ink, #222);">&darr;</span>
+                <div style="text-align:center; font-size:clamp(0.55rem, 2vw, 0.88rem); font-weight:600; color:var(--ink, #222); line-height:1.4; border:1px solid var(--ink, #222); border-radius:6px; padding:clamp(4px, 1.5vw, 10px) clamp(6px, 2vw, 14px);">
                   Construct<br>&ldquo;Imagined&rdquo; Flow Map
                 </div>
-                <span style="font-size:1.1rem; color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
+                <span style="font-size:clamp(0.65rem, 2vw, 1.1rem); color:var(--ink, #222); letter-spacing:0.3em;">&mdash;&mdash;&rarr;</span>
               </div>
               <div class="manip-compare__cell">
                 <img src="../assets/objects-paper/manip/sam_flow.png" alt="Dense flow — SAM" />
