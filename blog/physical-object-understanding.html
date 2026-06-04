@@ -219,9 +219,8 @@
         100% { opacity: 1; transform: translateY(0); }
       }
       @media (max-width: 520px) {
-        .pipeline { padding: 10px; }
-        .pipeline__view { flex-wrap: wrap; gap: 8px; }
-        .pipeline__step { flex: 0 0 calc(50% - 4px); }
+        .pipeline { padding: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .pipeline__view { min-width: 460px; }
         .pipeline__step__label { font-size: 0.78rem; }
       }
 
