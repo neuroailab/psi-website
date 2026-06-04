@@ -57,6 +57,24 @@
   }
 }
 
+/* Force light mode on mobile */
+@media (max-width: 768px) {
+  :root {
+    color-scheme: light !important;
+    --bg: #ffffff !important;
+    --bg-alt: #f7f7f4 !important;
+    --surface: #ffffff !important;
+    --surface-soft: #f7f7f4 !important;
+    --ink: #111111 !important;
+    --ink-soft: #303030 !important;
+    --muted: #686864 !important;
+    --line: rgba(17, 17, 17, 0.12) !important;
+    --line-strong: rgba(17, 17, 17, 0.24) !important;
+    --accent: #111111 !important;
+    --nav-bg: rgba(255, 255, 255, 0.9) !important;
+  }
+}
+
 *,
 *::before,
 *::after {
