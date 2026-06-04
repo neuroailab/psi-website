@@ -220,6 +220,9 @@
       }
       @media (max-width: 520px) {
         .pipeline { padding: 10px; }
+        .pipeline__view { flex-wrap: wrap; gap: 8px; }
+        .pipeline__step { flex: 0 0 calc(50% - 4px); }
+        .pipeline__step__label { font-size: 0.78rem; }
       }
 
       /* Manipulation comparison: two-row animated layout */
@@ -304,10 +307,23 @@
       }
       @media (max-width: 520px) {
         .manip-compare { padding: 10px; }
-        .manip-compare__row { grid-template-columns: repeat(2, 1fr); }
+        .manip-compare__row { grid-template-columns: repeat(2, 1fr) !important; }
         .manip-methods { padding: 10px; }
-        .manip-methods__row--top { grid-template-columns: repeat(3, 1fr); }
+        .manip-methods__row--top { grid-template-columns: repeat(2, 1fr); }
         .manip-methods__row--bottom { grid-template-columns: repeat(2, 1fr); }
+        .gallery__cell__label { font-size: 0.75rem; }
+        .gallery__slide--3col { grid-template-columns: 1fr 1fr !important; }
+        /* Float figures stack on mobile */
+        div[style*="float:right"], div[style*="float:left"] {
+          float: none !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 1em 0 !important;
+        }
+        /* Scale post figures */
+        .post__figure img {
+          max-width: 100% !important;
+        }
       }
     </style>
   </head>
