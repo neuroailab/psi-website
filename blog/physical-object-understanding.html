@@ -78,7 +78,7 @@
         border-radius: 6px;
       }
       .gallery__cell__label {
-        font-size: 0.88rem;
+        font-size: clamp(0.55rem, 2.2vw, 0.88rem);
         font-weight: 600;
         color: var(--ink-soft, #555);
         text-align: center;
@@ -115,7 +115,7 @@
         cursor: default;
       }
       .gallery__counter {
-        font-size: 0.78rem;
+        font-size: clamp(0.55rem, 2vw, 0.78rem);
         font-weight: 500;
         color: var(--ink-soft, #555);
         min-width: 3.5em;
@@ -181,7 +181,7 @@
       .pipeline__view {
         display: flex;
         align-items: flex-start;
-        gap: 4px;
+        gap: clamp(2px, 0.5vw, 4px);
       }
       .pipeline__step {
         flex: 1 1 0;
@@ -198,7 +198,7 @@
         border-radius: 0;
       }
       .pipeline__step__label {
-        font-size: 0.88rem;
+        font-size: clamp(0.55rem, 2.2vw, 0.88rem);
         font-weight: 600;
         color: var(--ink-soft, #555);
         text-align: center;
@@ -219,7 +219,6 @@
       }
       @media (max-width: 520px) {
         .pipeline { padding: 8px; }
-        .pipeline__step__label { font-size: 0.72rem; }
       }
 
       /* Manipulation comparison: two-row animated layout */
@@ -244,7 +243,7 @@
         opacity: 0;
       }
       .manip-compare__cell .gallery__cell__label {
-        min-height: 2.4em;
+        min-height: clamp(1.6em, 5vw, 2.4em);
         display: flex;
         align-items: flex-end;
       }
@@ -311,7 +310,6 @@
       @media (max-width: 520px) {
         .manip-compare { padding: 8px; }
         .manip-methods { padding: 8px; }
-        .gallery__cell__label { font-size: 0.72rem; }
         .post__figure img { max-width: 100% !important; }
       }
     </style>
