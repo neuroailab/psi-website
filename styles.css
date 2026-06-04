@@ -57,8 +57,8 @@
   }
 }
 
-/* Force light mode on mobile */
-@media (max-width: 768px) {
+/* Force light mode on mobile even when OS is dark */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
   :root {
     color-scheme: light !important;
     --bg: #ffffff !important;
@@ -72,6 +72,18 @@
     --line-strong: rgba(17, 17, 17, 0.24) !important;
     --accent: #111111 !important;
     --nav-bg: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .post-card--featured {
+    background: linear-gradient(180deg, #f7f7f4 0%, #ffffff 100%) !important;
+  }
+
+  .post__body blockquote {
+    background: rgba(17, 17, 17, 0.04) !important;
+  }
+
+  .text-button:hover {
+    background: rgba(17, 17, 17, 0.08) !important;
   }
 }
 
