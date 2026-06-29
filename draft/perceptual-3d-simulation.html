@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Perceptual 3D Simulation with Physical World Modeling — PSI Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .post--wide {
+        max-width: 1080px;
+      }
+
+      .post--wide .prose {
+        max-width: 102ch;
+      }
+
+      .post--wide .post__figure {
+        border: none;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .post--wide .post__figure img {
+        width: 100%;
+        max-width: 560px;
+      }
+
+      .post--wide .post__figure--wide img {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../blog.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="https://github.com/neuroailab/psi-demos" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post post--wide">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">CVPR 2026 · Physical world models · <a href="https://arxiv.org/abs/2606.27575" target="_blank" rel="noopener">arXiv:2606.27575</a></p>
+          <h1 class="post__title">Perceptual 3D Simulation with Physical World Modeling</h1>
+          <p class="post__authors">
+            Wanhee Lee, Klemen Kotar, Rahul Mysore Venkatesh, Jared Watrous,
+            Daniel L. K. Yamins.
+          </p>
+          <p><a href="https://arxiv.org/abs/2606.27575" target="_blank" rel="noopener">Read the paper on arXiv →</a></p>
+        </header>
+
+        <div class="prose post__body">
+          <p>
+            <strong>Real-world simulation starts from partial information.</strong>
+            Inside a game engine, 3D simulation is easy, because the full state of
+            the scene and its dynamics are known, so any change can be rendered
+            exactly. Real-world scenes give us far less. We only ever observe part
+            of the state, and the dynamics we know are often just the local action
+            we take. Most of the scene is occluded, and one local action tells us
+            little about its global consequences.
+          </p>
+          <p>
+            <strong>Our model predicts any scene element from any others.</strong>
+            We represent the scene as a probabilistic graphical model whose nodes
+            are local scene elements that capture both state and dynamics, namely
+            RGB, depth, and optical flow. This physical world model, which we call Ψ,
+            supports any-to-any prediction, conditioning on whichever elements we
+            know and predicting whichever ones we do not. We build a perceptual 3D
+            simulation system, <strong>P3Sim</strong>, around it. The rest of this
+            post shows what any-to-any prediction enables and how we build the full
+            system.
+          </p>
+
+          <h2>What any-to-any prediction enables</h2>
+          <p>
+            <strong>The same model handles known and unknown dynamics.</strong> When
+            the 3D motion of the visible surfaces is known, the model predicts the
+            change that motion implies, as in moving the camera and an object
+            together. It still fills in parts it cannot see, like the back of an
+            object, with probabilistic predictions. When even the visible motion is only partly known, it predicts
+            a distribution over plausible dynamics of the rest of the scene, as in acting with other agents.
+            The next two results show each case.
+          </p>
+
+          <p>
+            <strong>The camera and an object can move at once.</strong> When the
+            dynamics of the visible surfaces are fully known, we can compute the
+            optical flow and the new depth that the transform produces, and pass them
+            to the model as conditioning. The example shows the model composing a
+            global viewpoint change with a local object transform.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/p3sim/joint.jpg"
+              alt="Joint camera and object motion predictions"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <p>
+            <strong>Other agents react in uncertain ways.</strong> When the dynamics
+            are only partly known, moving one agent changes the dynamics of the rest
+            of the scene, and those dynamics have multiple plausible outcomes. Given
+            the motion of a single agent (red arrows), P3Sim makes probabilistic
+            predictions of the induced motion of the rest (yellow arrows), yielding a
+            distribution over plausible outcomes.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/p3sim/other_agent.jpg"
+              alt="Acting with other agents, predicting induced motion under uncertainty"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <p>
+            <strong>Predictions accumulate into 3D geometry.</strong> Integrated
+            over time, they form a consistent 3D description that can be read out at
+            the scene level, at the object level, and even as amodal completion of
+            structure that is not fully visible in a single frame.
+          </p>
+          <figure class="post__figure post__figure--wide">
+            <img
+              src="../assets/p3sim/extracting_geometry.jpg"
+              alt="Scene-level, object-level, and amodal completion of geometry"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <h2>How we build it</h2>
+          <p>
+            <strong>P3Sim has three components.</strong> A physical world model (Ψ)
+            does the prediction, a geometrizer (Γ) turns a desired transform into
+            geometric conditioning, and a persistent scene memory (μ) integrates
+            predictions over time.
+          </p>
+          <figure class="post__figure">
+            <img
+              src="../assets/p3sim/overview.jpg"
+              alt="P3Sim system overview with world model, geometrizer, and memory module"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <p>
+            <strong>A random-order sequence model makes any-to-any prediction
+            tractable.</strong> Predicting every element from every possible subset of
+            the others looks intractable. We serialize the scene elements into a sequence of pointer
+            and value pairs and train a single 7B autoregressive transformer,
+            randomizing the order of the elements in each sequence. Each pointer
+            represents a location, time, and modality, so decoding becomes random
+            access and the model can be queried for any element given any others.
+          </p>
+          <figure class="post__figure post__figure--wide">
+            <img
+              src="../assets/p3sim/model.jpg"
+              alt="Physical world modeling with multimodal probabilistic prediction"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <p>
+            <strong>The geometrizer and scene memory feed the model geometric
+            conditioning.</strong> Each observation or prediction contributes partial
+            geometry to the persistent scene memory μ, which integrates them into a
+            running 3D estimate. The geometrizer then
+            converts this memory and the desired 3D transforms into geometric
+            conditioning, reprojecting valid and visible surfaces to the target view
+            as the partial depth and flow that the world model conditions on.
+          </p>
+          <figure class="post__figure post__figure--wide">
+            <img
+              src="../assets/p3sim/graphics.jpg"
+              alt="Constructing geometric conditioning signals and persistent scene memory"
+              loading="lazy"
+              style="display: block; margin: 0 auto;"
+            />
+          </figure>
+
+          <p>
+            <strong>P3Sim simulates 3D scenes from perception.</strong> Together
+            these pieces make one autoregressive world model, a step toward
+            general-purpose physical world models that predict how scenes change under
+            partial observations and incomplete 3D transforms.
+          </p>
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+  </body>
+</html>
