@@ -1,0 +1,3773 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ψ-0.6: Adaptive Streams of Thought — PSI Blog</title>
+    <meta
+      name="description"
+      content="Ψ-0.6 is a unified vision-language world model that reasons through streams of thought: sequences interleaving images and text with its own predictions of depth, optical flow, and camera motion."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script>
+      try { const t = localStorage.getItem("psi-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (_) {}
+    </script>
+    <style>
+      :root {
+        --prompt-blue: #1573ff;
+        /* Modality colours: the paper's palette (Fig. 1 chips). */
+        --m-rgb: #1a73e8;
+        --m-cam: #7a4b2a;
+        --m-depth: #c5221f;
+        --m-flow: #0b7a34;
+        --m-text: #9334e6;
+        --m-vision: #1a73e8;
+        --m-lang: #7b1fa2;
+        --m-wm: #e08600;
+        --chip-alpha: 0.1;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --m-rgb: #7fb0ff;
+          --m-cam: #d3a47c;
+          --m-depth: #ff8a80;
+          --m-flow: #5fd393;
+          --m-text: #c79bff;
+          --m-vision: #7fb0ff;
+          --m-lang: #d59cf0;
+          --m-wm: #ffb547;
+          --chip-alpha: 0.16;
+        }
+      }
+
+      @media (max-width: 768px) and (prefers-color-scheme: dark) {
+        :root {
+          --m-rgb: #1a73e8;
+          --m-cam: #7a4b2a;
+          --m-depth: #c5221f;
+          --m-flow: #0b7a34;
+          --m-text: #9334e6;
+          --m-vision: #1a73e8;
+          --m-lang: #7b1fa2;
+          --m-wm: #e08600;
+          --chip-alpha: 0.1;
+        }
+      }
+
+      /* ---------- Page shell (mirrors psi-generations.html) ---------- */
+
+      .post--psi06,
+      .post--psi06 h1,
+      .post--psi06 h2,
+      .post--psi06 h3 {
+        font-family: "Manrope", sans-serif;
+      }
+
+      .post--psi06 {
+        max-width: 1180px;
+      }
+
+      .post--psi06 .post__header {
+        max-width: 1160px;
+      }
+
+      .post--psi06 .post__title {
+        max-width: 1000px;
+        font-size: clamp(2.3rem, 4.9vw, 4.4rem);
+        font-weight: 600;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+      }
+
+      .post--psi06 .post__title .psi-glyph {
+        font-family: "Instrument Serif", serif;
+        font-weight: 400;
+        letter-spacing: 0;
+      }
+
+      .post__authors {
+        max-width: 900px;
+        margin: 0 0 6px;
+        color: var(--ink-soft);
+        font-size: 1rem;
+        font-style: normal;
+        line-height: 1.6;
+      }
+
+      .post__affil {
+        margin: 0 0 22px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .post__links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 0 34px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .post__links a,
+      .post__links span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 8px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius-lg);
+        color: var(--ink);
+        font-size: 0.86rem;
+        font-weight: 800;
+      }
+
+      .post__links a:hover {
+        background: var(--surface-soft);
+      }
+
+      .post__links .is-pending {
+        color: var(--muted);
+        border-style: dashed;
+      }
+
+      .post__links .is-pending small {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .showcase-layout {
+        display: grid;
+        grid-template-columns: minmax(170px, 210px) minmax(0, 1fr);
+        gap: clamp(20px, 2.6vw, 38px);
+        align-items: start;
+      }
+
+      .showcase-toc {
+        position: sticky;
+        top: 92px;
+        max-height: calc(100vh - 116px);
+        overflow: auto;
+        padding: 14px 0;
+      }
+
+      .showcase-toc__title {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .showcase-toc ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .showcase-toc a {
+        display: block;
+        border-radius: 6px;
+        color: var(--ink);
+        font-size: 0.82rem;
+        font-weight: 800;
+        line-height: 1.25;
+        padding: 6px 8px;
+        transition: background 160ms ease, color 160ms ease;
+      }
+
+      .showcase-toc a:hover {
+        background: var(--surface-soft);
+      }
+
+      .showcase-toc .toc-sub a {
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 500;
+        padding: 4px 8px 4px 16px;
+      }
+
+      .showcase-toc a.is-active {
+        background: rgba(79, 156, 255, 0.12);
+        outline: 1px solid rgba(79, 156, 255, 0.5);
+        outline-offset: -1px;
+      }
+
+      .showcase-toc .toc-sub a.is-active {
+        background: rgba(79, 156, 255, 0.08);
+        outline: 0;
+        color: #4f9cff;
+        font-weight: 700;
+      }
+
+      .psi06-body {
+        max-width: none;
+        min-width: 0;
+      }
+
+      .psi06-body p {
+        max-width: 78ch;
+      }
+
+      .psi06-body a.inline-link {
+        color: #4f9cff;
+        font-weight: 700;
+      }
+
+      .psi06-section {
+        margin-top: 58px;
+        padding-top: 42px;
+        border-top: 1px solid var(--line);
+        scroll-margin-top: 80px;
+      }
+
+      .psi06-section:first-of-type {
+        margin-top: 8px;
+      }
+
+      .psi06-section h2 {
+        font-size: clamp(1.8rem, 3.2vw, 2.55rem);
+        line-height: 1.08;
+        margin: 0 0 16px;
+      }
+
+      .psi06-section h3 {
+        font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      .psi06-sub {
+        margin-top: 40px;
+        scroll-margin-top: 80px;
+      }
+
+      .psi06-sub > h3 {
+        margin-bottom: 10px;
+      }
+
+      .section__eyebrow {
+        margin-bottom: 10px;
+      }
+
+      .eyebrow-chip {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow-chip--vision { color: var(--m-vision); background: color-mix(in srgb, var(--m-vision) calc(var(--chip-alpha) * 100%), transparent); }
+      .eyebrow-chip--lang { color: var(--m-lang); background: color-mix(in srgb, var(--m-lang) calc(var(--chip-alpha) * 100%), transparent); }
+      .eyebrow-chip--wm { color: var(--m-wm); background: color-mix(in srgb, var(--m-wm) calc(var(--chip-alpha) * 100%), transparent); }
+
+      /* ---------- Modality chips & notation ---------- */
+
+      .m-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.5;
+        white-space: nowrap;
+        color: var(--chip, var(--ink));
+        background: color-mix(in srgb, var(--chip, var(--ink)) calc(var(--chip-alpha) * 100%), transparent);
+        border: 1px solid color-mix(in srgb, var(--chip, var(--ink)) 32%, transparent);
+      }
+
+      .m-chip--rgb { --chip: var(--m-rgb); }
+      .m-chip--c { --chip: var(--m-cam); }
+      .m-chip--d { --chip: var(--m-depth); }
+      .m-chip--f { --chip: var(--m-flow); }
+      .m-chip--t { --chip: var(--m-text); }
+
+      .m-chip sub {
+        font-size: 0.7em;
+        vertical-align: -0.15em;
+      }
+
+      .m-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        margin: 18px 0 6px;
+        padding: 0;
+        list-style: none;
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+      }
+
+      .m-legend li {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .notation {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: var(--ink);
+        overflow-wrap: anywhere;
+      }
+
+      .notation .arrow {
+        color: var(--prompt-blue);
+        padding: 0 4px;
+      }
+
+      /* ---------- Overview ---------- */
+
+      .psi06-lede {
+        max-width: 80ch;
+        margin: 0 0 22px;
+        color: var(--ink);
+        font-size: clamp(1.08rem, 1.4vw, 1.22rem);
+        line-height: 1.6;
+      }
+
+      .levels {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin: 26px 0 8px;
+      }
+
+      .level-card {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+        padding: 18px 18px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        color: inherit;
+        transition: border-color 160ms ease, background 160ms ease;
+      }
+
+      .level-card:hover {
+        border-color: var(--line-strong);
+        background: var(--surface-soft);
+      }
+
+      .level-card__index {
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .level-card h3 {
+        font-size: 1.02rem;
+        font-weight: 800;
+      }
+
+      .level-card p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.93rem;
+        line-height: 1.55;
+      }
+
+      /* ---------- Ψ core (shared) ---------- */
+
+      .psi-core {
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .psi-core__mark {
+        display: grid;
+        place-items: center;
+        width: clamp(46px, 5vw, 60px);
+        aspect-ratio: 1;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--surface);
+      }
+
+      .psi-core__mark img {
+        width: 66%;
+        height: 66%;
+        object-fit: contain;
+      }
+
+      .psi-core__label {
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .flow-arrow {
+        position: relative;
+        height: 2px;
+        min-width: 14px;
+        background: var(--prompt-blue);
+        align-self: center;
+      }
+
+      .flow-arrow::after {
+        content: "";
+        position: absolute;
+        right: -1px;
+        top: 50%;
+        width: 8px;
+        height: 8px;
+        border-top: 2px solid var(--prompt-blue);
+        border-right: 2px solid var(--prompt-blue);
+        transform: translateY(-50%) rotate(45deg);
+      }
+
+      /* ---------- Media tiles ---------- */
+
+      .tile {
+        margin: 0;
+        min-width: 0;
+      }
+
+      .tile__media {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-soft);
+      }
+
+      .tile__media img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .tile figcaption,
+      .tile__label {
+        margin-top: 7px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-align: center;
+      }
+
+      .tile__label--kind {
+        display: block;
+        margin: 0 0 6px;
+        color: var(--ink);
+        font-family: "Manrope", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      /* ---------- Section 1: capability cards ---------- */
+
+      .cap-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .cap-card {
+        display: grid;
+        gap: 14px;
+        padding: clamp(14px, 2vw, 20px);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        scroll-margin-top: 90px;
+      }
+
+      .cap-card--wide {
+        grid-column: 1 / -1;
+      }
+
+      .cap-card__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .cap-card__head h3 {
+        font-size: 1.08rem;
+        font-weight: 800;
+      }
+
+      .cap-strip {
+        display: grid;
+        grid-template-columns:
+          repeat(var(--nin, 1), minmax(0, 1fr)) 18px auto 18px repeat(var(--nout, 1), minmax(0, 1fr));
+        gap: 8px;
+        align-items: center;
+      }
+
+      .cap-strip--text {
+        grid-template-columns: minmax(0, 1.25fr) 18px auto 18px minmax(0, 1fr);
+      }
+
+      .cap-strip .psi-core__mark {
+        width: 44px;
+      }
+
+      .filmstrip {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+        gap: 3px;
+      }
+
+      .filmstrip img {
+        display: block;
+        width: 100%;
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid var(--line);
+      }
+
+      .text-out {
+        display: grid;
+        align-content: center;
+        min-height: 100%;
+        padding: 12px 14px;
+        border: 1px solid color-mix(in srgb, var(--m-text) 35%, transparent);
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--m-text) calc(var(--chip-alpha) * 60%), var(--surface));
+        color: var(--ink);
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+
+      .text-out__q {
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+
+      .t2f-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+        gap: 16px;
+        align-items: center;
+      }
+
+      .t2f-rows {
+        display: grid;
+        gap: 10px;
+      }
+
+      .t2f-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) 18px auto 18px minmax(0, 0.75fr) minmax(0, 0.75fr);
+        gap: 8px;
+        align-items: center;
+      }
+
+      .t2f-row .psi-core__mark {
+        width: 40px;
+      }
+
+      @media (max-width: 640px) {
+        .t2f-pair {
+          grid-template-columns: 1fr;
+        }
+
+        .t2f-row {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .t2f-row .flow-arrow,
+        .t2f-row .psi-core {
+          display: none;
+        }
+      }
+
+      .cap-picker {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cap-picker button {
+        width: 54px;
+        padding: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface-soft);
+        opacity: 0.6;
+        transition: opacity 160ms ease, border-color 160ms ease;
+      }
+
+      .cap-picker button img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+
+      .cap-picker button.is-selected,
+      .cap-picker button:hover {
+        opacity: 1;
+        border-color: var(--prompt-blue);
+      }
+
+      .cap-panel[hidden] {
+        display: none;
+      }
+
+      .cam-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-soft);
+      }
+
+      .cam-svg .grid-line { stroke: var(--line); stroke-width: 0.6; }
+      .cam-svg .cam0 { stroke: #22b8cf; fill: rgba(34, 184, 207, 0.1); stroke-width: 1.4; }
+      .cam-svg .cam1 { stroke: #d6336c; fill: rgba(214, 51, 108, 0.1); stroke-width: 1.4; }
+      .cam-svg .cam-path { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+      .cam-svg text { fill: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 8px; }
+
+      .cam-readout {
+        margin-top: 4px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.64rem;
+        line-height: 1.4;
+        text-align: center;
+      }
+
+      .see-also {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border: 1px dashed var(--line-strong);
+        border-radius: var(--radius-md);
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+      }
+
+      .see-also video {
+        width: 132px;
+        flex: 0 0 auto;
+        border-radius: 6px;
+        background: #000;
+      }
+
+      /* ---------- Stream-of-thought player (sections 2 and 3) ---------- */
+
+      .sot {
+        margin-top: 22px;
+        padding: clamp(14px, 2.2vw, 22px);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        scroll-margin-top: 90px;
+      }
+
+      .sot__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .sot__source {
+        margin: 0 0 4px;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .sot__question {
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(1.02rem, 1.4vw, 1.18rem);
+        font-weight: 700;
+        line-height: 1.4;
+      }
+
+      .sot__question .q-mark {
+        color: var(--m-text);
+      }
+
+      .replay {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 32px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: var(--surface-soft);
+        color: var(--ink-soft);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .replay:hover {
+        color: var(--ink);
+        border-color: var(--line-strong);
+      }
+
+      .sot__track {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 12px 8px;
+      }
+
+      .sot__step.sot__step--grow {
+        flex: 1 1 260px;
+        min-width: 220px;
+      }
+
+      .sot__step.sot__step--grow,
+      .sot__step.sot__answer {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .answer-gt .tile {
+        max-width: 200px;
+      }
+
+      .sot__step {
+        flex: 0 0 auto;
+        display: grid;
+        align-content: start;
+        gap: 8px;
+        min-width: 0;
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--surface-soft);
+        border: 1px solid transparent;
+        transition: opacity 420ms ease, transform 420ms ease, border-color 300ms ease;
+      }
+
+      .sot__step--vision { background: color-mix(in srgb, var(--m-vision) 6%, var(--surface)); }
+      .sot__step--wm { background: color-mix(in srgb, var(--m-wm) 8%, var(--surface)); }
+      .sot__step--lang { background: color-mix(in srgb, var(--m-lang) 7%, var(--surface)); }
+
+      .sot__step-kind {
+        color: var(--muted);
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .sot__step--vision .sot__step-kind { color: var(--m-vision); }
+      .sot__step--wm .sot__step-kind { color: var(--m-wm); }
+      .sot__step--lang .sot__step-kind { color: var(--m-lang); }
+
+      .sot__step-title {
+        margin-top: -4px;
+        color: var(--ink);
+        font-size: 0.86rem;
+        font-weight: 800;
+      }
+
+      .sot__connector {
+        flex: 0 0 22px;
+        align-self: center;
+      }
+
+      .sot__core {
+        flex: 0 0 auto;
+        align-self: center;
+      }
+
+      .sot__frames {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 5), var(--fw, 64px));
+        gap: 4px;
+      }
+
+      .sot__frames figure {
+        margin: 0;
+      }
+
+      .sot__frames img {
+        display: block;
+        width: 100%;
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid var(--line);
+      }
+
+      .sot__frames figcaption {
+        margin-top: 3px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        text-align: center;
+      }
+
+      .sot__chips {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+      }
+
+      .sot__chips .m-chip {
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 260ms ease, transform 260ms ease;
+      }
+
+      .sot__gen {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: var(--gw, 112px);
+        gap: 8px;
+      }
+
+      .sot__gen .tile {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 360ms ease, transform 360ms ease;
+      }
+
+      .sot__gen .tile__media img {
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+      }
+
+      .sot__gen .cam-svg {
+        aspect-ratio: var(--ar, 4 / 3);
+      }
+
+      .sot__step.sot__answer {
+        flex: 1 1 220px;
+        min-width: 210px;
+        max-width: 420px;
+      }
+
+      .answer-box {
+        display: grid;
+        gap: 8px;
+      }
+
+      .answer-text {
+        min-height: 3.2em;
+        color: var(--ink);
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+
+      .answer-text .caret {
+        display: inline-block;
+        width: 0.5em;
+        height: 1em;
+        margin-left: 1px;
+        vertical-align: -0.12em;
+        background: var(--m-lang);
+        opacity: 0.6;
+        animation: caret 900ms steps(1) infinite;
+      }
+
+      @keyframes caret {
+        50% { opacity: 0; }
+      }
+
+      .answer-gt {
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.4;
+      }
+
+      .answer-gt strong {
+        color: var(--ink-soft);
+      }
+
+      .answer-toggle {
+        display: inline-flex;
+        width: max-content;
+        padding: 2px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+      }
+
+      .answer-toggle button {
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+
+      .answer-toggle button.is-on {
+        background: var(--ink);
+        color: var(--bg);
+      }
+
+      .answer-verdict {
+        display: inline-block;
+        width: max-content;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .answer-verdict[hidden] {
+        display: none;
+      }
+
+      .answer-verdict--ok { color: #0b7a34; background: rgba(11, 122, 52, 0.1); }
+      .answer-verdict--no { color: #c5221f; background: rgba(197, 34, 31, 0.1); }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .answer-verdict--ok { color: #5fd393; background: rgba(95, 211, 147, 0.14); }
+
+        :root:not([data-theme="light"]) .answer-verdict--no { color: #ff8a80; background: rgba(255, 138, 128, 0.14); }
+      }
+
+      .reasoning {
+        max-height: 11em;
+        overflow: auto;
+        overflow-wrap: anywhere;
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      /* Stepwise reveal: JS adds .is-playing then .is-on per step. */
+      .sot.is-playing .sot__step,
+      .sot.is-playing .sot__connector,
+      .sot.is-playing .sot__core {
+        opacity: 0.18;
+      }
+
+      .sot.is-playing .is-on {
+        opacity: 1 !important;
+      }
+
+      .sot.is-playing .sot__step.is-current {
+        border-color: color-mix(in srgb, var(--prompt-blue) 45%, transparent);
+      }
+
+      .sot .is-revealed {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .sot__note {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.5;
+      }
+
+      /* Example switcher for galleries of streams */
+      .ex-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 18px 0 0;
+      }
+
+      .ex-tabs button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 6px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+
+      .ex-tabs button:hover {
+        border-color: var(--line-strong);
+        color: var(--ink);
+      }
+
+      .ex-tabs button.is-selected {
+        border-color: rgba(79, 156, 255, 0.6);
+        background: rgba(79, 156, 255, 0.1);
+        color: var(--ink);
+      }
+
+      .ex-panel[hidden] {
+        display: none;
+      }
+
+
+      .answer-how {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+      }
+
+      .answer-free {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+
+      .hero-sot {
+        margin: 6px 0 28px;
+      }
+
+      .hero-sot .sot {
+        margin-top: 0;
+        border-color: var(--line-strong);
+      }
+
+      .hero-sot__caption {
+        margin: 10px 0 0 !important;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+
+      .pm-figure {
+        margin: 22px 0 6px;
+        padding: 16px 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+      }
+
+      .pm-figure__sub {
+        margin: 4px 0 12px !important;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .pm-head,
+      .pm-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pm-head {
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .pm-row + .pm-row {
+        margin-top: 10px;
+      }
+
+      .pm-row .tile__media img {
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+      }
+
+      .pm-row .text-out {
+        font-size: 0.86rem;
+      }
+
+      @media (max-width: 640px) {
+        .pm-head {
+          display: none;
+        }
+
+        .pm-row {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .pm-row .text-out {
+          grid-column: 1 / -1;
+        }
+      }
+
+      /* ---------- Results ---------- */
+
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+        gap: 12px;
+        margin: 22px 0 6px;
+      }
+
+      .stat {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+      }
+
+      .stat__value {
+        font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+
+      .stat__value small {
+        color: var(--muted);
+        font-size: 0.55em;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .stat__label {
+        margin-top: 6px;
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      .stat__ref {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+
+      /* ---------- Results chart (palette validated: ordinal blue pair) ---------- */
+
+      .gain-chart {
+        --g-random: #86b6ef;
+        --g-policy: #1573ff;
+        margin: 22px 0 6px;
+        padding: 16px 18px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .gain-chart {
+          --g-random: #256abf;
+          --g-policy: #5598e7;
+        }
+      }
+
+      @media (max-width: 768px) and (prefers-color-scheme: dark) {
+        .gain-chart {
+          --g-random: #86b6ef;
+          --g-policy: #1573ff;
+        }
+      }
+
+      .gain-chart__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px 18px;
+        margin-bottom: 10px;
+      }
+
+      .gain-chart__title {
+        margin: 0 !important;
+        color: var(--ink);
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+
+      .gain-legend {
+        display: flex;
+        gap: 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+      }
+
+      .gain-legend li {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .gain-swatch {
+        display: inline-block;
+        width: 14px;
+        height: 8px;
+        border-radius: 2px;
+      }
+
+      .gain-group {
+        margin-top: 8px;
+      }
+
+      .gain-group__head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 6px 0 2px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .gain-group__mean {
+        color: var(--ink-soft);
+        letter-spacing: 0.02em;
+        text-transform: none;
+      }
+
+      .gain-row,
+      .gain-axis {
+        position: relative;
+        display: grid;
+        grid-template-columns: 128px minmax(0, 1fr) 58px;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .gain-row {
+        min-height: 30px;
+        border-radius: 6px;
+        outline: none;
+      }
+
+      .gain-row:hover,
+      .gain-row:focus-visible {
+        background: var(--surface-soft);
+      }
+
+      .gain-label {
+        color: var(--ink);
+        font-size: 0.86rem;
+        font-weight: 700;
+        padding-left: 4px;
+      }
+
+      .gain-val {
+        color: var(--ink-soft);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-align: right;
+        padding-right: 4px;
+      }
+
+      .gain-track {
+        position: relative;
+        height: 22px;
+      }
+
+      .gain-grid {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 1px;
+        background: var(--line);
+      }
+
+      .gain-grid--zero {
+        background: var(--line-strong);
+      }
+
+      .gain-bar {
+        position: absolute;
+        height: 8px;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .gain-bar.is-neg {
+        border-radius: 4px 0 0 4px;
+      }
+
+      .gain-bar--random {
+        top: 1px;
+        background: var(--g-random);
+      }
+
+      .gain-bar--policy {
+        top: 11px;
+        background: var(--g-policy);
+      }
+
+      .gain-swatch.gain-bar--random,
+      .gain-swatch.gain-bar--policy {
+        position: static;
+      }
+
+      .gain-tip {
+        position: absolute;
+        z-index: 3;
+        left: 138px;
+        bottom: calc(100% + 4px);
+        display: none;
+        max-width: min(420px, 90%);
+        padding: 7px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 0.78rem;
+        line-height: 1.45;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        pointer-events: none;
+      }
+
+      .gain-tip strong {
+        display: block;
+        color: var(--ink);
+      }
+
+      .gain-row:hover .gain-tip,
+      .gain-row:focus-visible .gain-tip {
+        display: block;
+      }
+
+      .gain-axis {
+        margin-top: 6px;
+        min-height: 18px;
+      }
+
+      .gain-axis__ticks {
+        position: relative;
+        height: 16px;
+      }
+
+      .gain-tick {
+        position: absolute;
+        transform: translateX(-50%);
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+      }
+
+      .gain-table {
+        margin-top: 10px;
+        font-size: 0.82rem;
+      }
+
+      .gain-table summary {
+        color: var(--muted);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .gain-table table {
+        width: 100%;
+        margin-top: 8px;
+        border-collapse: collapse;
+        color: var(--ink-soft);
+      }
+
+      .gain-table th,
+      .gain-table td {
+        padding: 4px 6px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .gain-table th:first-child,
+      .gain-table td:first-child,
+      .gain-table th:nth-child(2),
+      .gain-table td:nth-child(2) {
+        text-align: left;
+      }
+
+      .gain-chart figcaption {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 640px) {
+        .gain-row,
+        .gain-axis {
+          grid-template-columns: 96px minmax(0, 1fr) 50px;
+          gap: 6px;
+        }
+
+        .gain-tip {
+          left: 4px;
+        }
+      }
+
+      /* ---------- Loop diagram (section 3) ---------- */
+
+      .roles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 22px 0 8px;
+      }
+
+      .role {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+      }
+
+      .role__tag {
+        display: inline-block;
+        margin-bottom: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+
+      .role h3 {
+        margin-bottom: 6px !important;
+        font-size: 1rem !important;
+        font-weight: 800;
+      }
+
+      .role p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      .fineprint {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.55;
+      }
+
+      .bibtex pre {
+        font-size: 0.82rem;
+      }
+
+      /* ---------- Responsive ---------- */
+
+      @media (max-width: 1040px) {
+        .showcase-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .showcase-toc {
+          display: none;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .cap-grid,
+        .levels,
+        .roles {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .cap-strip,
+        .cap-strip--text {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .cap-strip .flow-arrow,
+        .cap-strip .psi-core {
+          display: none;
+        }
+
+        .cap-strip .text-out {
+          grid-column: 1 / -1;
+        }
+
+        .sot__track {
+          flex-direction: column;
+          overflow: visible;
+        }
+
+        .sot__connector {
+          display: none;
+        }
+
+        .sot__core {
+          align-self: flex-start;
+        }
+
+        .sot__frames {
+          grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+        }
+
+        .sot__gen {
+          grid-auto-flow: row;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-auto-columns: auto;
+        }
+
+        .sot__answer {
+          width: auto;
+        }
+
+        .sot__chips {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sot__step,
+        .sot__chips .m-chip,
+        .sot__gen .tile {
+          transition: none;
+        }
+
+        .answer-text .caret {
+          animation: none;
+        }
+      }
+
+      /* ================= Capability wheel ================= */
+
+      .post--wheel {
+        max-width: 1240px;
+      }
+
+      .post--wheel .post__header {
+        max-width: 1240px;
+        text-align: center;
+      }
+
+      .post--wheel .post__title {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 980px;
+        font-size: clamp(2rem, 3.9vw, 3.4rem);
+      }
+
+      .post--wheel .post__authors,
+      .post--wheel .post__affil {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .post--wheel .post__links {
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+
+      .psi06-body .wheel-section p {
+        max-width: none;
+      }
+
+      .wheel-lede {
+        margin: 0 auto 6px;
+        color: var(--ink-soft);
+        font-size: 1.04rem;
+        text-align: center;
+      }
+
+      .wheel-families {
+        display: flex;
+        justify-content: center;
+        gap: 6px 14px;
+        margin: 0 0 8px;
+        font-size: 1.12rem;
+        font-weight: 800;
+      }
+
+      .wheel-families span:nth-child(1) { color: var(--m-vision); }
+      .wheel-families span:nth-child(3) { color: var(--m-lang); }
+      .wheel-families span:nth-child(5) { color: var(--m-wm); }
+      .wheel-families .dot { color: var(--muted); font-weight: 400; }
+
+      .wheel {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 11;
+        margin: 0 auto;
+        user-select: none;
+      }
+
+      .wheel-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        pointer-events: none;
+      }
+
+      .wheel-ray text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        opacity: 0.22;
+      }
+
+      .wheel-ray--lang text { fill: var(--m-lang); }
+      .wheel-ray--wm text { fill: var(--m-wm); }
+      .wheel-ray--vision text { fill: var(--m-vision); }
+
+      .wheel-ray text {
+        animation: ray-drift var(--dur, 22s) linear infinite;
+        animation-delay: var(--delay, 0s);
+      }
+
+      @keyframes ray-drift {
+        0% { transform: translateX(calc(var(--dir, 1) * -30px)); opacity: 0; }
+        12% { opacity: 0.24; }
+        85% { opacity: 0.24; }
+        100% { transform: translateX(calc(var(--dir, 1) * 140px)); opacity: 0; }
+      }
+
+      .wheel-beam {
+        opacity: 0;
+        transition: opacity 260ms ease;
+      }
+
+      .wheel-beam.is-on {
+        opacity: 1;
+      }
+
+      .wheel-path {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 8 7;
+        opacity: 0;
+        transition: opacity 260ms ease;
+      }
+
+      .wheel-path.is-on {
+        opacity: 0.9;
+        animation: path-march 1.1s linear infinite;
+      }
+
+      @keyframes path-march {
+        to { stroke-dashoffset: -30; }
+      }
+
+      /* ---- task nodes ---- */
+
+      .wheel-node {
+        position: absolute;
+        z-index: 3;
+        left: var(--x);
+        top: var(--y);
+        transform: translate(-50%, -50%);
+        display: grid;
+        gap: 3px;
+        width: clamp(120px, 13.5%, 172px);
+        padding: 7px 9px 7px;
+        border: 2px solid var(--fam);
+        border-top-width: 5px;
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--fam) 5%, var(--surface));
+        color: var(--ink);
+        text-align: left;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease, opacity 200ms ease, border-color 160ms ease, background 160ms ease;
+      }
+
+
+      .wheel-node__thumbs {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 4px;
+        align-items: center;
+        margin-top: 3px;
+      }
+
+      .nthumb {
+        display: grid;
+        place-items: center;
+        height: clamp(26px, 2.6vw, 36px);
+        overflow: hidden;
+        border-radius: 5px;
+        background: var(--surface-soft);
+      }
+
+      .nthumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .nthumb-arrow {
+        color: var(--muted);
+        font-size: 0.7rem;
+      }
+
+      .nthumb-text {
+        padding: 2px 4px;
+        color: var(--m-text);
+        font-size: 0.56rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .nthumb .nthumb-camsvg {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .nthumb-cam {
+        color: var(--m-cam);
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 800;
+      }
+
+      .wheel-node.is-attract {
+        border-color: var(--fam);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--fam) 18%, transparent);
+      }
+
+      .wheel-node--lang { --fam: var(--m-lang); }
+      .wheel-node--wm { --fam: var(--m-wm); }
+      .wheel-node--vision { --fam: var(--m-vision); }
+
+      .wheel-node:hover,
+      .wheel-node:focus-visible {
+        transform: translate(-50%, -50%) scale(1.045);
+        box-shadow: 0 10px 28px color-mix(in srgb, var(--fam) 22%, transparent);
+        border-color: var(--fam);
+        outline: none;
+      }
+
+      .wheel-node.is-active {
+        background: color-mix(in srgb, var(--fam) 10%, var(--surface));
+        border-color: var(--fam);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--fam) 22%, transparent);
+      }
+
+      .wheel-node__title {
+        color: color-mix(in srgb, var(--fam) 70%, var(--ink));
+        font-size: clamp(0.76rem, 0.98vw, 0.92rem);
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .wheel-node__nota {
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(0.6rem, 0.72vw, 0.7rem);
+        font-weight: 600;
+        line-height: 1.35;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+
+      .tok { font-weight: 700; }
+      .tok--rgb { color: var(--m-rgb); }
+      .tok--c { color: var(--m-cam); }
+      .tok--d { color: var(--m-depth); }
+      .tok--f { color: var(--m-flow); }
+      .tok--t { color: var(--m-text); }
+      .tok-arrow { color: var(--prompt-blue); padding: 0 2px; }
+
+      .wheel.is-composing .wheel-node { opacity: 0.28; }
+      .wheel.is-composing .wheel-node.is-match { opacity: 1; box-shadow: 0 0 0 3px color-mix(in srgb, var(--fam) 28%, transparent); }
+      .wheel.is-composing .wheel-node.is-partial { opacity: 0.7; }
+
+      /* ---- hub ---- */
+
+      .wheel-hub {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: 50%;
+        width: clamp(230px, 25%, 310px);
+        transform: translate(-50%, -50%);
+        transition: opacity 260ms ease, transform 260ms ease;
+      }
+
+      .wheel.has-stage .wheel-hub {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.86);
+        pointer-events: none;
+      }
+
+      .wheel-hub__ring {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+      }
+
+      .wheel-hub__ring svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .wheel-hub__ring circle,
+      .wheel-hub__ring line {
+        fill: none;
+        stroke: var(--line-strong);
+        stroke-width: 2;
+      }
+
+      .wheel-hub__mark {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 30%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow: 0 0 0 6px var(--bg);
+      }
+
+      .wheel-hub__mark img {
+        width: 82%;
+        height: auto;
+        animation: hub-breathe 5s ease-in-out infinite;
+      }
+
+      @keyframes hub-breathe {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .mchip {
+        position: absolute;
+        left: var(--cx);
+        top: var(--cy);
+        transform: translate(-50%, -50%);
+        display: grid;
+        justify-items: center;
+        gap: 1px;
+        min-width: 66px;
+        padding: 5px 10px 4px;
+        border: 1.5px solid color-mix(in srgb, var(--mc) 35%, transparent);
+        border-radius: 9px;
+        background: color-mix(in srgb, var(--mc) 9%, var(--surface));
+        color: var(--mc);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .mchip small {
+        min-height: 0.9em;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.56rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        opacity: 0.9;
+      }
+
+      .mchip--rgb { --mc: var(--m-rgb); }
+      .mchip--c { --mc: var(--m-cam); }
+      .mchip--d { --mc: var(--m-depth); }
+      .mchip--f { --mc: var(--m-flow); }
+      .mchip--t { --mc: var(--m-text); }
+
+      .mchip:hover { border-color: var(--mc); }
+
+      .mchip.is-in {
+        border: 2px solid var(--mc);
+        background: var(--surface);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc) 16%, transparent);
+      }
+
+      .mchip.is-out {
+        border-color: var(--mc);
+        background: var(--mc);
+        color: #fff;
+      }
+
+      .mchip.is-in.is-out {
+        background: linear-gradient(90deg, var(--surface) 0 50%, var(--mc) 50% 100%);
+        color: var(--ink);
+      }
+
+      .wheel-hub__readout {
+        margin-top: 8px;
+        text-align: center;
+      }
+
+      .wheel-hub__nota {
+        min-height: 1.4em;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .wheel-hub__sub {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .wheel-hub__reset {
+        margin-top: 4px;
+        padding: 2px 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+
+      .wheel-hub__reset[hidden] { display: none; }
+
+      /* ---- stage (selected task) ---- */
+
+      .wheel-stage {
+        position: absolute;
+        z-index: 4;
+        left: 50%;
+        top: 50%;
+        width: min(60%, 700px);
+        max-height: 74%;
+        overflow: auto;
+        transform: translate(-50%, -50%);
+        padding: 16px 18px 14px;
+        border: 1.5px solid color-mix(in srgb, var(--fam, var(--line-strong)) 60%, transparent);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--surface) 96%, transparent);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(6px);
+        transition: opacity 240ms ease, transform 240ms ease;
+      }
+
+      .wheel.has-stage .wheel-stage {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: auto;
+      }
+
+      .stage__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .stage__fam {
+        margin: 0;
+        color: var(--fam);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .stage__title {
+        margin: 2px 0 0 !important;
+        font-size: 1.22rem !important;
+        font-weight: 800;
+      }
+
+      .stage__close {
+        flex: 0 0 auto;
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .stage__eq {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 10px;
+        margin: 10px 0 12px;
+      }
+
+      .stage__chips {
+        display: flex;
+        gap: 4px;
+      }
+
+      .stage__chips .mchip {
+        position: static;
+        transform: none;
+        min-width: 0;
+        padding: 3px 7px 2px;
+        font-size: 0.64rem;
+        cursor: default;
+      }
+
+      .stage__nota {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .stage__flow {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+      }
+
+      .stage__col {
+        display: grid;
+        gap: 8px;
+        align-content: center;
+        min-width: 0;
+      }
+
+      .stage__col--row {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+      }
+
+      .stage__psi {
+        display: grid;
+        justify-items: center;
+        gap: 4px;
+        color: var(--prompt-blue);
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+
+      .stage__psi img {
+        width: 38px;
+        height: auto;
+      }
+
+      .stage__psi span {
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.6rem;
+        font-weight: 700;
+      }
+
+      .smedia {
+        margin: 0;
+        min-width: 0;
+      }
+
+      .smedia img,
+      .smedia .cam-svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 180px;
+        object-fit: contain;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-soft);
+      }
+
+      .stage__col--row .smedia img,
+      .stage__col--row .smedia .cam-svg {
+        max-height: 140px;
+      }
+
+      .wheel-stage {
+        max-height: 70%;
+      }
+
+      .smedia figcaption {
+        margin-top: 4px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .smedia--text .stext {
+        padding: 10px 12px;
+        border: 1px solid color-mix(in srgb, var(--m-text) 35%, transparent);
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--m-text) 7%, var(--surface));
+        color: var(--ink);
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+
+      .smedia--text .stext .text-out__q {
+        display: block;
+        margin-bottom: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+      }
+
+      .smedia--frames .sframes {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+        gap: 3px;
+      }
+
+      .smedia--frames .sframes img {
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+        border-radius: 4px;
+      }
+
+      .smedia--flip .flip {
+        position: relative;
+      }
+
+      .smedia--flip .flip img + img {
+        position: absolute;
+        inset: 0;
+      }
+
+      .smedia--flip .flip img {
+        opacity: 0;
+      }
+
+      .smedia--flip .flip img.is-on {
+        opacity: 1;
+      }
+
+      .stage__foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px 14px;
+        margin-top: 12px;
+      }
+
+      .stage__note {
+        margin: 0 !important;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .stage__picks {
+        display: flex;
+        gap: 5px;
+      }
+
+      .stage__picks button {
+        width: 46px;
+        padding: 0;
+        overflow: hidden;
+        border: 1.5px solid var(--line);
+        border-radius: 6px;
+        background: var(--surface-soft);
+        opacity: 0.65;
+      }
+
+      .stage__picks button img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+
+      .stage__picks button.is-on,
+      .stage__picks button:hover {
+        opacity: 1;
+        border-color: var(--fam);
+      }
+
+
+      .wheel-stage .stage__head {
+        display: block;
+      }
+
+      .stage__head .stage__title {
+        margin-top: 0 !important;
+      }
+
+      .stage__desc {
+        margin: 2px 0 10px !important;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+      }
+
+      .stage__side {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .stage__label {
+        margin: 0 !important;
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .stage__picks span {
+        align-self: center;
+        margin-right: 2px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .stage__nota {
+        font-size: 0.78rem !important;
+      }
+
+
+      .pbuilder {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px 14px;
+        max-width: 980px;
+        margin: 6px auto 4px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--surface);
+      }
+
+      .pbuilder__group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .pbuilder__label {
+        color: var(--ink);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .pbuilder__chips {
+        display: flex;
+        gap: 5px;
+      }
+
+      .pchip {
+        padding: 5px 10px;
+        border: 1.5px dashed color-mix(in srgb, var(--mc) 45%, transparent);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--mc);
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+      }
+
+      .pchip:hover {
+        border-style: solid;
+        background: color-mix(in srgb, var(--mc) 8%, transparent);
+      }
+
+      .pchip[aria-pressed="true"] {
+        border: 1.5px solid var(--mc);
+        background: var(--mc);
+        color: #fff;
+      }
+
+      .pchip--rgb { --mc: var(--m-rgb); }
+      .pchip--c { --mc: var(--m-cam); }
+      .pchip--d { --mc: var(--m-depth); }
+      .pchip--f { --mc: var(--m-flow); }
+      .pchip--t { --mc: var(--m-text); }
+
+      .pbuilder__arrow {
+        color: var(--prompt-blue);
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+
+      .pbuilder__result {
+        flex-basis: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 6px 10px;
+        min-height: 26px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .pbuilder__nota {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+
+      .pbuilder__task {
+        padding: 3px 10px;
+        border: 1.5px solid color-mix(in srgb, var(--fam) 60%, transparent);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--ink);
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+
+      .pbuilder__task.is-on {
+        background: color-mix(in srgb, var(--fam) 14%, var(--surface));
+        border-color: var(--fam);
+      }
+
+      .wheel-node.is-suggest {
+        border-style: dashed;
+        border-color: var(--fam);
+      }
+
+      .stage__empty {
+        padding: 18px 6px;
+        color: var(--ink-soft);
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      .stage__empty .pbuilder__nota {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+
+
+      @media (max-width: 640px) {
+        .pbuilder {
+          padding: 10px 8px;
+        }
+
+        .pbuilder__group {
+          flex-direction: column;
+          gap: 5px;
+          width: 100%;
+        }
+
+        .pbuilder__chips {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .pchip {
+          padding: 5px 8px;
+          font-size: 0.72rem;
+        }
+
+        .pbuilder__arrow {
+          transform: rotate(90deg);
+          line-height: 1;
+        }
+      }
+
+
+      .idea-eyebrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 0 auto 2px !important;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .idea-num {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--bg);
+        font-size: 0.72rem;
+        letter-spacing: 0;
+      }
+
+      .psi06-body .idea-title {
+        margin: 0 auto 6px;
+        font-size: clamp(1.7rem, 3vw, 2.4rem);
+        text-align: center;
+      }
+
+      #streams .idea-eyebrow,
+      #streams .idea-title {
+        justify-content: center;
+      }
+
+      .wheel-lede--left {
+        max-width: 72ch !important;
+      }
+
+      /* section 2 centred like the rest of the page (.prose p's margin: 0 0 20px otherwise pins these to the left) */
+      #streams .wheel-lede,
+      #streams .panel-lede,
+      #streams .fineprint {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center;
+      }
+
+      #streams .ex-tabs {
+        justify-content: center;
+      }
+
+      #streams .sotv figcaption {
+        text-align: center;
+      }
+
+
+      .wheel-ghost {
+        position: absolute;
+        z-index: 1;
+        left: var(--x);
+        top: var(--y);
+        transform: translate(-50%, -50%);
+        visibility: hidden;
+        padding: 4px 10px;
+        border: 1.5px solid color-mix(in srgb, var(--fam) 70%, transparent);   /* as the paper's small boxes */
+        border-radius: 9px;
+        background: var(--surface);
+        opacity: 0.9;
+        color: var(--ink);
+        font-size: 0.74rem;
+        font-weight: 500;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .wheel-ghost__nota {
+        margin-left: 7px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+      }
+
+      .wheel-ghost--stack { display: flex; flex-direction: column; align-items: flex-start; }
+      .wheel-ghost--stack .wheel-ghost__nota { margin-left: 0; }
+
+      .wheel-ghost--lang { --fam: var(--m-lang); }
+      .wheel-ghost--wm { --fam: var(--m-wm); }
+      .wheel-ghost--vision { --fam: var(--m-vision); }
+
+      .wheel-count {
+        position: absolute;
+        right: 1%;
+        bottom: 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .wheel-count b { color: var(--ink); }
+
+      .wheel-stage {
+        width: min(54%, 640px) !important;
+        max-height: 64% !important;
+      }
+
+      @media (max-width: 860px) {
+        .wheel-ghost, .wheel-count { display: none; }
+        .wheel-stage { width: 100% !important; }
+      }
+
+
+      /* wheel uses the full window width (the post column is narrower) */
+      .wheel-section {
+        position: relative;
+        width: min(1720px, calc(100vw - 32px));
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .wheel-section .wheel {
+        aspect-ratio: 16 / 9.6;
+        margin-top: 18px;
+      }
+
+      .wheel-section .wheel-stage {
+        width: 54% !important;
+        height: 60%;
+        max-height: none !important;
+        overflow: auto;
+      }
+
+      .wheel-section .smedia img,
+      .wheel-section .smedia .cam-svg {
+        max-height: min(300px, 26vw);
+      }
+
+      .wheel-section .stage__col--row .smedia img,
+      .wheel-section .stage__col--row .smedia .cam-svg {
+        max-height: min(210px, 18vw);
+      }
+
+      .wheel-section .wheel-node {
+        width: clamp(130px, 11.5%, 196px);
+      }
+
+      .wheel-section .nthumb {
+        height: clamp(30px, 2.8vw, 46px);
+      }
+
+      .wheel-section .smedia--text .stext {
+        font-size: 1rem;
+      }
+
+      /* video inputs: one large playing frame + a thin strip of the frames */
+      .smedia--frames .sframes-big {
+        position: relative;
+      }
+
+      .smedia--frames .sframes-big img {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+      }
+
+      .smedia--frames .sframes-big img:first-child {
+        position: relative;
+      }
+
+      .smedia--frames .sframes-big img.is-on {
+        opacity: 1;
+      }
+
+      .smedia--frames .sframes-strip {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+        gap: 3px;
+        margin-top: 4px;
+      }
+
+      .smedia--frames .sframes-strip img {
+        max-height: 48px !important;
+        aspect-ratio: var(--ar, 4 / 3);
+        object-fit: cover;
+        border-radius: 3px;
+        opacity: 0.45;
+        transition: opacity 120ms ease;
+      }
+
+      .smedia--frames .sframes-strip img.is-on {
+        opacity: 1;
+        outline: 2px solid var(--prompt-blue);
+      }
+
+      @media (max-width: 860px) {
+        .wheel-section { width: 100%; left: 0; transform: none; }
+        .wheel-section .wheel-stage { width: 100% !important; height: auto; max-height: none !important; }
+      }
+
+      .wheel-section .stage__col--qa .smedia img {
+        max-height: min(220px, 19vw);
+      }
+
+      /* video inputs: the source clip, looping */
+      .smedia--video video {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: var(--ar, 4 / 3);
+        max-height: min(300px, 26vw);
+        object-fit: contain;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-soft);
+      }
+
+      .wheel-section .stage__col--qa .smedia--video video {
+        max-height: min(260px, 22vw);
+      }
+
+      .wheel-section .stage__col--qa .smedia--frames .sframes-strip img {
+        max-height: 34px !important;
+      }
+
+
+      .sviews {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .sview {
+        display: grid;
+        gap: 3px;
+      }
+
+      .sview img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+      }
+
+      .sview span {
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-align: center;
+      }
+
+
+      .seqp {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(200px, 1fr);
+        gap: 16px;
+        align-items: center;
+      }
+
+      .seqp__canvas {
+        position: relative;
+        width: 100%;
+        max-height: min(380px, 34vw);
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface-soft);
+      }
+
+      .seqp__canvas > img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 320ms ease;
+      }
+
+      .seqp__canvas > img.is-on {
+        opacity: 1;
+      }
+
+      .seqp__overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 200ms ease;
+        pointer-events: none;
+      }
+
+      .seqp__overlay.is-on {
+        opacity: 1;
+      }
+
+      .seq-arrow__halo { stroke: rgba(0, 0, 0, 0.55); stroke-width: 15; stroke-linecap: round; }
+      .seq-arrow__line { stroke: #fff; stroke-width: 8; stroke-linecap: round; }
+      .seq-arrow__head { fill: #fff; stroke: rgba(0, 0, 0, 0.55); stroke-width: 3; }
+      .seq-arrow__dot { fill: #fff; stroke: rgba(0, 0, 0, 0.55); stroke-width: 3; }
+      .seq-hold { fill: none; stroke: #fff; stroke-width: 6; filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.7)); }
+
+      .seqp__overlay.is-drawing .seq-arrow line {
+        stroke-dasharray: var(--len);
+        stroke-dashoffset: var(--len);
+        animation: seq-draw 900ms ease-out forwards;
+        animation-delay: var(--d);
+      }
+
+      .seqp__overlay.is-drawing .seq-arrow__head,
+      .seqp__overlay.is-drawing .seq-hold {
+        opacity: 0;
+        animation: seq-pop 250ms ease-out forwards;
+        animation-delay: calc(var(--d) + 0.75s);
+      }
+
+      .seqp__overlay.is-drawing .seq-hold {
+        animation-delay: var(--d);
+      }
+
+      @keyframes seq-draw { to { stroke-dashoffset: 0; } }
+      @keyframes seq-pop { to { opacity: 1; } }
+
+      .seqp__badge {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px 3px 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+        color: #111;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+      }
+
+      .seqp__badge img { width: 16px; height: auto; }
+
+      .seqp__steps {
+        display: grid;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .seqp__steps button {
+        display: grid;
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        width: 100%;
+        padding: 8px 10px;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 0.86rem;
+        font-weight: 700;
+        line-height: 1.3;
+        text-align: left;
+        transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+      }
+
+      .seqp__steps b {
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--surface-soft);
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .seqp__steps button.is-on {
+        border-color: var(--fam);
+        background: color-mix(in srgb, var(--fam) 9%, var(--surface));
+        color: var(--ink);
+      }
+
+      .seqp__steps button.is-on b {
+        background: var(--fam);
+        color: #fff;
+      }
+
+      @media (max-width: 860px) {
+        .seqp { grid-template-columns: 1fr; }
+        .seqp__canvas { max-height: none; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .seqp__overlay.is-drawing .seq-arrow line, .seqp__overlay.is-drawing .seq-arrow__head, .seqp__overlay.is-drawing .seq-hold {
+          animation: none; stroke-dashoffset: 0; opacity: 1;
+        }
+      }
+
+
+      .sotv-wrap .ex-tabs {
+        margin: 14px 0 10px;
+      }
+
+      .sotv {
+        margin: 0;
+      }
+
+      .sotv video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 12px;
+        background: #fff;                 /* the white render on the light page */
+        border: 1px solid var(--line);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .sotv video { background: #000; border-color: transparent; }
+      }
+
+      :root[data-theme="dark"] .sotv video { background: #000; border-color: transparent; }
+
+      .sotv figcaption {
+        margin-top: 8px;
+        color: var(--ink-soft);
+        font-size: 0.92rem;
+        line-height: 1.5;
+      }
+
+      .sotv__src {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 1px 8px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .wheel-section .smedia--small img {
+        max-height: 80px !important;
+        width: auto;
+        margin: 0 auto;
+      }
+
+      .wheel-hint {
+        margin: 12px auto 0 !important;
+        color: var(--muted);
+        font-size: 0.84rem;
+        text-align: center;
+      }
+
+      .wheel-hint kbd {
+        padding: 1px 6px;
+        border: 1px solid var(--line-strong);
+        border-radius: 5px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.74rem;
+      }
+
+      /* ---- small screens: hub on top, stage, then grouped task chips ---- */
+      @media (max-width: 860px) {
+        .wheel {
+          aspect-ratio: auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .wheel-bg {
+          display: none;
+        }
+
+        .wheel-hub,
+        .wheel-stage {
+          position: relative;
+          left: auto;
+          top: auto;
+          transform: none !important;
+        }
+
+        .wheel-hub {
+          width: min(280px, 78vw);
+        }
+
+        .wheel.has-stage .wheel-hub {
+          display: none;
+        }
+
+        .wheel-stage {
+          width: 100%;
+          max-height: none;
+        }
+
+        .wheel-nodes {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+        }
+
+        .wheel-node {
+          position: static;
+          transform: none !important;
+          width: calc(50% - 4px);
+        }
+
+        .stage__flow {
+          grid-template-columns: 1fr;
+        }
+
+        .stage__psi {
+          grid-auto-flow: column;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .wheel-ray text,
+        .wheel-hub__mark img,
+        .wheel-path.is-on {
+          animation: none;
+        }
+      }
+
+
+      .wheel-streams {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 700;
+      }
+
+      .wheel-streams button {
+        padding: 6px 12px;
+        border: 1px dashed color-mix(in srgb, var(--prompt-blue) 55%, transparent);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--ink);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .wheel-streams button:hover,
+      .wheel-streams button:focus-visible {
+        border-style: solid;
+        background: color-mix(in srgb, var(--prompt-blue) 8%, var(--surface));
+      }
+
+      .ex-tabs--big {
+        margin: 18px 0 14px;
+      }
+
+      .ex-tabs--big button {
+        min-height: 40px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      .panel-lede {
+        margin: 0 0 4px !important;
+        color: var(--ink-soft);
+      }
+
+      .stat-row--3 {
+        grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+      }
+
+      .psi06-section h2 {
+        margin-bottom: 8px;
+      }
+    
+      /* ---- explicit theme choice (overrides the OS setting) ---- */
+      :root[data-theme="light"] {
+        color-scheme: light;
+        --bg: #ffffff; --bg-alt: #f7f7f4; --surface: #ffffff; --surface-soft: #f7f7f4;
+        --ink: #111111; --ink-soft: #303030; --muted: #686864;
+        --line: rgba(17, 17, 17, 0.12); --line-strong: rgba(17, 17, 17, 0.24);
+        --accent: #111111; --nav-bg: rgba(255, 255, 255, 0.9);
+        --m-rgb: #1a73e8; --m-cam: #7a4b2a; --m-depth: #c5221f; --m-flow: #0b7a34; --m-text: #9334e6;
+        --m-vision: #1a73e8; --m-lang: #7b1fa2; --m-wm: #e08600; --chip-alpha: 0.1;
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0f0f0d !important; --bg-alt: #171714 !important; --surface: #151512 !important; --surface-soft: #1d1d19 !important;
+        --ink: #f4f3ee !important; --ink-soft: #d7d5cc !important; --muted: #a3a096 !important;
+        --line: rgba(244, 243, 238, 0.14) !important; --line-strong: rgba(244, 243, 238, 0.28) !important;
+        --accent: #f4f3ee !important; --nav-bg: rgba(15, 15, 13, 0.86) !important;
+      }
+
+      :root[data-theme="dark"] {
+          --m-rgb: #7fb0ff;
+          --m-cam: #d3a47c;
+          --m-depth: #ff8a80;
+          --m-flow: #5fd393;
+          --m-text: #c79bff;
+          --m-vision: #7fb0ff;
+          --m-lang: #d59cf0;
+          --m-wm: #ffb547;
+          --chip-alpha: 0.16;
+        }
+
+      :root[data-theme="dark"] .answer-verdict--ok { color: #5fd393; background: rgba(95, 211, 147, 0.14); }
+
+      :root[data-theme="dark"] .answer-verdict--no { color: #ff8a80; background: rgba(255, 138, 128, 0.14); }
+
+      :root[data-theme="dark"] .gain-chart {
+          --g-random: #256abf;
+          --g-policy: #5598e7;
+        }
+
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+
+      .theme-toggle:hover { color: var(--ink); }
+</style>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <a class="site-nav__brand" href="../blog.html">Ψ</a>
+      <ul class="site-nav__links">
+        <li><a href="https://github.com/neuroailab/psi-demos" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://huggingface.co/StanfordNeuroAILab/psi0_5" target="_blank" rel="noopener">Hugging Face</a></li>
+        <li><button type="button" class="theme-toggle" aria-label="Switch light or dark mode"><span class="theme-toggle__icon">☾</span><span class="theme-toggle__label">Dark</span></button></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article class="post post--psi06 post--wheel">
+        <header class="post__header">
+          <a class="post__back" href="../blog.html">← All posts</a>
+          <p class="post__meta">Paper release · Vision-language world models</p>
+          <h1 class="post__title">
+            <span class="psi-glyph">Ψ</span>-0.6: Adaptive Streams of Thought in a Unified Vision-Language World Model
+          </h1>
+          <p class="post__authors">
+            Khai Loong Aw*, Klemen Kotar*, Baihan Zhang*, Yifan Liu*, Lilian Chen,
+            Atlas Kazemian, Rahul Venkatesh, Daniel Yamins
+          </p>
+          <p class="post__affil">Stanford University · *Equal contribution</p>
+          <ul class="post__links" aria-label="Paper resources">
+            <li><span class="is-pending">Paper <small>arXiv · soon</small></span></li>
+            <li><span class="is-pending">Model <small>Hugging Face · soon</small></span></li>
+            <li><a href="psi-generations.html">PSI generation gallery →</a></li>
+          </ul>
+        </header>
+
+        <div class="prose post__body psi06-body">
+
+            <section class="wheel-section" id="wheel" aria-label="Ψ-0.6 capability wheel">
+              <p class="idea-eyebrow"><span class="idea-num">1</span> Unification</p>
+              <h2 class="idea-title">One model, any task</h2>
+              <p class="wheel-families"><span>Vision</span><span class="dot">·</span><span>Language</span><span class="dot">·</span><span>World Modeling</span></p>
+              <p class="wheel-lede">Images, text, camera, depth and flow share one token interface, so a task is just a choice of what to give and what to predict. There are endlessly many; here is a selection. <strong>Click one, or build your own prompt.</strong></p>
+              <div class="pbuilder" aria-label="Build a prompt">
+                <div class="pbuilder__group"><span class="pbuilder__label">Give</span><span class="pbuilder__chips" data-side="give"></span></div>
+                <span class="pbuilder__arrow" aria-hidden="true">→</span>
+                <div class="pbuilder__group"><span class="pbuilder__label">Predict</span><span class="pbuilder__chips" data-side="pred"></span></div>
+                <div class="pbuilder__result" aria-live="polite"></div>
+              </div>
+              <div class="wheel" data-wheel>
+                <svg class="wheel-bg" viewBox="0 0 1600 1100" preserveAspectRatio="none" aria-hidden="true"></svg>
+                <div class="wheel-stage" aria-live="polite" aria-label="Selected task"></div>
+                <div class="wheel-nodes"></div>
+              </div>
+            </section>
+
+            <!-- ================= Streams of thought ================= -->
+            <section class="psi06-section" id="streams">
+              <p class="idea-eyebrow"><span class="idea-num">2</span> Adaptivity</p>
+              <h2 class="idea-title">Adaptive streams of thought</h2>
+              <p class="wheel-lede wheel-lede--left">Ψ-0.6 chooses the representations it reasons through. For each question it decides which streams to think with (depth, motion, camera, an imagined scene), generates them itself, and answers with them in context. Reinforcement learning on task feedback teaches it which streams help.</p>
+              <div data-picker-scope>
+                <div class="ex-tabs ex-tabs--big" data-picker role="tablist">
+                  <button type="button" class="is-selected" data-target="st-adaptive">Ψ-0.6 picks its stream</button>
+                  <button type="button" data-target="st-spatial">Stream: camera → view → answer</button>
+                  <button type="button" data-target="st-cf">Stream: imagine the move → answer</button>
+                </div>
+
+                <div class="ex-panel" id="st-adaptive">
+                  <p class="panel-lede">One checkpoint plays three roles: it writes a notation naming the streams it wants, generates each of them from the video, then answers. Each video pauses at every stream Ψ-0.6 chose and fades in its prediction.</p>
+<div class="sotv-wrap" data-picker-scope><div class="ex-tabs" data-picker role="tablist"><button type="button" class="is-selected" data-target="sotv-toast" role="tab">Toast into the toaster</button><button type="button" class="" data-target="sotv-table" role="tab">Carrying a box to the table</button><button type="button" class="" data-target="sotv-sink" role="tab">Washing up</button><button type="button" class="" data-target="sotv-stove" role="tab">Cooking at the hob</button></div><figure class="sotv ex-panel" id="sotv-toast"><video src="../assets/psi06/sot/toast_white.mp4" poster="../assets/psi06/sot/toast_white.jpg" data-light="../assets/psi06/sot/toast_white" data-dark="../assets/psi06/sot/toast" muted playsinline loop autoplay preload="auto"></video><figcaption><span class="sotv__src">AgiBot World · robot</span>“What is the robot doing with the toast?” → Putting it into the toaster ✓ · video alone: wrong</figcaption></figure><figure class="sotv ex-panel" id="sotv-table" hidden><video src="../assets/psi06/sot/table_white.mp4" poster="../assets/psi06/sot/table_white.jpg" data-light="../assets/psi06/sot/table_white" data-dark="../assets/psi06/sot/table" muted playsinline loop preload="none"></video><figcaption><span class="sotv__src">RoboVQA · mobile robot</span>“Where will the robot put the box?” → On the table ✓</figcaption></figure><figure class="sotv ex-panel" id="sotv-sink" hidden><video src="../assets/psi06/sot/sink_white.mp4" poster="../assets/psi06/sot/sink_white.jpg" data-light="../assets/psi06/sot/sink_white" data-dark="../assets/psi06/sot/sink" muted playsinline loop preload="none"></video><figcaption><span class="sotv__src">Ego4D · EgoPlan-Bench2</span>“Goal: prepare for washing. What is the next action?” → Drop spoon in sink ✓</figcaption></figure><figure class="sotv ex-panel" id="sotv-stove" hidden><video src="../assets/psi06/sot/stove_white.mp4" poster="../assets/psi06/sot/stove_white.jpg" data-light="../assets/psi06/sot/stove_white" data-dark="../assets/psi06/sot/stove" muted playsinline loop preload="none"></video><figcaption><span class="sotv__src">Ego4D · EgoPlan-Bench2</span>“Goal: prepare ingredients. What is the next action?” → Put cooking pan on cooker ✓</figcaption></figure></div>
+                  <div class="stat-row stat-row--3">
+                    <div class="stat"><div class="stat__value">+5.6<small>%</small></div><div class="stat__label">relative accuracy over video-only answering, held-out data</div></div>
+                    <div class="stat"><div class="stat__value">+9.0<small>%</small></div><div class="stat__label">on four unseen benchmarks</div></div>
+                  </div>
+<figure class="gain-chart" aria-label="Relative accuracy gain over video-only answering"><div class="gain-chart__head"><p class="gain-chart__title">Relative accuracy gain over answering from the video alone</p><ul class="gain-legend"><li><span class="gain-swatch gain-bar--random"></span>random notations</li><li><span class="gain-swatch gain-bar--policy"></span>Ψ-0.6 policy</li></ul></div><div class="gain-plot"><div class="gain-group"><div class="gain-group__head"><span>Held-out data from the training sources</span></div><div class="gain-row" tabindex="0"><span class="gain-label">EgoDex</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:34.43%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:78.12%"></span></span><span class="gain-val">+12.5%</span><span class="gain-tip"><strong>EgoDex</strong>video only 47.5% · random notations 50.2% · Ψ-0.6 policy 53.5%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">SSv2</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:29.83%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:39.78%"></span></span><span class="gain-val">+6.4%</span><span class="gain-tip"><strong>SSv2</strong>video only 82.3% · random notations 86.2% · Ψ-0.6 policy 87.5%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">OpenVid</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:16.87%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:11.95%"></span></span><span class="gain-val">+1.9%</span><span class="gain-tip"><strong>OpenVid</strong>video only 92.2% · random notations 94.7% · Ψ-0.6 policy 94.0%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">PE</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random is-neg" style="left:10.98%;width:1.52%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:9.14%"></span></span><span class="gain-val">+1.5%</span><span class="gain-tip"><strong>PE</strong>video only 84.2% · random notations 84.0% · Ψ-0.6 policy 85.4%</span></div></div><div class="gain-group"><div class="gain-group__head"><span>Unseen benchmarks</span></div><div class="gain-row" tabindex="0"><span class="gain-label">HanDyVQA</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:44.46%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:62.76%"></span></span><span class="gain-val">+10.0%</span><span class="gain-tip"><strong>HanDyVQA</strong>video only 23.9% · random notations 25.6% · Ψ-0.6 policy 26.3%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">STAR</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:22.48%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:71.94%"></span></span><span class="gain-val">+11.5%</span><span class="gain-tip"><strong>STAR</strong>video only 29.4% · random notations 30.5% · Ψ-0.6 policy 32.8%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">EgoPlan-Bench2</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:20.95%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:62.85%"></span></span><span class="gain-val">+10.1%</span><span class="gain-tip"><strong>EgoPlan-Bench2</strong>video only 25.9% · random notations 26.8% · Ψ-0.6 policy 28.6%</span></div><div class="gain-row" tabindex="0"><span class="gain-label">TGIF-QA</span><span class="gain-track"><span class="gain-grid gain-grid--zero" style="left:12.50%"></span><span class="gain-grid" style="left:43.75%"></span><span class="gain-grid" style="left:75.00%"></span><span class="gain-bar gain-bar--random" style="left:12.50%;width:11.49%"></span><span class="gain-bar gain-bar--policy" style="left:12.50%;width:25.28%"></span></span><span class="gain-val">+4.0%</span><span class="gain-tip"><strong>TGIF-QA</strong>video only 31.4% · random notations 31.9% · Ψ-0.6 policy 32.6%</span></div></div><div class="gain-axis" aria-hidden="true"><span></span><span class="gain-axis__ticks"><span class="gain-tick gain-tick--zero" style="left:12.50%">0</span><span class="gain-tick" style="left:43.75%">+5%</span><span class="gain-tick" style="left:75.00%">+10%</span></span><span></span></div></div><details class="gain-table"><summary>Show as table</summary><table><thead><tr><th>Benchmark</th><th>Set</th><th>Video only</th><th>Random</th><th>Policy</th><th>Random gain</th><th>Policy gain</th></tr></thead><tbody><tr><td>EgoDex</td><td>Held-out</td><td>47.5</td><td>50.2</td><td>53.5</td><td>+5.5%</td><td>+12.5%</td></tr><tr><td>SSv2</td><td>Held-out</td><td>82.3</td><td>86.2</td><td>87.5</td><td>+4.8%</td><td>+6.4%</td></tr><tr><td>OpenVid</td><td>Held-out</td><td>92.2</td><td>94.7</td><td>94.0</td><td>+2.7%</td><td>+1.9%</td></tr><tr><td>PE</td><td>Held-out</td><td>84.2</td><td>84.0</td><td>85.4</td><td>-0.2%</td><td>+1.5%</td></tr><tr><td>HanDyVQA</td><td>Unseen</td><td>23.9</td><td>25.6</td><td>26.3</td><td>+7.1%</td><td>+10.0%</td></tr><tr><td>STAR</td><td>Unseen</td><td>29.4</td><td>30.5</td><td>32.8</td><td>+3.6%</td><td>+11.5%</td></tr><tr><td>EgoPlan-Bench2</td><td>Unseen</td><td>25.9</td><td>26.8</td><td>28.6</td><td>+3.4%</td><td>+10.1%</td></tr><tr><td>TGIF-QA</td><td>Unseen</td><td>31.4</td><td>31.9</td><td>32.6</td><td>+1.8%</td><td>+4.0%</td></tr></tbody></table></details><figcaption>Multiple-choice accuracy (%), one sampled notation per question. Gains are relative to the same model answering from the video alone.</figcaption></figure>
+                  <p class="fineprint">Benchmark numbers use precomputed streams scored by a frozen copy of the model; the examples above run the whole loop in one checkpoint. Examples are selected.</p>
+                </div>
+
+                <div class="ex-panel" id="st-spatial" hidden>
+                  <p class="panel-lede">On <a class="inline-link" href="https://arxiv.org/abs/2506.21458" target="_blank" rel="noopener">MindCube</a>, Ψ-0.6 estimates how each view is rotated, picks the view the question asks about, and answers from it.</p>
+<div data-picker-scope><article class="sot ex-panel" id="mc-0"><div class="sot__head"><div><p class="sot__source">MindCube · rotation · zero-shot</p><p class="sot__question"><span class="q-mark">Q</span> “If I am standing at the same spot and facing the same direction as shown in image 1, what is to my right?”<br><span class="text-out__q">Options: A. green cabinet · B. window and brown cabinet · C. several pictures</span></p></div><button type="button" class="replay" aria-label="Replay stream">↻ Replay</button></div><div class="sot__track"><div class="sot__step sot__step--vision" data-seq="1"><span class="sot__step-kind">Input</span><span class="sot__step-title">views</span><div class="sot__frames" style="--n: 3; --fw: 92px; --ar: 0.7500"><figure><img src="../assets/psi06/comp/mc-0_view1.jpg" alt="image 1" loading="lazy" /><figcaption>image 1</figcaption></figure><figure><img src="../assets/psi06/comp/mc-0_view2.jpg" alt="image 2" loading="lazy" /><figcaption>image 2</figcaption></figure><figure><img src="../assets/psi06/comp/mc-0_view3.jpg" alt="image 3" loading="lazy" /><figcaption>image 3</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="psi-core sot__core" data-seq="2"><span class="psi-core__mark"><img src="../assets/psi-logo.png" alt="Ψ" /></span><span class="psi-core__label">Ψ-0.6</span></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="sot__step sot__step--vision" data-seq="3"><span class="sot__step-kind">Vision</span><span class="sot__step-title">estimate camera motion</span><div class="sot__gen" style="--gw: 120px; --ar: 4 / 3"><figure class="tile"><svg class="cam-svg" data-camera data-rot="[0.0, -95.0, 0.0]" data-trans="[0.0, 0.0, 0.0]" data-tscale="1.0" role="img" aria-label="image 2 relative to image 1"></svg><figcaption>c<sub>1→2</sub> · yaw -95°</figcaption></figure><figure class="tile"><svg class="cam-svg" data-camera data-rot="[0.0, -145.0, 0.0]" data-trans="[0.0, 0.0, 0.0]" data-tscale="1.0" role="img" aria-label="image 3 relative to image 1"></svg><figcaption>c<sub>1→3</sub> · yaw -145°</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="4" aria-hidden="true"></span><div class="sot__step sot__step--lang" data-seq="5"><span class="sot__step-kind">Reasoning</span><span class="sot__step-title">pick the view</span><div class="sot__gen" style="--gw: 150px; --ar: 0.7500"><figure class="tile" style="--ar: 0.7500"><div class="tile__media"><img src="../assets/psi06/comp/mc-0_selected.jpg" alt="" loading="lazy" /></div><figcaption>image 2 · closest to a 90° right turn</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="6" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__answer" data-seq="7"><span class="sot__step-kind">Language</span><span class="sot__step-title">answer</span><div class="answer-box" data-sot="B. window and brown cabinet" data-rgb="A. green cabinet" data-sot-ok="1" data-rgb-ok="0"><div class="answer-text">B. window and brown cabinet</div><span class="answer-verdict" hidden></span><div class="answer-toggle" role="group" aria-label="Compare answers"><button type="button" data-mode="sot" class="is-on">via camera</button><button type="button" data-mode="rgb">anchor view only</button></div><div class="answer-gt">Ground truth: <strong>B. window and brown cabinet</strong></div></div></div></div></article></div>
+                  <div class="stat-row stat-row--3">
+                    <div class="stat"><div class="stat__value">49.7<small>%</small></div><div class="stat__label">MindCube, answering directly (zero-shot)</div></div>
+                    <div class="stat"><div class="stat__value">57.7<small>%</small></div><div class="stat__label">thinking in camera motion first</div></div>
+                  </div>
+                </div>
+
+                <div class="ex-panel" id="st-cf" hidden>
+                  <p class="panel-lede">Asked about a move that never happened, Ψ-0.6 turns the command into optical flow, renders the scene after the move, and reasons over its own imagined frame (<a class="inline-link" href="https://github.com/liuyifan22/FlowBench" target="_blank" rel="noopener">FlowBench</a>).</p>
+<div data-picker-scope><div class="ex-tabs" data-picker role="tablist"><button type="button" class="is-selected" data-target="fb-0" role="tab">Occlusion</button><button type="button" class="" data-target="fb-1" role="tab">Count nearby</button><button type="button" class="" data-target="fb-2" role="tab">Left or right</button></div><article class="sot ex-panel" id="fb-0"><div class="sot__head"><div><p class="sot__source">FlowBench-Sim · Occlusion</p><p class="sot__question"><span class="q-mark">“Move the houseplant (1) 0.39m right and 0.12m down.”</span> In the after image, is the candle (2) occluded by the object (1) so that a part of it is invisible, or is it totally visible?<br><span class="text-out__q">Options: A. totally visible (not occluded). · B. a part is invisible (occluded).</span></p></div><button type="button" class="replay" aria-label="Replay stream">↻ Replay</button></div><div class="sot__track"><div class="sot__step sot__step--vision" data-seq="1"><span class="sot__step-kind">Input</span><span class="sot__step-title">scene + command</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-0_rgb0.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>0</sub> · marked objects</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="psi-core sot__core" data-seq="2"><span class="psi-core__mark"><img src="../assets/psi-logo.png" alt="Ψ" /></span><span class="psi-core__label">Ψ-0.6</span></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="sot__step sot__step--wm" data-seq="3"><span class="sot__step-kind">World modeling</span><span class="sot__step-title">imagine the move</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-0_flow.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · imagined motion</figcaption></figure><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-0_rgb1.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>1</sub> · imagined view</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="4" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__step--grow" data-seq="5"><span class="sot__step-kind">Language</span><span class="sot__step-title">reasoning trace</span><div class="reasoning">The houseplant has been shifted slightly to the right and a bit downward, moving closer to the sidetable. In the after image, the plant now overlaps with the area where the candle sits. The leaves extend over the candle, covering a noticeable portion of it. While part of the candle remains visible, a significant section is hidden behind the plant’s foliage. The occlusion is clear and substantial, not just a minor overlap. The candle is no longer fully visible due to the plant’s new position.</div></div><span class="flow-arrow sot__connector" data-seq="6" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__answer" data-seq="7"><span class="sot__step-kind">Language</span><span class="sot__step-title">answer</span><div class="answer-box" data-sot="B. a part is invisible (occluded)." data-rgb="" data-sot-ok="1" data-rgb-ok=""><div class="answer-text">B. a part is invisible (occluded).</div><span class="answer-verdict" hidden></span><div class="answer-gt">Ground truth: <strong>B. a part is invisible (occluded).</strong><figure class="tile" style="margin-top:6px"><div class="tile__media"><img src="../assets/psi06/comp/fb-0_gt.jpg" alt="simulator after the move" loading="lazy" /></div><figcaption>what actually happened (simulator)</figcaption></figure></div></div></div></div></article><article class="sot ex-panel" id="fb-1" hidden><div class="sot__head"><div><p class="sot__source">FlowBench-Sim · Count nearby</p><p class="sot__question"><span class="q-mark">“Move the desklamp (1) 0.40m along the camera forward axis.”</span> After the move, how many of the following objects are within 1.00m of the desklamp (1)? Objects: (A) the wateringcan; (B) the sidetable; (C) the houseplant; (D) the chair; (E) the chair; (F) the laptop.<br><span class="text-out__q">Options: A. 5 · B. 2 · C. 3 · D. 4</span></p></div><button type="button" class="replay" aria-label="Replay stream">↻ Replay</button></div><div class="sot__track"><div class="sot__step sot__step--vision" data-seq="1"><span class="sot__step-kind">Input</span><span class="sot__step-title">scene + command</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-1_rgb0.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>0</sub> · marked objects</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="psi-core sot__core" data-seq="2"><span class="psi-core__mark"><img src="../assets/psi-logo.png" alt="Ψ" /></span><span class="psi-core__label">Ψ-0.6</span></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="sot__step sot__step--wm" data-seq="3"><span class="sot__step-kind">World modeling</span><span class="sot__step-title">imagine the move</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-1_flow.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · imagined motion</figcaption></figure><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-1_rgb1.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>1</sub> · imagined view</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="4" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__step--grow" data-seq="5"><span class="sot__step-kind">Language</span><span class="sot__step-title">reasoning trace</span><div class="reasoning">The desklamp is currently on the small round table near the left wall, close to the houseplant and the first chair from the left. Moving it forward a short distance along the camera’s view pushes it slightly away from the table but keeps it in the same general area. The houseplant remains right beside it, still very close. The first chair from the left is also nearby, just a bit to the left and slightly behind the lamp’s new position. The sidetable is farther away, across the room, and the laptop is on the red sofa, which is also at a noticeable distance. The second chair from the left is even farther, near the back wall. After the move, only the houseplant and the first chair stay within arm’s reach of the lamp.</div></div><span class="flow-arrow sot__connector" data-seq="6" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__answer" data-seq="7"><span class="sot__step-kind">Language</span><span class="sot__step-title">answer</span><div class="answer-box" data-sot="B. 2" data-rgb="" data-sot-ok="1" data-rgb-ok=""><div class="answer-text">B. 2</div><span class="answer-verdict" hidden></span><div class="answer-gt">Ground truth: <strong>B. 2</strong><figure class="tile" style="margin-top:6px"><div class="tile__media"><img src="../assets/psi06/comp/fb-1_gt.jpg" alt="simulator after the move" loading="lazy" /></div><figcaption>what actually happened (simulator)</figcaption></figure></div></div></div></div></article><article class="sot ex-panel" id="fb-2" hidden><div class="sot__head"><div><p class="sot__source">FlowBench-Sim · Left or right</p><p class="sot__question"><span class="q-mark">“Move the garbagecan (1) 0.50m left.”</span> In the after image, is the garbagecan (1) to the left of the scrubbrush (2) from the camera&#x27;s viewpoint?<br><span class="text-out__q">Options: A. no — from the camera, the stated side relation is false. · B. yes — from the camera, the stated side relation is true.</span></p></div><button type="button" class="replay" aria-label="Replay stream">↻ Replay</button></div><div class="sot__track"><div class="sot__step sot__step--vision" data-seq="1"><span class="sot__step-kind">Input</span><span class="sot__step-title">scene + command</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-2_rgb0.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>0</sub> · marked objects</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="psi-core sot__core" data-seq="2"><span class="psi-core__mark"><img src="../assets/psi-logo.png" alt="Ψ" /></span><span class="psi-core__label">Ψ-0.6</span></div><span class="flow-arrow sot__connector" data-seq="2" aria-hidden="true"></span><div class="sot__step sot__step--wm" data-seq="3"><span class="sot__step-kind">World modeling</span><span class="sot__step-title">imagine the move</span><div class="sot__gen" style="--gw: 170px; --ar: 1.3333"><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-2_flow.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · imagined motion</figcaption></figure><figure class="tile" style="--ar: 1.3333"><div class="tile__media"><img src="../assets/psi06/comp/fb-2_rgb1.jpg" alt="" loading="lazy" /></div><figcaption>rgb<sub>1</sub> · imagined view</figcaption></figure></div></div><span class="flow-arrow sot__connector" data-seq="4" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__step--grow" data-seq="5"><span class="sot__step-kind">Language</span><span class="sot__step-title">reasoning trace</span><div class="reasoning">The garbagecan was moved slightly to the left, closer to the toilet. In the after image, the garbagecan sits near the left wall, just beside the toilet. The scrubbrush is visible on the sink, which is further to the right in the scene. From the camera’s viewpoint, the garbagecan is clearly positioned to the left of the scrubbrush. The relative positions haven’t changed in a way that would shift the garbagecan to the right. The scrubbrush remains on the right side of the frame, while the garbagecan is now more centered but still left of the scrubbrush.</div></div><span class="flow-arrow sot__connector" data-seq="6" aria-hidden="true"></span><div class="sot__step sot__step--lang sot__answer" data-seq="7"><span class="sot__step-kind">Language</span><span class="sot__step-title">answer</span><div class="answer-box" data-sot="B. yes — from the camera, the stated side relation is true." data-rgb="" data-sot-ok="1" data-rgb-ok=""><div class="answer-text">B. yes — from the camera, the stated side relation is true.</div><span class="answer-verdict" hidden></span><div class="answer-gt">Ground truth: <strong>B. yes — from the camera, the stated side relation is true.</strong><figure class="tile" style="margin-top:6px"><div class="tile__media"><img src="../assets/psi06/comp/fb-2_gt.jpg" alt="simulator after the move" loading="lazy" /></div><figcaption>what actually happened (simulator)</figcaption></figure></div></div></div></div></article></div><figure class="pm-figure"><div class="pm-figure__head"><p class="gain-chart__title">How Ψ-0.6 imagines a commanded move</p><p class="pm-figure__sub">One forward pass estimates which patches are likely to move; flow is then decoded most-likely-first, with classifier-free guidance on the command.</p></div><div class="pm-head" aria-hidden="true"><span>command</span><span>probability of motion</span><span>predicted flow</span><span>ground truth</span></div><div class="pm-row" style="--ar: 1.3333"><div class="text-out"><span class="text-out__q">tGQ<sub>0</sub> · command</span>“Move the house plant (1) 0.60m along the camera forward axis”</div><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm0_pmotion.jpg" alt="" loading="lazy" /></div><figcaption>p(motion) · where it moves</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm0_pred.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · Ψ-0.6</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm0_gt.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · simulator</figcaption></figure></div><div class="pm-row" style="--ar: 1.3333"><div class="text-out"><span class="text-out__q">tGQ<sub>0</sub> · command</span>“Move the statue (1) 1.05m along the camera forward axis”</div><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm1_pmotion.jpg" alt="" loading="lazy" /></div><figcaption>p(motion) · where it moves</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm1_pred.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · Ψ-0.6</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm1_gt.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · simulator</figcaption></figure></div><div class="pm-row" style="--ar: 1.3333"><div class="text-out"><span class="text-out__q">tGQ<sub>0</sub> · command</span>“Move the garbagecan (1) 0.90m right”</div><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm2_pmotion.jpg" alt="" loading="lazy" /></div><figcaption>p(motion) · where it moves</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm2_pred.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · Ψ-0.6</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm2_gt.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · simulator</figcaption></figure></div><div class="pm-row" style="--ar: 1.3333"><div class="text-out"><span class="text-out__q">tGQ<sub>0</sub> · command</span>“Move the desklamp (1) 0.40m right”</div><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm3_pmotion.jpg" alt="" loading="lazy" /></div><figcaption>p(motion) · where it moves</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm3_pred.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · Ψ-0.6</figcaption></figure><figure class="tile"><div class="tile__media"><img src="../assets/psi06/comp/pm3_gt.jpg" alt="" loading="lazy" /></div><figcaption>f<sub>0→1</sub> · simulator</figcaption></figure></div></figure>
+                  <div class="stat-row stat-row--3">
+                    <div class="stat"><div class="stat__value">56.4<small>%</small></div><div class="stat__label">text-to-flow accuracy (modular experts 50.8%)</div></div>
+                    <div class="stat"><div class="stat__value">57.5<small>%</small></div><div class="stat__label">sim-to-real transfer on FlowBench-Real</div></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ================= Citation ================= -->
+            <section class="psi06-section" id="citation">
+              <p class="section__eyebrow">Citation</p>
+              <div class="code-block bibtex">
+                <div class="code-block__head">
+                  <span class="code-block__file">BibTeX</span>
+                </div>
+                <pre><code>@article{psi06_2026,
+  title   = {$\Psi$-0.6: Adaptive Streams of Thought in a Unified Vision-Language
+             World Model},
+  author  = {Aw, Khai Loong and Kotar, Klemen and Zhang, Baihan and Liu, Yifan and
+             Chen, Lilian and Kazemian, Atlas and Venkatesh, Rahul and Yamins, Daniel},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+              </div>
+            </section>
+          </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <span>© Stanford NeuroAI</span>
+      <span>Ψ Probabilistic Structure Integration</span>
+    </footer>
+
+    <script type="application/json" id="wheel-data">{"nodes": [{"id": "caption", "title": "Video captioning", "family": "lang", "notation": "rgb0,…,rgb4->t0", "ins": ["rgb"], "outs": ["t"], "pos": [14, 10], "desc": "Watch a clip, write what happens.", "examples": [{"ins": [{"t": "video", "src": "../assets/psi06/wheel/caption_0_in.mp4", "poster": "../assets/psi06/wheel/caption_0_in0.jpg", "ar": "1.7822", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}], "outs": [{"t": "text", "text": "The video opens with a serene view of a tranquil lake bordered by snow-capped mountains and evergreen trees, setting a peaceful and natural scene.", "q": "t₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/caption_0_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/caption_1_in.mp4", "poster": "../assets/psi06/wheel/caption_1_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}], "outs": [{"t": "text", "text": "The video shows a person cooking in a kitchen. The person is wearing a white shirt and has a watch on their left wrist. The person is using a pan on a stove and is adding ingredients to it. The person is standing in front of a counter that has various items on it.", "q": "t₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/caption_1_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/caption_2_in.mp4", "poster": "../assets/psi06/wheel/caption_2_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}], "outs": [{"t": "text", "text": "A person wearing orange shirt and yellow vest is working on a pipe. The person is using a tool to tighten a pipe, and the camera is focused on the person's hands and the pipe. The person is wearing gloves and holding the pipe with one hand while using the other hand to tighten the pipe.", "q": "t₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/caption_2_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/caption_3_in.mp4", "poster": "../assets/psi06/wheel/caption_3_in0.jpg", "ar": "1.1875", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}], "outs": [{"t": "text", "text": "The video shows two female dancers performing a synchronized routine on a stage. They are wearing white outfits with black stripes, and each dancer holds a microphone in her hand. The dancers are positioned in a line, with one dancer slightly ahead of the other, and they are all facing the same direction.", "q": "t₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/caption_3_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/caption_4_in.mp4", "poster": "../assets/psi06/wheel/caption_4_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}], "outs": [{"t": "text", "text": "pretending to put a bottle into a shopping cart", "q": "t₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/caption_4_in0.jpg"}], "thumbOut": null}, {"id": "vqa", "title": "Video question answering", "family": "lang", "notation": "rgb0,…,rgb4,tQn0->tAns0", "ins": ["rgb", "t"], "outs": ["t"], "pos": [32, 10], "desc": "Watch a clip, answer a question about it.", "examples": [{"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_0_in.mp4", "poster": "../assets/psi06/wheel/vqa_0_in0.jpg", "ar": "1.7822", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What is in the background?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The background features snow-capped mountains.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_0_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_1_in.mp4", "poster": "../assets/psi06/wheel/vqa_1_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What is the person pushing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The person is pushing a shopping cart.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_1_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_2_in.mp4", "poster": "../assets/psi06/wheel/vqa_2_in0.jpg", "ar": "1.7822", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What sport is the man playing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "He is playing soccer.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_2_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_3_in.mp4", "poster": "../assets/psi06/wheel/vqa_3_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What is the person cooking with?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The person is cooking with a pan.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_3_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_4_in.mp4", "poster": "../assets/psi06/wheel/vqa_4_in0.jpg", "ar": "1.3438", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What color is the person's hair?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The person's hair is pink.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_4_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_5_in.mp4", "poster": "../assets/psi06/wheel/vqa_5_in0.jpg", "ar": "1.1875", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What are the dancers wearing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The dancers are wearing white outfits.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_5_in0.jpg"}, {"ins": [{"t": "video", "src": "../assets/psi06/wheel/vqa_6_in.mp4", "poster": "../assets/psi06/wheel/vqa_6_in0.jpg", "ar": "1.7822", "cap": "rgb<sub>0<\/sub>, rgb<sub>1<\/sub>, rgb<sub>2<\/sub>, … from this clip"}, {"t": "text", "text": "What season is it?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "Winter", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/vqa_6_in0.jpg"}], "thumbOut": null}, {"id": "counterfactual", "title": "Counterfactual imagination", "family": "wm", "notation": "rgb0,tGQ0->f01,rgb1", "ins": ["rgb", "t"], "outs": ["f", "rgb"], "pos": [50, 10], "desc": "Read a move command; imagine the motion and the scene after the move.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_0_in.jpg", "ar": "1.3333", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "“Move the houseplant (1) 0.39m right and 0.12m down.”", "q": "t₀ · command", "cap": ""}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_0_f.jpg", "ar": "1.3445", "cap": "f<sub>0→1<\/sub> · imagined"}, {"t": "img", "src": "../assets/psi06/wheel/counterfactual_0_out.jpg", "ar": "1.3445", "cap": "rgb<sub>1<\/sub> · imagined"}], "note": "FlowBench-tuned checkpoint.", "thumb": "../assets/psi06/wheel/counterfactual_0_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_1_in.jpg", "ar": "1.3333", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "“Move the garbagecan (1) 0.50m left.”", "q": "t₀ · command", "cap": ""}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_1_f.jpg", "ar": "1.3445", "cap": "f<sub>0→1<\/sub> · imagined"}, {"t": "img", "src": "../assets/psi06/wheel/counterfactual_1_out.jpg", "ar": "1.3445", "cap": "rgb<sub>1<\/sub> · imagined"}], "note": "FlowBench-tuned checkpoint.", "thumb": "../assets/psi06/wheel/counterfactual_1_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_2_in.jpg", "ar": "1.3333", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "“Move the desklamp (1) 0.40m along the camera forward axis.”", "q": "t₀ · command", "cap": ""}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/counterfactual_2_f.jpg", "ar": "1.3445", "cap": "f<sub>0→1<\/sub> · imagined"}, {"t": "img", "src": "../assets/psi06/wheel/counterfactual_2_out.jpg", "ar": "1.3445", "cap": "rgb<sub>1<\/sub> · imagined"}], "note": "FlowBench-tuned checkpoint.", "thumb": "../assets/psi06/wheel/counterfactual_2_in.jpg", "outsRow": false}], "thumbOut": 1}, {"id": "vpred", "title": "Video prediction", "family": "wm", "notation": "rgb0,rgb1->rgb2,rgb3,rgb4", "ins": ["rgb"], "outs": ["rgb"], "pos": [68, 10], "desc": "Continue a video into the future, one frame at a time.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/vpred_0_in.jpg", "ar": "1.7827", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "flip", "srcs": ["../assets/psi06/wheel/vpred_0_p1.jpg", "../assets/psi06/wheel/vpred_0_p2.jpg", "../assets/psi06/wheel/vpred_0_p3.jpg"], "cap": "rgb<sub>1<\/sub> · predicted", "caps": ["rgb<sub>1<\/sub> · predicted · +1 s", "rgb<sub>2<\/sub> · predicted · +2 s", "rgb<sub>3<\/sub> · predicted · +3 s"]}], "note": "", "thumb": "../assets/psi06/wheel/vpred_0_in.jpg", "notation": "rgb0->rgb1,rgb2,rgb3"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/vpred_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "flip", "srcs": ["../assets/psi06/wheel/vpred_1_p1.jpg", "../assets/psi06/wheel/vpred_1_p2.jpg", "../assets/psi06/wheel/vpred_1_p3.jpg"], "cap": "rgb<sub>1<\/sub> · predicted", "caps": ["rgb<sub>1<\/sub> · predicted · +0.4 s", "rgb<sub>2<\/sub> · predicted · +0.8 s", "rgb<sub>3<\/sub> · predicted · +1.2 s"]}], "note": "", "thumb": "../assets/psi06/wheel/vpred_1_in.jpg", "notation": "rgb0->rgb1,rgb2,rgb3"}], "thumbOut": null}, {"id": "nvs", "title": "Novel view synthesis", "family": "wm", "notation": "rgb0,c01->rgb1", "ins": ["rgb", "c"], "outs": ["rgb"], "pos": [86, 10], "desc": "Render the scene from a new camera position.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/nvs_0_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, 1.5], "cap": "c<sub>0→1<\/sub> · step back 1.5 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/nvs_0_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/nvs_0_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/nvs_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 15, 0], "tr": [0, 0, 0], "cap": "c<sub>0→1<\/sub> · pan 15°"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/nvs_1_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/nvs_1_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/nvs_2_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, 1.0], "cap": "c<sub>0→1<\/sub> · step back 1 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/nvs_2_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/nvs_2_in.jpg"}], "thumbOut": null}, {"id": "textcam", "title": "Text → camera → view", "family": "wm", "notation": "rgb0,t0->c01,rgb1", "ins": ["rgb", "t"], "outs": ["c", "rgb"], "pos": [89, 31], "desc": "Turn a camera instruction into a camera move, then render the new view.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/textcam_0_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "The camera pans to the left.", "q": "t₀", "cap": ""}], "outs": [{"t": "cam", "rot": [-1.0, -9.0, 0.0], "tr": [-0.29, 0.09, -0.2], "cap": "c<sub>0→1<\/sub> · yaw -9° · 0.3 m left"}, {"t": "img", "src": "../assets/psi06/wheel/textcam_0_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/textcam_0_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/textcam_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "The camera moves forward through the doorway.", "q": "t₀", "cap": ""}], "outs": [{"t": "cam", "rot": [0.0, 0.0, 0.0], "tr": [-0.02, -0.02, -0.33], "cap": "c<sub>0→1<\/sub> · 0.3 m forward"}, {"t": "img", "src": "../assets/psi06/wheel/textcam_1_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/textcam_1_in.jpg", "outsRow": false}], "thumbOut": null}, {"id": "camflow", "title": "Flow from camera motion", "family": "wm", "notation": "rgb0,c01->f01,rgb1", "ins": ["rgb", "c"], "outs": ["f", "rgb"], "pos": [89, 50], "desc": "Predict how every pixel moves when the camera moves, and the view after it.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/camflow_0_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, -0.8], "cap": "c<sub>0→1<\/sub> · move forward 0.8 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/camflow_0_f.jpg", "ar": "1.0000", "cap": "f<sub>0→1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camflow_0_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/camflow_0_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/camflow_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 15, 0], "tr": [0, 0, 0], "cap": "c<sub>0→1<\/sub> · pan 15°"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/camflow_1_f.jpg", "ar": "1.0000", "cap": "f<sub>0→1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camflow_1_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/camflow_1_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/camflow_2_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, 1.0], "cap": "c<sub>0→1<\/sub> · step back 1 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/camflow_2_f.jpg", "ar": "1.0000", "cap": "f<sub>0→1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camflow_2_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/camflow_2_in.jpg", "outsRow": false}], "thumbOut": 0}, {"id": "dwarp", "title": "Depth warp", "family": "wm", "notation": "rgb0,d0,c01->d1,rgb1", "ins": ["rgb", "d", "c"], "outs": ["d", "rgb"], "pos": [89, 69], "desc": "Predict the depth and the view after a camera move.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_0_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_0_d0.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub> · Ψ-estimated"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, 1.0], "cap": "c<sub>0→1<\/sub> · step back 1 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_0_d1.jpg", "ar": "1.0000", "cap": "d<sub>1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_0_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/dwarp_0_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_1_d0.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub> · Ψ-estimated"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, -0.8], "cap": "c<sub>0→1<\/sub> · move forward 0.8 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_1_d1.jpg", "ar": "1.0000", "cap": "d<sub>1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_1_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/dwarp_1_in.jpg", "outsRow": false}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_2_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_2_d0.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub> · Ψ-estimated"}, {"t": "cam", "rot": [0, 0, 0], "tr": [0, 0, 1.0], "cap": "c<sub>0→1<\/sub> · step back 1 m"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/dwarp_2_d1.jpg", "ar": "1.0000", "cap": "d<sub>1<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/dwarp_2_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/dwarp_2_in.jpg", "outsRow": false}], "thumbOut": null}, {"id": "flowcond", "title": "Flow-conditioned generation", "family": "wm", "notation": "rgb0,f01->f01,rgb1", "ins": ["rgb", "f"], "outs": ["rgb"], "pos": [86, 90], "desc": "Drag a few points; Ψ-0.6 works out how everything moves and renders what happens next.", "examples": [{"layout": "seq", "ar": "1.0000", "arrows": [[0.595703125, 0.505859375, 0.478515625, 0.505859375]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_0_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_0_rgb0.jpg", "label": "Drag a few points (push left)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_0_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_0_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_0_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_0_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_0_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_0_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "The deck slides into the case and tucks under it.", "thumb": "../assets/psi06/wheel/flowcond_0_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_0_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_0_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.0000", "arrows": [[0.595703125, 0.505859375, 0.693359375, 0.505859375]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_1_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_1_rgb0.jpg", "label": "Drag a few points (push right)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_1_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_1_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_1_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_1_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_1_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_1_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "Same scene, opposite push: the deck slides away.", "thumb": "../assets/psi06/wheel/flowcond_1_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_1_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_1_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.0000", "arrows": [[0.15087719298245614, 0.2807017543859649, 0.3333333333333333, 0.3912280701754386]], "holds": [[0.4421052631578947, 0.2631578947368421], [0.5210526315789473, 0.45964912280701753], [0.41578947368421054, 0.7052631578947368], [0.6350877192982456, 0.6614035087719298]], "steps": [{"src": "../assets/psi06/wheel/flowcond_2_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_2_rgb0.jpg", "label": "Drag a few points (drag sleeve, hold body) · circles are held still", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_2_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_2_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_2_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_2_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_2_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_2_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "Circles mark held points.", "thumb": "../assets/psi06/wheel/flowcond_2_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_2_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_2_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.0000", "arrows": [[0.7035087719298245, 0.7350877192982456, 0.7035087719298245, 0.8771929824561403]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_3_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_3_rgb0.jpg", "label": "Drag a few points (pull down)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_3_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_3_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_3_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_3_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_3_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_3_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "More paper unrolls off the roll.", "thumb": "../assets/psi06/wheel/flowcond_3_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_3_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_3_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.7799", "arrows": [[0.283203125, 0.7534722222222222, 0.4140625, 0.7534722222222222], [0.650390625, 0.7534722222222222, 0.517578125, 0.7534722222222222]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_4_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_4_rgb0.jpg", "label": "Drag a few points (hands inward)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_4_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_4_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_4_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_4_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_4_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_4_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "The sheet crumples.", "thumb": "../assets/psi06/wheel/flowcond_4_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_4_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_4_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.0000", "arrows": [[0.38596491228070173, 0.36140350877192984, 0.6491228070175439, 0.27017543859649124]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_5_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_5_rgb0.jpg", "label": "Drag a few points (move fingers right)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_5_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_5_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_5_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_5_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_5_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_5_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "The thread passes through the eye of the needle.", "thumb": "../assets/psi06/wheel/flowcond_5_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_5_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_5_rgb1.jpg"}]}, {"layout": "seq", "ar": "1.4990", "arrows": [[0.59375, 0.2421875, 0.40625, 0.421875]], "holds": [], "steps": [{"src": "../assets/psi06/wheel/flowcond_6_rgb0.jpg", "label": "Start from one image", "ms": 1100, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_6_rgb0.jpg", "label": "Drag a few points (drag glove)", "ms": 2200, "overlay": true, "draw": true}, {"src": "../assets/psi06/wheel/flowcond_6_flowover.jpg", "label": "Ψ-0.6 predicts how every pixel moves (dense flow)", "ms": 2200, "overlay": true}, {"src": "../assets/psi06/wheel/flowcond_6_rgb1.jpg", "label": "…and renders the next frame", "ms": 2000, "overlay": false}, {"src": "../assets/psi06/wheel/flowcond_6_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_6_rgb1.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_6_rgb0.jpg", "label": "Before ↔ after", "ms": 800, "overlay": false, "group": 4}, {"src": "../assets/psi06/wheel/flowcond_6_rgb1.jpg", "label": "Before ↔ after", "ms": 1400, "overlay": false, "group": 4}], "note": "The glove slides off the sponge; the sponge stays.", "thumb": "../assets/psi06/wheel/flowcond_6_rgb1.jpg", "ins": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_6_rgb0.jpg"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flowcond_6_rgb1.jpg"}]}], "thumbOut": null}, {"id": "interp", "title": "Frame interpolation", "family": "vision", "notation": "rgb0,rgb2->rgb1", "ins": ["rgb"], "outs": ["rgb"], "pos": [68, 90], "desc": "Fill in the frame between two frames.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/interp_0_in0.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/interp_0_in2.jpg", "ar": "1.0000", "cap": "rgb<sub>2<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/interp_0_out.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub> · in between"}], "note": "", "thumb": "../assets/psi06/wheel/interp_0_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/interp_1_in0.jpg", "ar": "1.7857", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/interp_1_in2.jpg", "ar": "1.7857", "cap": "rgb<sub>2<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/interp_1_out.jpg", "ar": "1.7827", "cap": "rgb<sub>1<\/sub> · in between"}], "note": "", "thumb": "../assets/psi06/wheel/interp_1_in0.jpg"}], "thumbOut": null}, {"id": "flow", "title": "Optical flow", "family": "vision", "notation": "rgb0,rgb1->f01", "ins": ["rgb"], "outs": ["f"], "pos": [50, 90], "desc": "Estimate how every pixel moves between two frames.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/flow_0_in0.jpg", "ar": "1.7857", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/flow_0_in1.jpg", "ar": "1.7857", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flow_0_out.jpg", "ar": "1.7827", "cap": "f<sub>0→1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/flow_0_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/flow_1_in0.jpg", "ar": "1.3453", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/flow_1_in1.jpg", "ar": "1.3453", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flow_1_out.jpg", "ar": "1.3445", "cap": "f<sub>0→1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/flow_1_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/flow_2_in0.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/flow_2_in1.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flow_2_out.jpg", "ar": "1.0000", "cap": "f<sub>0→1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/flow_2_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/flow_3_in0.jpg", "ar": "1.3453", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/flow_3_in1.jpg", "ar": "1.3453", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/flow_3_out.jpg", "ar": "1.3445", "cap": "f<sub>0→1<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/flow_3_in0.jpg"}], "thumbOut": null}, {"id": "depth", "title": "Depth estimation", "family": "vision", "notation": "rgb0->d0", "ins": ["rgb"], "outs": ["d"], "pos": [32, 90], "desc": "Estimate depth from a single image.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/depth_0_in.jpg", "ar": "1.3445", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/depth_0_out.jpg", "ar": "1.3445", "cap": "d<sub>0<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/depth_0_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/depth_1_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/depth_1_out.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/depth_1_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/depth_2_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/depth_2_out.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/depth_2_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/depth_3_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/depth_3_out.jpg", "ar": "1.0000", "cap": "d<sub>0<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/depth_3_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/depth_4_in.jpg", "ar": "1.8130", "cap": "rgb<sub>0<\/sub>"}], "outs": [{"t": "img", "src": "../assets/psi06/wheel/depth_4_out.jpg", "ar": "1.8130", "cap": "d<sub>0<\/sub>"}], "note": "", "thumb": "../assets/psi06/wheel/depth_4_in.jpg"}], "thumbOut": null}, {"id": "camera", "title": "Camera pose estimation", "family": "vision", "notation": "rgb0,rgb1->c01", "ins": ["rgb"], "outs": ["c"], "pos": [14, 90], "desc": "Estimate how the camera moved between two frames.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/camera_0_in0.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camera_0_in1.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "cam", "rot": [0.0, -12.0, -2.0], "tr": [-1.07, 0.07, -0.49], "cap": "c<sub>0→1<\/sub> · yaw -12° · 1.1 m left"}], "note": "", "thumb": "../assets/psi06/wheel/camera_0_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/camera_1_in0.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camera_1_in1.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "cam", "rot": [-1.0, -21.0, -6.0], "tr": [-1.1, 0.06, -0.25], "cap": "c<sub>0→1<\/sub> · yaw -21° · 1.1 m left"}], "note": "", "thumb": "../assets/psi06/wheel/camera_1_in0.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/camera_2_in0.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "img", "src": "../assets/psi06/wheel/camera_2_in1.jpg", "ar": "1.0000", "cap": "rgb<sub>1<\/sub>"}], "outs": [{"t": "cam", "rot": [2.0, -23.0, -3.0], "tr": [-1.55, -0.12, -0.39], "cap": "c<sub>0→1<\/sub> · yaw -23° · 1.6 m left"}], "note": "", "thumb": "../assets/psi06/wheel/camera_2_in0.jpg"}], "thumbOut": null}, {"id": "spatial", "title": "Spatial reasoning", "family": "lang", "notation": "rgb0,rgb1,rgb2,tQn0->tAns0", "ins": ["rgb", "t"], "outs": ["t"], "pos": [11, 38], "desc": "Answer a question about a scene seen from several viewpoints.", "examples": [{"ins": [{"t": "views", "srcs": ["../assets/psi06/wheel/spatial_0_in0.jpg", "../assets/psi06/wheel/spatial_0_in1.jpg", "../assets/psi06/wheel/spatial_0_in2.jpg"], "labels": ["image 1", "image 2", "image 3"], "cap": ""}, {"t": "text", "text": "…If I am standing at the same spot and facing the same direction as shown in image 2, then I turn 90 degrees to the right, what is to my behind? A. Door B. Chair and white board C. Two chairs", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "B. Chair and white board", "q": "tAns₀ · generated", "cap": ""}], "note": "MindCube, zero-shot. Question shortened; the full prompt also describes how the views were taken.", "thumb": "../assets/psi06/wheel/spatial_0_in0.jpg", "notation": "rgb0,rgb1,rgb2,tQn0->tAns0"}, {"ins": [{"t": "views", "srcs": ["../assets/psi06/wheel/spatial_1_in0.jpg", "../assets/psi06/wheel/spatial_1_in1.jpg", "../assets/psi06/wheel/spatial_1_in2.jpg"], "labels": ["image 1", "image 2", "image 3"], "cap": ""}, {"t": "text", "text": "…If I am standing at the same spot and facing the same direction as shown in image 3, then I turn 180 degrees around, what is to my behind? A. sink B. wooden frame mirror C. door", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "C. door", "q": "tAns₀ · generated", "cap": ""}], "note": "MindCube, zero-shot. Question shortened; the full prompt also describes how the views were taken.", "thumb": "../assets/psi06/wheel/spatial_1_in0.jpg", "notation": "rgb0,rgb1,rgb2,tQn0->tAns0"}, {"ins": [{"t": "views", "srcs": ["../assets/psi06/wheel/spatial_2_in0.jpg", "../assets/psi06/wheel/spatial_2_in1.jpg"], "labels": ["image 1", "image 2"], "cap": ""}, {"t": "text", "text": "In which direction did I move from the first view to the second view? A. Diagonally forward and left B. Directly right C. Directly left D. Diagonally forward and right", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "A. Diagonally forward and left", "q": "tAns₀ · generated", "cap": ""}], "note": "MindCube, zero-shot.", "thumb": "../assets/psi06/wheel/spatial_2_in0.jpg", "notation": "rgb0,rgb1,tQn0->tAns0"}], "thumbOut": null}, {"id": "ivqa", "title": "Image question answering", "family": "lang", "notation": "rgb0,tQn0->tAns0", "ins": ["rgb", "t"], "outs": ["t"], "pos": [11, 62], "desc": "Answer a question about an image.", "examples": [{"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_0_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What fruit is in the picture?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "apple", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_0_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_1_in.jpg", "ar": "1.7827", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "How many balls are on the table?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "5", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_1_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_2_in.jpg", "ar": "1.7827", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What is shown on the laptop screen?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The laptop screen displays a wallpaper featuring a forest scene with trees and a sky.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_2_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_3_in.jpg", "ar": "1.7827", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What color is the car?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "gray", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_3_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_4_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "How many pins are standing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "2", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_4_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_5_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What is stored in the drawers?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "plates", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_5_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_6_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What is behind the apple?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "box", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_6_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_7_in.jpg", "ar": "1.7486", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What tool is the person using?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "The person is using a hammer, which is a tool commonly used for driving nails into wood or other materials.", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_7_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_8_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What object is this?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "lamp", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_8_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_9_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What are the hands doing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "kneading dough", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_9_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_10_in.jpg", "ar": "1.0000", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What is the person about to light?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "candle", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_10_in.jpg"}, {"ins": [{"t": "img", "src": "../assets/psi06/wheel/ivqa_11_in.jpg", "ar": "0.6667", "cap": "rgb<sub>0<\/sub>"}, {"t": "text", "text": "What is the man doing?", "q": "tQn₀", "cap": ""}], "outs": [{"t": "text", "text": "lifting", "q": "tAns₀ · generated", "cap": ""}], "note": "", "thumb": "../assets/psi06/wheel/ivqa_11_in.jpg"}], "thumbOut": null}], "orderings": ["t0,rgb0,c01,rgb1,c12,rgb2,c23,…", "t0,rgb0,c01,c12,f01,rgb1,f12,…", "rgb0,f01,rgb1,f12,rgb2,f23,rgb3", "t0,rgb0,c01,c12,rgb1,rgb2", "rgb0,d0,c01,d1,rgb1,t0", "t0,rgb0,c01,c12,c23,c34,rgb1,…", "rgb0,t0,c01,rgb1,c12,rgb2", "rgb0,d0,c01,c12,c23,c34,f01,…", "rgb0,rgb1,rgb2,rgb3,rgb4,rgb5,rgb6,…", "rgb0,rgb2,rgb1", "rgb0,d0,t0", "rgb0,t0,c01,c12,c23,c34,c45", "rgb0,c01,rgb3,rgb1,rgb2", "rgb0,c01,rgb2,rgb1", "rgb0,t0", "t0,rgb0,d0,d1,rgb1", "rgb0,rgb1,c01", "t0,rgb0,d0,d1,rgb1,d2,rgb2", "tQn0,rgb0,rgb1,rgb2,rgb3,rgb4,rgb5,…", "t0,rgb0,d0,c01,d1,rgb1,c12,…", "rgb0,rgb2,c01,f01,f12", "rgb0,rgb1,rgb2,rgb3,rgb4,t0", "tQn0,rgb0,f01,rgb1,f12,rgb2,f23,…", "t0,rgb0,c01,c12,c23,c34,c45,…", "rgb0,c01,rgb1,c12,rgb2,c23,rgb3,…", "rgb0,rgb2,c01,d0,d1", "rgb0,c01,rgb1,c12,rgb2,c23,rgb3", "rgb0,rgb3,rgb1,rgb2", "rgb0,t0,c01,f01,rgb1", "rgb0,f01,rgb1", "rgb0,rgb1,rgb2,rgb3,tQn0,tAns0", "rgb0,c01,rgb1,c12,rgb2,t0", "rgb0,d0,c01,c12,c23,d1,rgb1,…", "t0,rgb0,d0,c01,c12,f01", "tQn0,rgb0,d0,rgb1,d1,rgb2,d2,…", "rgb0,rgb2,f02", "rgb0,d0,c01,c12,d1,rgb1,d2,…", "rgb0,c01,rgb3,f01,f12,f23", "rgb0,c01,c12,c23,c34,rgb1,rgb2,…", "t0,rgb0,rgb1,rgb2,rgb3,rgb4", "rgb0,t0,d0,c01,d1,rgb1,c12,…", "rgb0,c01,c12,c23,c34,f01,rgb1,…", "rgb0,d0,t0,c01,d1,rgb1,t1,…", "t0,rgb0,d0,d1,rgb1,d2,rgb2,…", "rgb0,rgb1,rgb2,rgb3,rgb4,tQn0,f01,…", "rgb0,d0,c01,f01,d1,rgb1", "rgb0,d0,c01,c12,c23,c34,c45,…", "tQn0,rgb0,rgb1,rgb2,rgb3,rgb4,f01,…", "rgb0,rgb1,rgb2,rgb3,c01,c12,c23,…", "t0,rgb0,c01,f01", "rgb0,d0,f01,d1,rgb1,t0", "rgb0,d0,f01", "rgb0,rgb1,rgb2,rgb3,rgb4,rgb5,tQn0,…", "t0,rgb0,f01"], "start": "vqa", "ghosts": [{"name": "Caption from flow", "notation": "rgb,f->t", "family": "lang"}, {"name": "Temporal caption", "notation": "rgb0,t0,rgb1,t1,…", "family": "lang"}, {"name": "Structure from motion cue", "notation": "rgb,f->d", "family": "vision"}, {"name": "Zero-shot Depth", "notation": "rgb,c->f->d", "family": "vision"}, {"name": "Zero-shot Flow", "notation": "rgb,rgb->f", "family": "vision"}]}</script>
+    <script>
+      (() => {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        /* ---- theme toggle ---- */
+        const themeBtn = document.querySelector(".theme-toggle");
+        if (themeBtn) {
+          const mq = window.matchMedia("(prefers-color-scheme: dark)");
+          const effective = () => document.documentElement.dataset.theme || (mq.matches ? "dark" : "light");
+          const paint = () => {
+            const dark = effective() === "dark";
+            themeBtn.querySelector(".theme-toggle__icon").textContent = dark ? "☀" : "☾";
+            themeBtn.querySelector(".theme-toggle__label").textContent = dark ? "Light" : "Dark";
+          };
+          themeBtn.addEventListener("click", () => {
+            const next = effective() === "dark" ? "light" : "dark";
+            document.documentElement.dataset.theme = next;
+            try { localStorage.setItem("psi-theme", next); } catch (_) {}
+            paint();
+          });
+          mq.addEventListener?.("change", paint);
+          paint();
+        }
+
+
+        /* ---- Camera frustums: draw predicted relative pose as two frustums ---- */
+        const rotFromAxisAngle = (aa) => {
+          const [x, y, z] = aa.map((v) => (v * Math.PI) / 180);
+          const th = Math.hypot(x, y, z);
+          if (th < 1e-9) return [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+          const [kx, ky, kz] = [x / th, y / th, z / th];
+          const c = Math.cos(th), s = Math.sin(th), v = 1 - c;
+          return [
+            [kx * kx * v + c, kx * ky * v - kz * s, kx * kz * v + ky * s],
+            [ky * kx * v + kz * s, ky * ky * v + c, ky * kz * v - kx * s],
+            [kz * kx * v - ky * s, kz * ky * v + kx * s, kz * kz * v + c],
+          ];
+        };
+        const mul = (R, p) => [0, 1, 2].map((i) => R[i][0] * p[0] + R[i][1] * p[1] + R[i][2] * p[2]);
+        const drawCamera = (svg) => {
+          const rot = JSON.parse(svg.dataset.rot || "[0,0,0]");
+          const tr = JSON.parse(svg.dataset.trans || "[0,0,0]");
+          const scaleT = Number(svg.dataset.tscale || 1);
+          const R = rotFromAxisAngle(rot);
+          const fr = (Rm, t) => {
+            const w = 0.42, h = 0.3, d = 0.55;
+            const pts = [[0, 0, 0], [-w, -h, d], [w, -h, d], [w, h, d], [-w, h, d]];
+            return pts.map((p) => mul(Rm, p)).map((p) => [p[0] + t[0], p[1] + t[1], p[2] + t[2]]);
+          };
+          const I = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+          const t1 = tr.map((v) => v * scaleT);
+          const f0 = fr(I, [0, 0, 0]);
+          const f1 = fr(R, t1);
+          // oblique view: rotate world about y then x, orthographic
+          const ay = (-35 * Math.PI) / 180, ax = (22 * Math.PI) / 180;
+          const view = (p) => {
+            let [x, y, z] = p;
+            [x, z] = [x * Math.cos(ay) + z * Math.sin(ay), -x * Math.sin(ay) + z * Math.cos(ay)];
+            [y, z] = [y * Math.cos(ax) - z * Math.sin(ax), y * Math.sin(ax) + z * Math.cos(ax)];
+            return [x, -y];
+          };
+          const all = [...f0, ...f1].map(view);
+          const xs = all.map((p) => p[0]), ys = all.map((p) => p[1]);
+          const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+          const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys), 1.0);
+          const W = 160, H = 120, k = 0.72 * Math.min(W, H) / span;
+          const P = (p) => { const [x, y] = view(p); return [W / 2 + (x - cx) * k, H / 2 + (y - cy) * k]; };
+          const poly = (f, cls) => {
+            const q = f.map(P);
+            const faces = [[1, 2, 3, 4]];
+            const edges = [[0, 1], [0, 2], [0, 3], [0, 4]];
+            let s = faces.map((fc) => `<polygon class="${cls}" points="${fc.map((i) => q[i].join(",")).join(" ")}"/>`).join("");
+            s += edges.map(([a, b]) => `<line class="${cls}" x1="${q[a][0]}" y1="${q[a][1]}" x2="${q[b][0]}" y2="${q[b][1]}"/>`).join("");
+            return s;
+          };
+          const g = [];
+          for (let i = -3; i <= 3; i++) {
+            const a = P([i * 0.5, 0.45, -1.5]), b = P([i * 0.5, 0.45, 1.5]);
+            const c = P([-1.5, 0.45, i * 0.5]), d = P([1.5, 0.45, i * 0.5]);
+            g.push(`<line class="grid-line" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`);
+            g.push(`<line class="grid-line" x1="${c[0]}" y1="${c[1]}" x2="${d[0]}" y2="${d[1]}"/>`);
+          }
+          const o0 = P([0, 0, 0]), o1 = P(t1);
+          svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+          svg.innerHTML = g.join("") +
+            `<line class="cam-path" x1="${o0[0]}" y1="${o0[1]}" x2="${o1[0]}" y2="${o1[1]}"/>` +
+            poly(f0, "cam0") + poly(f1, "cam1");
+        };
+        document.querySelectorAll("svg[data-camera]").forEach(drawCamera);
+
+        /* ================= Capability wheel (click a task; the centre runs it) ================= */
+        const wheelEl = document.querySelector("[data-wheel]");
+        const wheelData = JSON.parse(document.getElementById("wheel-data")?.textContent || "{}");
+        if (wheelEl && wheelData.nodes) {
+          const FAM = { lang: "Language", wm: "World modeling", vision: "Vision" };
+          const famVar = { lang: "var(--m-lang)", wm: "var(--m-wm)", vision: "var(--m-vision)" };
+          const bg = wheelEl.querySelector(".wheel-bg");
+          const stage = wheelEl.querySelector(".wheel-stage");
+          const nodesWrap = wheelEl.querySelector(".wheel-nodes");
+          const VBW = 1600, VBH = 1100;
+          const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+          const tokClass = (t) => (/^rgb/.test(t) ? "rgb" : /^t/.test(t) ? "t" : t[0]);
+          const notaHTML = (s) => {   // any number of arrows ("rgb,c->f->d"), or none ("rgb0,t0,rgb1,t1,…")
+            const side = (x) => x.split(",").map((t) => t.trim()).filter(Boolean)
+              .map((t) => t === "…" ? "…" : `<span class="tok tok--${tokClass(t)}">${esc(t)}</span>`).join(", ");
+            return s.split("->").map(side).join(`<span class="tok-arrow">→</span>`);
+          };
+
+          /* task nodes with a small input → output preview */
+          wheelData.nodes.forEach((n, i) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = `wheel-node wheel-node--${n.family}`;
+            b.setAttribute("aria-pressed", "false");
+            const ex0 = n.examples[0] || { ins: [], outs: [] };
+            const th = (m) => !m ? "" : m.t === "img" ? `<img src="${m.src}" alt="" loading="lazy" />`
+              : m.t === "video" ? `<img src="${m.poster}" alt="" loading="lazy" />`
+              : (m.t === "frames" || m.t === "views") ? `<img src="${m.srcs[0]}" alt="" loading="lazy" />`
+              : m.t === "flip" ? `<img src="${m.srcs[m.srcs.length - 1]}" alt="" loading="lazy" />`
+              : m.t === "text" ? `<span class="nthumb-text">${esc(m.text.split(/\s+/).slice(0, 5).join(" "))}…</span>`
+              : m.t === "cam" ? `<svg class="cam-svg nthumb-camsvg" data-camera data-rot="${esc(JSON.stringify(m.rot))}" data-trans="${esc(JSON.stringify(m.tr))}" data-tscale="1"></svg>` : "";
+            const inM = ex0.ins.find((m) => m.t !== "text" && m.t !== "cam") || ex0.ins[0];
+            const outM = n.thumbOut != null ? ex0.outs[n.thumbOut] : (ex0.outs.find((m) => m.t === "img" || m.t === "flip") || ex0.outs[0]);
+            b.innerHTML = `<span class="wheel-node__title">${esc(n.title)}</span><span class="wheel-node__nota">${notaHTML(n.notation)}</span>` +
+              `<span class="wheel-node__thumbs" aria-hidden="true"><span class="nthumb">${th(inM)}</span><span class="nthumb-arrow">→</span><span class="nthumb">${th(outM)}</span></span>`;
+            nodesWrap.appendChild(b);
+          });
+          const nodeEls = Array.from(nodesWrap.children);
+          /* more named tasks (the paper's Fig. 1A small boxes) without an example here — the wheel is a sample */
+          const ghostWrap = document.createElement("div");
+          ghostWrap.className = "wheel-ghosts"; ghostWrap.setAttribute("aria-hidden", "true");
+          const N0 = wheelData.nodes.length;
+          (wheelData.ghosts || []).forEach((gd) => {
+            const g = document.createElement("span");
+            g.className = `wheel-ghost wheel-ghost--${gd.family}`;
+            g.innerHTML = `<span class="wheel-ghost__name">${esc(gd.name)}</span><span class="wheel-ghost__nota">${notaHTML(gd.notation)}</span>`;
+            ghostWrap.appendChild(g);
+          });
+          wheelEl.insertBefore(ghostWrap, nodesWrap);
+          const count = document.createElement("div");
+          count.className = "wheel-count"; count.innerHTML = `<b>${N0}</b> of ∞ tasks shown`;
+          wheelEl.appendChild(count);
+
+          nodesWrap.querySelectorAll("svg[data-camera]").forEach(drawCamera);
+
+          /* background: rays of real training prompt orderings + one beam per task */
+          const sectorOf = (deg) => {
+            const d = ((deg % 360) + 360) % 360;
+            if (d >= 300 || d < 60) return "wm";
+            if (d >= 60 && d < 150) return "vision";
+            return "lang";
+          };
+          const rays = wheelData.orderings || [];
+          let bgHTML = `<defs>`;
+          ["lang", "wm", "vision"].forEach((f) => {
+            bgHTML += `<radialGradient id="beam-${f}" gradientUnits="userSpaceOnUse" cx="${VBW / 2}" cy="${VBH / 2}" r="760">
+              <stop offset="0.12" stop-color="${famVar[f]}" stop-opacity="0"/>
+              <stop offset="0.75" stop-color="${famVar[f]}" stop-opacity="0.26"/></radialGradient>`;
+          });
+          bgHTML += `</defs><g class="wheel-rays">`;
+          const NR = 60;
+          for (let k = 0; k < NR; k++) {
+            const deg = (360 / NR) * k + (k % 2) * 2.2;
+            const fam = sectorOf(deg);
+            const left = deg > 90 && deg < 270;
+            const rot = left ? deg - 180 : deg, sgn = left ? -1 : 1, anchor = left ? "end" : "start";
+            [175, 520].forEach((r0, j) => {
+              const txt = rays[(k * 2 + j) % Math.max(rays.length, 1)] || "rgb0,c01->rgb1";
+              const dur = 19 + ((k * 7 + j * 5) % 11);
+              bgHTML += `<g class="wheel-ray wheel-ray--${fam}" transform="translate(${VBW / 2},${VBH / 2}) rotate(${rot}) translate(${sgn * r0},0)">` +
+                `<text text-anchor="${anchor}" style="--dir:${sgn};--dur:${dur}s;--delay:-${((k * 1.7) + j * 6) % dur}s">${esc(txt.replace(/->/g, " → "))}</text></g>`;
+            });
+          }
+          bgHTML += `</g><g class="wheel-beams"></g>`;
+          bg.innerHTML = bgHTML;
+          const beamsG = bg.querySelector(".wheel-beams");
+          const toVB = (el) => {
+            const W = wheelEl.getBoundingClientRect(), r = el.getBoundingClientRect();
+            return { x: ((r.left + r.width / 2 - W.left) / W.width) * VBW, y: ((r.top + r.height / 2 - W.top) / W.height) * VBH,
+                     w: (r.width / W.width) * VBW, h: (r.height / W.height) * VBH };
+          };
+          const drawBeams = () => {
+            const cx = VBW / 2, cy = VBH / 2;
+            beamsG.innerHTML = nodeEls.map((el, i) => {
+              const n = wheelData.nodes[i], p = toVB(el);
+              const corners = [[p.x - p.w / 2, p.y - p.h / 2], [p.x + p.w / 2, p.y - p.h / 2], [p.x + p.w / 2, p.y + p.h / 2], [p.x - p.w / 2, p.y + p.h / 2]];
+              const a0 = Math.atan2(p.y - cy, p.x - cx);
+              const rel = (q) => { let d = Math.atan2(q[1] - cy, q[0] - cx) - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return d; };
+              const sorted = corners.slice().sort((u, v) => rel(u) - rel(v));
+              const lo = sorted[0], hi = sorted[3];
+              return `<polygon class="wheel-beam" data-idx="${i}" fill="url(#beam-${n.family})" points="${cx},${cy} ${lo[0]},${lo[1]} ${hi[0]},${hi[1]}"/>`;
+            }).join("");
+            if (active !== null) beam(active, true);
+          };
+          const beam = (i, on) => beamsG.querySelector(`[data-idx="${i}"]`)?.classList.toggle("is-on", on);
+
+          /* the centre: always shows the selected task */
+          const media = (m) => {
+            const cap = m.cap ? `<figcaption>${m.cap}</figcaption>` : "";
+            if (m.t === "img") return `<figure class="smedia ${m.small ? "smedia--small" : ""}"><img src="${m.src}" alt="${esc(m.alt || "")}" />${cap}</figure>`;
+            if (m.t === "text") return `<figure class="smedia smedia--text"><div class="stext">${m.q ? `<span class="text-out__q">${esc(m.q)}</span>` : ""}${esc(m.text)}</div>${cap}</figure>`;
+            if (m.t === "cam") return `<figure class="smedia"><svg class="cam-svg" data-camera data-rot="${esc(JSON.stringify(m.rot))}" data-trans="${esc(JSON.stringify(m.tr))}" data-tscale="1"></svg>${cap}</figure>`;
+            if (m.t === "views") return `<figure class="smedia smedia--views"><div class="sviews" style="--n:${m.srcs.length}">${m.srcs.map((s, j) => `<div class="sview"><img src="${s}" alt="${esc((m.labels || [])[j] || "")}" /><span>${esc((m.labels || [])[j] || "")}</span></div>`).join("")}</div>${cap}</figure>`;
+            if (m.t === "video") return `<figure class="smedia smedia--video" style="--ar:${m.ar || "4 / 3"}"><video src="${m.src}" poster="${m.poster}" autoplay muted loop playsinline preload="auto"></video>${cap}</figure>`;
+            if (m.t === "frames") return `<figure class="smedia smedia--frames" style="--n:${m.srcs.length};--ar:${m.ar || "4 / 3"}"><div class="sframes-big">${m.srcs.map((s, j) => `<img src="${s}" alt="frame ${j}" class="${j ? "" : "is-on"}" />`).join("")}</div><div class="sframes-strip">${m.srcs.map((s, j) => `<img src="${s}" alt="" class="${j ? "" : "is-on"}" />`).join("")}</div>${cap}</figure>`;
+            if (m.t === "flip") return `<figure class="smedia smedia--flip"><div class="flip" ${m.slow ? 'data-slow="1"' : ""} data-caps="${esc(JSON.stringify(m.caps || []))}">${m.srcs.map((s, j) => `<img src="${s}" alt="" class="${j ? "" : "is-on"}" />`).join("")}</div>${cap}</figure>`;
+            return "";
+          };
+          let flipTimer = null, active = null, exIdx = 0;
+          const startFlips = () => {
+            clearInterval(flipTimer);
+            const flips = Array.from(stage.querySelectorAll(".flip"));
+            const players = Array.from(stage.querySelectorAll(".smedia--frames"));
+            if (!flips.length && !players.length) return;
+            let tf = 0;
+            if (players.length) {
+              const tick = () => {
+                tf++;
+                players.forEach((pl) => {
+                  const big = pl.querySelectorAll(".sframes-big img"), strip = pl.querySelectorAll(".sframes-strip img");
+                  big.forEach((im, j) => im.classList.toggle("is-on", j === tf % big.length));
+                  strip.forEach((im, j) => im.classList.toggle("is-on", j === tf % strip.length));
+                });
+              };
+              if (!flips.length) { flipTimer = setInterval(tick, 600); return; }
+              stage.__tickFrames = tick;
+            } else stage.__tickFrames = null;
+            let t = 0;
+            flipTimer = setInterval(() => {
+              t++;
+              if (stage.__tickFrames) stage.__tickFrames();
+              flips.forEach((f) => {
+                const imgs = f.querySelectorAll("img"), caps = JSON.parse(f.dataset.caps || "[]");
+                const k = f.dataset.slow ? Math.floor(t / 2) : t;   // before/after pairs hold each frame twice as long
+                imgs.forEach((im, j) => im.classList.toggle("is-on", j === k % imgs.length));
+                const capEl = f.parentElement.querySelector("figcaption");
+                if (capEl && caps.length) capEl.innerHTML = caps[k % imgs.length];
+              });
+            }, 600);
+          };
+          let seqTimer = null;
+          const renderSeq = (n, ex, picks) => {
+            const [W, H] = [1000, 1000 / Number(ex.ar || 1.333)];
+            const arrowSvg = ex.arrows.map((a, k) => {
+              const [x0, y0, x1, y1] = [a[0] * W, a[1] * H, a[2] * W, a[3] * H];
+              const L = Math.hypot(x1 - x0, y1 - y0) || 1, ang = Math.atan2(y1 - y0, x1 - x0), h = Math.max(22, W * 0.03);
+              const hp = [[x1, y1], [x1 - h * Math.cos(ang - 0.5), y1 - h * Math.sin(ang - 0.5)], [x1 - h * Math.cos(ang + 0.5), y1 - h * Math.sin(ang + 0.5)]];
+              return `<g class="seq-arrow" style="--len:${L.toFixed(1)};--d:${(k * 0.35).toFixed(2)}s">` +
+                `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" class="seq-arrow__halo"/><line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y1}" class="seq-arrow__line"/>` +
+                `<circle cx="${x0}" cy="${y0}" r="${W * 0.012}" class="seq-arrow__dot"/>` +
+                `<polygon points="${hp.map((p) => p.join(",")).join(" ")}" class="seq-arrow__head"/></g>`;
+            }).join("") + ex.holds.map((p, k) => `<circle cx="${p[0] * W}" cy="${p[1] * H}" r="${W * 0.022}" class="seq-hold" style="--d:${(0.2 + k * 0.15).toFixed(2)}s"/>`).join("");
+            const groups = [], seen = new Set();
+            ex.steps.forEach((st, i) => { const g = st.group != null ? st.group : i; if (!seen.has(g)) { seen.add(g); groups.push({ g, i, label: st.label }); } });
+            stage.innerHTML =
+              `<div class="stage__head"><p class="stage__fam">${FAM[n.family]}</p><h3 class="stage__title">${esc(n.title)}</h3>` +
+              `<p class="stage__desc">${esc(n.desc || "")}</p></div>` +
+              `<div class="seqp"><div class="seqp__canvas" style="aspect-ratio:${ex.ar}">` +
+                ex.steps.map((st, i) => `<img src="${st.src}" alt="" data-i="${i}" class="${i ? "" : "is-on"}" />`).join("") +
+                `<svg class="seqp__overlay" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${arrowSvg}</svg>` +
+                `<div class="seqp__badge"><img src="../assets/psi-logo.png" alt="" /><span>${esc(ex.psi || "Ψ-0.6")}</span></div></div>` +
+              `<ol class="seqp__steps">${groups.map((g, k) => `<li><button type="button" data-start="${g.i}" data-g="${g.g}"><b>${k + 1}</b><span>${esc(g.label)}</span></button></li>`).join("")}</ol></div>` +
+              `<div class="stage__foot"><p class="stage__note"><span class="stage__nota">${notaHTML(ex.notation || n.notation)}</span>${ex.note ? " · " + ex.note : ""}</p>${picks}</div>`;
+            const imgs = Array.from(stage.querySelectorAll(".seqp__canvas > img"));
+            const ov = stage.querySelector(".seqp__overlay"), btns = Array.from(stage.querySelectorAll(".seqp__steps button"));
+            const show = (i) => {
+              const st = ex.steps[i], g = st.group != null ? st.group : i;
+              imgs.forEach((im, j) => im.classList.toggle("is-on", j === i));
+              ov.classList.toggle("is-on", !!st.overlay);
+              if (st.draw) { ov.classList.remove("is-drawing"); void ov.getBoundingClientRect(); ov.classList.add("is-drawing"); }
+              btns.forEach((b) => b.classList.toggle("is-on", Number(b.dataset.g) === g));
+              clearTimeout(seqTimer);
+              seqTimer = setTimeout(() => show((i + 1) % ex.steps.length), reduceMotion ? 2500 : st.ms);
+            };
+            btns.forEach((b) => b.addEventListener("click", () => show(Number(b.dataset.start))));
+            stage.querySelectorAll(".stage__picks button").forEach((b) => b.addEventListener("click", () => { exIdx = Number(b.dataset.ex); renderStage(); }));
+            show(0);
+          };
+          const renderStage = () => {
+            const n = wheelData.nodes[active], ex = n.examples[exIdx];
+            clearTimeout(seqTimer);
+            if (ex.layout === "seq") {
+              clearInterval(flipTimer);
+              stage.style.setProperty("--fam", famVar[n.family]);
+              const picks = n.examples.length > 1 ? `<div class="stage__picks" role="tablist" aria-label="More examples"><span>more examples</span>${n.examples.map((e, j) =>
+                `<button type="button" class="${j === exIdx ? "is-on" : ""}" data-ex="${j}" aria-label="example ${j + 1}"><img src="${e.thumb}" alt="" /></button>`).join("")}</div>` : "";
+              renderSeq(n, ex, picks);
+              return;
+            }
+            stage.style.setProperty("--fam", famVar[n.family]);
+            const picks = n.examples.length > 1 ? `<div class="stage__picks" role="tablist" aria-label="More examples"><span>more examples</span>${n.examples.map((e, j) =>
+              `<button type="button" class="${j === exIdx ? "is-on" : ""}" data-ex="${j}" aria-label="example ${j + 1}"><img src="${e.thumb}" alt="" /></button>`).join("")}</div>` : "";
+            const rowIns = ex.ins.filter((m) => m.t !== "text").length > 1;
+            stage.innerHTML =
+              `<div class="stage__head"><p class="stage__fam">${FAM[n.family]}</p><h3 class="stage__title">${esc(n.title)}</h3>` +
+              `<p class="stage__desc">${esc(n.desc || "")}</p></div>` +
+              `<div class="stage__flow">` +
+                `<div class="stage__side"><p class="stage__label">Given</p><div class="stage__col ${rowIns ? "stage__col--row" : ""} ${ex.ins.some((m) => m.t === "text") ? "stage__col--qa" : ""}">${ex.ins.map(media).join("")}</div></div>` +
+                `<div class="stage__psi"><img src="../assets/psi-logo.png" alt="" /><span>${esc(ex.psi || "Ψ-0.6")}</span></div>` +
+                `<div class="stage__side"><p class="stage__label">Predicted</p><div class="stage__col ${ex.outs.filter((m) => m.t !== "text" && !m.small).length > 1 ? "stage__col--row" : ""}">${ex.outs.map(media).join("")}</div></div>` +
+              `</div>` +
+              `<div class="stage__foot"><p class="stage__note"><span class="stage__nota">${notaHTML(ex.notation || n.notation)}</span>${ex.note ? " · " + ex.note : ""}</p>${picks}</div>`;
+            stage.querySelectorAll("svg[data-camera]").forEach(drawCamera);
+            startFlips();
+            stage.querySelectorAll("video").forEach((v) => { v.muted = true; v.play().catch(() => {}); });   // autoplay alone misses the first render
+            stage.querySelectorAll(".stage__picks button").forEach((b) => b.addEventListener("click", () => { exIdx = Number(b.dataset.ex); renderStage(); }));
+          };
+          /* prompt builder: Give / Predict rows, kept in sync with the selected task */
+          const MODS = [["rgb", "RGB"], ["c", "Camera"], ["d", "Depth"], ["f", "Flow"], ["t", "Text"]];
+          const give = new Set(), pred = new Set();
+          const builder = document.querySelector(".pbuilder");
+          const resultEl = builder.querySelector(".pbuilder__result");
+          builder.querySelectorAll(".pbuilder__chips").forEach((row) => {
+            row.innerHTML = MODS.map(([k, label]) => `<button type="button" class="pchip pchip--${k}" data-mod="${k}" aria-pressed="false">${label}</button>`).join("");
+          });
+          const paintBuilder = () => {
+            builder.querySelectorAll('[data-side="give"] .pchip').forEach((c) => c.setAttribute("aria-pressed", String(give.has(c.dataset.mod))));
+            builder.querySelectorAll('[data-side="pred"] .pchip').forEach((c) => c.setAttribute("aria-pressed", String(pred.has(c.dataset.mod))));
+          };
+          const shortNota = () => {
+            const names = (set) => MODS.filter(([k]) => set.has(k)).map(([k]) => `<span class="tok tok--${k}">${k}</span>`).join(", ");
+            return `<span class="pbuilder__nota">${names(give) || "?"}<span class="tok-arrow">→</span>${names(pred) || "?"}</span>`;
+          };
+          const sameSet = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
+          const matches = () => wheelData.nodes.map((n, i) => i).filter((i) => sameSet(new Set(wheelData.nodes[i].ins), give) && sameSet(new Set(wheelData.nodes[i].outs), pred));
+          const nearest = () => {
+            const score = (n) => {
+              const a = new Set(n.ins), b = new Set(n.outs);
+              const j = (x, y) => { const u = new Set([...x, ...y]); return u.size ? [...x].filter((v) => y.has(v)).length / u.size : 1; };
+              return j(a, give) + 1.5 * j(b, pred);
+            };
+            return wheelData.nodes.map((n, i) => [score(n), i]).sort((p, q) => q[0] - p[0]).slice(0, 2).map((p) => p[1]);
+          };
+          const taskBtn = (i, on) => {
+            const n = wheelData.nodes[i];
+            return `<button type="button" class="pbuilder__task ${on ? "is-on" : ""}" data-task="${i}" style="--fam:${famVar[n.family]}">${esc(n.title)}</button>`;
+          };
+          const paintResult = (ms) => {
+            nodeEls.forEach((el) => el.classList.remove("is-suggest"));
+            if (!give.size || !pred.size) {
+              resultEl.innerHTML = `${shortNota()}<span>${!give.size ? "pick at least one input" : "pick at least one output"}</span>`;
+            } else if (ms.length) {
+              resultEl.innerHTML = `${shortNota()}<span>${ms.length > 1 ? `= ${ms.length} tasks with this prompt shape:` : "="}</span>` + ms.map((i) => taskBtn(i, i === active)).join("");
+            } else {
+              const near = nearest();
+              near.forEach((i) => nodeEls[i].classList.add("is-suggest"));
+              resultEl.innerHTML = `${shortNota()}<span>no example on this page yet · closest:</span>` + near.map((i) => taskBtn(i, false)).join("");
+            }
+            resultEl.querySelectorAll(".pbuilder__task").forEach((b) => b.addEventListener("click", () => select(Number(b.dataset.task), true, true)));
+          };
+          const clearActive = () => {
+            if (active === null) return;
+            nodeEls[active].classList.remove("is-active"); nodeEls[active].setAttribute("aria-pressed", "false"); beam(active, false);
+            active = null;
+          };
+          const showEmpty = () => {
+            clearInterval(flipTimer);
+            stage.style.setProperty("--fam", "var(--line-strong)");
+            stage.innerHTML = `<div class="stage__empty">${shortNota()}${!give.size || !pred.size
+              ? "Choose what to give and what to predict."
+              : "Ψ-0.6 takes any ordering of these tokens, but this combination isn't precomputed on this page. Try one of the closest tasks above."}</div>`;
+          };
+          builder.querySelectorAll(".pchip").forEach((c) => c.addEventListener("click", () => {
+            const set = c.closest(".pbuilder__chips").dataset.side === "give" ? give : pred, k = c.dataset.mod;
+            set.has(k) ? set.delete(k) : set.add(k);
+            paintBuilder();
+            const ms = matches();
+            if (ms.length) select(ms.includes(active) ? active : ms[0], false, false);
+            else { clearActive(); showEmpty(); paintResult(ms); }
+          }));
+
+          const select = (i, scroll, syncBuilder = true) => {
+            if (active !== null) { nodeEls[active].classList.remove("is-active"); nodeEls[active].setAttribute("aria-pressed", "false"); beam(active, false); }
+            active = i; exIdx = 0;
+            nodeEls[i].classList.add("is-active"); nodeEls[i].setAttribute("aria-pressed", "true");
+            beam(i, true);
+            if (syncBuilder) {
+              give.clear(); pred.clear();
+              wheelData.nodes[i].ins.forEach((k) => give.add(k)); wheelData.nodes[i].outs.forEach((k) => pred.add(k));
+              paintBuilder();
+            }
+            paintResult(matches());
+            renderStage();
+            if (scroll && window.matchMedia("(max-width: 860px)").matches) stage.scrollIntoView({ behavior: "smooth", block: "start" });
+          };
+          nodeEls.forEach((el, i) => {
+            el.addEventListener("click", () => select(i, true));
+            el.addEventListener("mouseenter", () => { if (active !== i) beam(i, true); });
+            el.addEventListener("mouseleave", () => { if (active !== i) beam(i, false); });
+          });
+
+
+          const layoutWheel = () => {
+            if (window.matchMedia("(max-width: 860px)").matches) return;
+            const W = wheelEl.clientWidth, H = wheelEl.clientHeight;
+            const se = (v, e) => Math.sign(v) * Math.pow(Math.abs(v), 2 / e);
+            const pts = [], M = 1440, a = 0.43 * W, b = 0.445 * H, e = 3.6, t0 = -150 * Math.PI / 180;
+            for (let k = 0; k <= M; k++) { const t = t0 + (2 * Math.PI * k) / M; pts.push([W / 2 + a * se(Math.cos(t), e), H / 2 + b * se(Math.sin(t), e)]); }
+            const cum = [0];
+            for (let k = 1; k < pts.length; k++) cum.push(cum[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+            const L = cum[cum.length - 1];
+            const at = (sv) => { let k = cum.findIndex((c) => c >= sv); k = Math.max(1, k); return pts[k]; };
+            const boxes = [];
+            nodeEls.forEach((el, i) => {
+              const [x, y] = at((L * i) / nodeEls.length);
+              const dx = x - W / 2, dy = y - H / 2, r = Math.hypot(dx, dy) || 1, st = (i % 2 ? 1 : -1) * 0.02 * H;
+              const hw = el.offsetWidth / 2 + 6, hh = el.offsetHeight / 2 + 6;
+              const X = Math.min(W - hw, Math.max(hw, x + (dx / r) * st)), Y = Math.min(H - hh, Math.max(hh, y + (dy / r) * st));
+              el.style.setProperty("--x", (100 * X / W) + "%"); el.style.setProperty("--y", (100 * Y / H) + "%");
+              boxes.push([X - el.offsetWidth / 2 - 6, Y - el.offsetHeight / 2 - 6, X + el.offsetWidth / 2 + 6, Y + el.offsetHeight / 2 + 6]);
+            });
+            const sr = stage.getBoundingClientRect(), wr = wheelEl.getBoundingClientRect();
+            boxes.push([sr.left - wr.left - 8, sr.top - wr.top - 8, sr.right - wr.left + 8, sr.bottom - wr.top + 8]);   // the centre stage
+            const hit = (r) => boxes.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
+            const gs = Array.from(ghostWrap.children);
+            const place = (g, j) => {   // spread evenly round the wheel: the free spot nearest each one's own angle
+              const gw = g.offsetWidth, gh = g.offsetHeight, base = -Math.PI / 2 + ((j + 0.5) * 2 * Math.PI) / gs.length;
+              let placed = false;
+              for (let s = 0; s < 210 && !placed; s++) {
+                const ang = base + (s % 2 ? 1 : -1) * Math.ceil(s / 2) * 0.03;
+                for (const rr of [0.92, 0.82, 1.02, 0.72, 1.12, 0.62]) {
+                  const x = W / 2 + 0.5 * W * rr * Math.cos(ang), y = H / 2 + 0.5 * H * rr * Math.sin(ang);
+                  const rect = [x - gw / 2 - 6, y - gh / 2 - 6, x + gw / 2 + 6, y + gh / 2 + 6];
+                  if (rect[0] < 0 || rect[1] < 0 || rect[2] > W || rect[3] > H || hit(rect)) continue;
+                  g.style.setProperty("--x", (100 * x / W) + "%"); g.style.setProperty("--y", (100 * y / H) + "%");
+                  g.style.visibility = "visible"; boxes.push(rect); placed = true; break;
+                }
+              }
+              return placed;
+            };
+            gs.forEach((g, j) => {
+              g.classList.remove("wheel-ghost--stack");
+              if (place(g, j)) return;
+              g.classList.add("wheel-ghost--stack");   // no room on one line: name over notation, and try again
+              if (!place(g, j)) g.style.visibility = "hidden";
+            });
+          };
+          const relayout = () => { if (!window.matchMedia("(max-width: 860px)").matches) { layoutWheel(); drawBeams(); } };
+          relayout();
+          window.addEventListener("resize", () => requestAnimationFrame(relayout));
+          const start = Math.max(0, wheelData.nodes.findIndex((n) => n.id === wheelData.start));
+          select(start, false);
+        }
+
+
+        /* stream-of-thought videos: Khai's white render on the light page, the black one on the dark page */
+        const sotMq = window.matchMedia("(prefers-color-scheme: dark)");
+        const sotTheme = () => {
+          const t = document.documentElement.dataset.theme || (sotMq.matches ? "dark" : "light");
+          document.querySelectorAll(".sotv video").forEach((v) => {
+            const base = v.dataset[t];
+            if (!base || v.getAttribute("src") === `${base}.mp4`) return;
+            const playing = !v.paused;   // restarts from 0: seeking into the new file needs range requests
+            v.poster = `${base}.jpg`;
+            v.src = `${base}.mp4`;
+            if (playing) v.addEventListener("canplay", () => v.play().catch(() => {}), { once: true });   // play() right after src= can be cut off by the load
+          });
+        };
+        sotTheme();
+        new MutationObserver(sotTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+        sotMq.addEventListener?.("change", sotTheme);
+        /* stream-of-thought videos: play the selected one from the start, pause the rest */
+        document.querySelectorAll(".sotv-wrap [data-picker] button").forEach((b) => b.addEventListener("click", () => {
+          document.querySelectorAll(".sotv video").forEach((v) => {
+            const on = v.closest(".sotv").id === b.dataset.target;
+            if (on) { v.preload = "auto"; try { v.currentTime = 0; } catch (_) {} v.play().catch(() => {}); } else v.pause();
+          });
+        }));
+        /* ---- Generic pickers: buttons with data-target show one panel ---- */
+        document.querySelectorAll("[data-picker]").forEach((picker) => {
+          const buttons = Array.from(picker.querySelectorAll("button[data-target]"));
+          const scope = picker.closest("[data-picker-scope]") || document;
+          buttons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+              buttons.forEach((b) => {
+                const on = b === btn;
+                b.classList.toggle("is-selected", on);
+                b.setAttribute("aria-selected", String(on));
+                const panel = scope.querySelector(`#${b.dataset.target}`);
+                if (panel) panel.hidden = !on;
+              });
+              const panel = scope.querySelector(`#${btn.dataset.target}`);
+              const sot = panel && (panel.matches(".sot") ? panel : panel.querySelector(".sot"));
+              if (sot && sot.__play) sot.__play();
+            });
+          });
+        });
+
+        /* ---- Stream-of-thought player ---- */
+        const typeText = (el, text, ms) => new Promise((resolve) => {
+          if (reduceMotion) { el.textContent = text; resolve(); return; }
+          el.textContent = "";
+          const caret = document.createElement("span");
+          caret.className = "caret";
+          let i = 0;
+          const step = () => {
+            el.textContent = text.slice(0, i);
+            el.appendChild(caret);
+            i += 2;
+            if (i <= text.length + 1) { el.__timer = setTimeout(step, ms); }
+            else { el.textContent = text; resolve(); }
+          };
+          step();
+        });
+
+        const setAnswer = (sot, mode) => {
+          const box = sot.querySelector(".answer-box");
+          if (!box) return;
+          const txt = box.querySelector(".answer-text");
+          const verdict = box.querySelector(".answer-verdict");
+          const data = mode === "rgb" ? box.dataset.rgb : box.dataset.sot;
+          const ok = mode === "rgb" ? box.dataset.rgbOk : box.dataset.sotOk;
+          if (txt) { clearTimeout(txt.__timer); txt.textContent = data || ""; }
+          if (verdict && ok !== undefined && ok !== "") {
+            verdict.hidden = false;
+            verdict.className = "answer-verdict " + (ok === "1" ? "answer-verdict--ok" : "answer-verdict--no");
+            verdict.textContent = ok === "1" ? "matches ground truth" : "misses";
+          }
+          box.querySelectorAll(".answer-toggle button").forEach((b) => b.classList.toggle("is-on", b.dataset.mode === mode));
+        };
+
+        document.querySelectorAll(".sot").forEach((sot) => {
+          const order = Array.from(sot.querySelectorAll("[data-seq]"))
+            .sort((a, b) => Number(a.dataset.seq) - Number(b.dataset.seq));
+          let token = 0;
+          const finish = () => {
+            sot.classList.remove("is-playing");
+            sot.querySelectorAll(".is-current").forEach((n) => n.classList.remove("is-current"));
+            sot.querySelectorAll(".sot__chips .m-chip, .sot__gen .tile").forEach((n) => n.classList.add("is-revealed"));
+          };
+          const play = async () => {
+            const my = ++token;
+            const wait = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+            sot.querySelectorAll(".is-on, .is-revealed, .is-current").forEach((n) => n.classList.remove("is-on", "is-revealed", "is-current"));
+            setAnswer(sot, "sot");
+            const ansText = sot.querySelector(".answer-text");
+            const full = sot.querySelector(".answer-box")?.dataset.sot || "";
+            if (ansText) ansText.textContent = "";
+            const verdict = sot.querySelector(".answer-verdict");
+            if (verdict) verdict.hidden = true;
+            if (reduceMotion) { finish(); setAnswer(sot, "sot"); return; }
+            sot.classList.add("is-playing");
+            for (const node of order) {
+              if (my !== token) return;
+              sot.querySelectorAll(".is-current").forEach((n) => n.classList.remove("is-current"));
+              node.classList.add("is-on");
+              if (node.classList.contains("sot__step")) node.classList.add("is-current");
+              const items = node.querySelectorAll(".sot__chips .m-chip, .sot__gen .tile");
+              if (items.length) {
+                for (const it of items) { if (my !== token) return; await wait(380); it.classList.add("is-revealed"); }
+                await wait(300);
+              } else if (node.querySelector(".answer-text")) {
+                await typeText(ansText, full, 22);
+                if (my !== token) return;
+                setAnswer(sot, "sot");
+              } else {
+                await wait(node.classList.contains("sot__step") ? 650 : 280);
+              }
+            }
+            if (my === token) finish();
+          };
+          sot.__play = play;
+          sot.querySelector(".replay")?.addEventListener("click", play);
+          sot.querySelectorAll(".answer-toggle button").forEach((b) => {
+            b.addEventListener("click", () => { token++; finish(); setAnswer(sot, b.dataset.mode); });
+          });
+          finish();
+          setAnswer(sot, "sot");
+        });
+
+        if ("IntersectionObserver" in window && !reduceMotion) {
+          const seen = new WeakSet();
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting && !seen.has(e.target) && e.target.offsetParent !== null) {
+                seen.add(e.target);
+                e.target.__play && e.target.__play();
+              }
+            });
+          }, { threshold: 0.45 });
+          document.querySelectorAll(".sot").forEach((s) => io.observe(s));
+        }
+
+        /* ---- TOC highlighting ---- */
+        const tocLinks = Array.from(document.querySelectorAll(".showcase-toc a[href^='#']"));
+        const targets = tocLinks.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean);
+        const onScroll = () => {
+          const y = window.scrollY + 120;
+          let current = null;
+          targets.forEach((t) => { if (t.offsetTop <= y) current = t; });
+          tocLinks.forEach((a) => a.classList.toggle("is-active", current && a.hash === "#" + current.id));
+        };
+        window.addEventListener("scroll", () => requestAnimationFrame(onScroll), { passive: true });
+        onScroll();
+      })();
+    </script>
+  </body>
+</html>
