@@ -1,0 +1,12 @@
+[
+  {
+    "id": "plate-stacking",
+    "title": "Plate stacking",
+    "data": "./assets/results/plate-stacking.json"
+  },
+  {
+    "id": "toys-sorting",
+    "title": "Toys sorting",
+    "data": "./assets/results/toys-sorting.json"
+  }
+]

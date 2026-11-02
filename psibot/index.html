@@ -1,114 +1,249 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f8f5" />
-    <meta name="description" content="PSI Bot. Coming soon from the Stanford NeuroAI Lab." />
-    <meta property="og:title" content="PSI Bot" />
-    <meta property="og:description" content="Coming soon from the Stanford NeuroAI Lab." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://neuroailab.github.io/psi-website/psibot/" />
-    <link rel="canonical" href="https://neuroailab.github.io/psi-website/psibot/" />
-    <link rel="icon" href="psi-mark.svg" type="image/svg+xml" />
-    <title>PSI Bot — Stanford NeuroAI Lab</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --paper: #f8f8f5;
-        --ink: #191b1b;
-        --muted: #626762;
-        --line: #dedfd8;
-        --accent: #245cd6;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-synthesis: none;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        min-width: 280px;
-        background: var(--paper);
-        color: var(--ink);
-      }
-      a { color: inherit; text-decoration: none; }
-      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 7px; }
-      .page {
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        min-height: 100vh;
-        min-height: 100svh;
-        max-width: 1600px;
-        margin-inline: auto;
-        padding: 32px 48px 28px;
-      }
-      .topline, .bottomline {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        font-size: 12px;
-        line-height: 1.5;
-      }
-      .wordmark { font-weight: 650; letter-spacing: .18em; }
-      .lab { color: var(--muted); }
-      .lab:hover, .explore:hover { color: var(--accent); }
-      main {
-        display: grid;
-        justify-items: center;
-        align-content: center;
-        padding-block: 80px 100px;
-        text-align: center;
-      }
-      .symbol { width: 148px; height: 172px; margin-bottom: 46px; }
-      h1 { margin: 0; font-size: clamp(42px, 7vw, 62px); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; }
-      .status {
-        display: inline-flex;
-        align-items: center;
-        gap: 9px;
-        margin: 23px 0 0;
-        color: var(--muted);
-        font-size: 14px;
-        letter-spacing: .015em;
-      }
-      .status::before { content: ""; display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
-      .bottomline { border-top: 1px solid var(--line); padding-top: 22px; color: var(--muted); }
-      .explore { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); }
-      .explore svg { width: 14px; height: 14px; }
-      @media (max-width: 600px) {
-        .page { padding: 24px 24px 22px; }
-        .topline, .bottomline { font-size: 11px; gap: 16px; }
-        .symbol { width: 120px; height: 140px; margin-bottom: 38px; }
-        main { padding-block: 70px 85px; }
-        .bottomline { align-items: flex-end; }
-      }
-      @media (max-height: 570px) and (min-width: 601px) {
-        main { padding-block: 32px; }
-        .symbol { width: 90px; height: 104px; margin-bottom: 20px; }
-        h1 { font-size: 40px; }
-        .status { margin-top: 15px; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <header class="topline">
-        <a class="wordmark" href="https://neuroailab.github.io/psi-website/" aria-label="PSI home">PSI</a>
-        <a class="lab" href="https://neuroailab.stanford.edu/">Stanford NeuroAI Lab</a>
-      </header>
-      <main>
-        <svg class="symbol" viewBox="0 0 120 140" fill="none" aria-hidden="true">
-          <path d="M24 27V56C24 78 37 91 60 91C83 91 96 78 96 56V27M60 14V125" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <h1>PSI Bot</h1>
-        <p class="status">Coming soon.</p>
-      </main>
-      <footer class="bottomline">
-        <span>Probabilistic Structure Integration</span>
-        <a class="explore" href="https://neuroailab.github.io/psi-website/">
-          Explore PSI
-          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        </a>
-      </footer>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PSI0.5-r unifies robot policy, action-conditioned simulation, and progress tracking through next-token prediction.">
+  <link rel="canonical" href="https://neuroailab.github.io/psi-website/psibot/">
+  <link rel="icon" href="./assets/psi-mark.svg" type="image/svg+xml">
+  <meta property="og:title" content="PSI0.5-r">
+  <meta property="og:description" content="One model for robot policy, simulation, and progress tracking.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://neuroailab.github.io/psi-website/psibot/">
+  <title>PSI0.5-r · PSI</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#article">Skip to article</a>
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="PSI research home"><span class="brand-symbol" aria-hidden="true">Ψ</span><span>PSI <span class="brand-detail">/ Research notes</span></span></a>
+    <a class="results-link" href="#results">Robot results <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="article">
+    <header class="article-header">
+      <div class="article-meta"><span>Robotics</span><time datetime="2026-11-02">November 2, 2026</time></div>
+      <h1>PSI0.5-r</h1>
+      <div class="capability-index" aria-label="Three model capabilities"><span class="policy-label">01 / Policy</span><span class="simulation-label">02 / Simulation</span><span class="progress-label">03 / Progress tracking</span></div>
+    </header>
+
+    <div class="article-layout">
+      <aside class="contents">
+        <nav aria-label="On this page">
+          <p class="contents-title">In this post</p>
+          <a href="#introduction"><span>01</span> Introduction</a>
+          <a href="#model"><span>02</span> Model</a>
+          <a href="#model-and-training"><span>03</span> Data &amp; training</a>
+          <a href="#results"><span>04</span> Results</a>
+          <a href="#discussion"><span>05</span> Discussion</a>
+          <a href="#learn-more"><span>06</span> Learn more</a>
+        </nav>
+      </aside>
+
+      <article class="prose">
+        <section id="introduction" aria-labelledby="introduction-title">
+          <h2 id="introduction-title" class="section-number">01 / Introduction</h2>
+          <p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p>
+          <p>Current robotic systems often distribute these capabilities across separate models, each with its own architecture, training data, and objective. Post training a vision-language or video model to robot control can also introduce a substantial change in its training distribution, particularly when broad pretraining data gives way to a much narrower set of robot demonstrations.</p>
+          <p>We take a different approach to robot foundation model training by treating policy inference, simulation, and progress tracking as different queries to a single model, trained continuously using a diverse distribution of visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), we model relationships between visual observations and actions using next-token prediction, reframing robotics tasks as a set of sequence design problems.</p>
+          <p>At inference time, we observe striking generalization beyond the training distribution, where the model flexibly manipulates unfamiliar objects, simulates counterfactuals given a set of actions, and measures its own progress.</p>
+        </section>
+
+        <figure id="model-overview" class="model-overview" aria-labelledby="overview-caption">
+          <div class="overview-heading"><div class="overview-legend" aria-label="Token colors"><span class="rgb">RGB</span><span class="action">Action</span><span class="time">Time</span></div></div>
+          <div class="overview-diagram">
+            <div class="overview-model">
+              <svg class="overview-connections" viewBox="0 0 140 600" preserveAspectRatio="none" aria-hidden="true">
+                <defs><marker id="overview-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1L7 4 1 7" fill="none" stroke="#9aa9ae" stroke-width="1.3"/></marker></defs>
+                <g fill="none" stroke="#aebcc0" stroke-width="1.5" vector-effect="non-scaling-stroke" marker-end="url(#overview-arrow)">
+                  <path d="M2 100C58 100 38 218 62 252"/><path d="M2 300H20"/><path d="M2 500C58 500 38 382 62 348"/>
+                  <path d="M78 252C102 218 82 100 138 100"/><path d="M120 300H138"/><path d="M78 348C102 382 82 500 138 500"/>
+                </g>
+              </svg>
+              <div class="overview-model-mark"><img src="./assets/psi-mark.svg" width="209" height="201" alt="PSI, the same model for all three queries"></div>
+            </div>
+            <div class="overview-row overview-progress" style="--row:1">
+              <div class="overview-inputs"><h3><span>01</span> Progress tracking</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-current.png" width="448" height="256" alt="The same plate-stacking current observation."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-goal.png" width="448" height="256" alt="The same two-plate goal image."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
+              <div class="overview-output"><div class="overview-output-heading">Time to goal</div><div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/overview/time-to-goal.png"><img src="./assets/overview/time-to-goal.gif" width="672" height="384" alt="Real intermediate plate-stacking frames fade in between the fully visible current image and goal. The bracket illustrates their temporal separation."></picture></div><div class="overview-token-line time"><span class="overview-token-label">Δt</span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+            </div>
+            <div class="overview-row overview-policy" style="--row:2">
+              <div class="overview-inputs"><h3><span>02</span> Policy</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-current.png" width="448" height="256" alt="The robot holds the blue plate above the brown plate."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-goal.png" width="448" height="256" alt="The recorded goal: blue plate stacked on the brown plate."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal_t</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
+              <div class="overview-output"><div class="overview-output-heading">1 s action chunk</div><div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/overview/policy-action.png"><img src="./assets/overview/policy-action.gif" width="672" height="384" alt="MuJoCo replay of the exact one-second action chunk predicted for this plate observation and goal."></picture></div><div class="overview-token-line action"><span class="overview-token-label">a<sub>0</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+            </div>
+            <div class="overview-row overview-simulation" style="--row:3">
+              <div class="overview-inputs"><h3><span>03</span> Simulation</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img src="./assets/overview/cup-initial.png" width="448" height="256" alt="Fixed initial ground-truth observation from the cup recording."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0, GT</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/cup-history-2.png" width="448" height="256" alt="Earlier model-generated frame 24, two steps before the current prediction."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−2</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/cup-history-1.png" width="448" height="256" alt="Earlier model-generated frame 25, one step before the current prediction."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−1</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/cup-history-current.png" width="448" height="256" alt="Current model-generated frame 26 at the cup grasp."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/overview/cup-action.png"><img src="./assets/overview/cup-action.gif" width="672" height="384" alt="The first 400 milliseconds of action chunk 26, rendered in MuJoCo."></picture></div><div class="overview-token-line action"><span class="overview-token-label">a<sub>t</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i></span></div></div></div></div>
+              <div class="overview-output"><div class="overview-output-heading">Next generated frame</div><div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/overview/cup-prediction.png"><img src="./assets/overview/cup-prediction.gif" width="672" height="384" alt="Saved model prediction 27 appears in its recorded patch generation order, conditioned on the fixed initial frame, predictions 24, 25, 26 and action 26."></picture></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t+1</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+            </div>
+          </div>
+
+        <figcaption id="overview-caption">Figure 1: PSI0.5-r sequence design</figcaption>
+        </figure>
+
+        <section id="model" aria-labelledby="model-title">
+          <h2 id="model-title" class="section-number">02 / Model</h2>
+          <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix.</p>
+          <p>Autoregressive token prediction leads to the model learning a conditional distribution over action sequences. At inference time, we sample action chunks from this distribution.</p>
+        </section>
+
+        <section id="model-and-training" aria-labelledby="data-training-title">
+          <h2 id="data-training-title" class="section-number">03 / Data &amp; training</h2>
+          <p>Unlike current VLAs that post-train a VLM backbone on actions, we continuously train our base vision model using a diverse mixture of video and robot data. Specifically, our training data falls into three groups:</p>
+          <p><strong>General visual data:</strong> Diverse internet videos and vision datasets used to train the base model, including human activity and egocentric video.</p>
+          <p><strong>Robot videos:</strong> Open-source datasets spanning different robot embodiments and tasks. These broaden the model’s exposure to robot motion, object interactions, and task structure.</p>
+          <p><strong>Paired observations and actions:</strong> YAM data from <a href="https://huggingface.co/datasets/XDOF/ABC-130k">ABC</a>, <a href="https://huggingface.co/datasets/WorldEngineAI/WEB-Dataset">World Engine</a>, <a href="https://huggingface.co/collections/allenai/molmoact2-bimanualyam-dataset">Molmo</a>, and diverse manipulation tasks collected on our own bimanual YAM setup. These datasets connect visual observations to actions in the YAM embodiment.</p>
+          <figure id="training-data-figure" class="dataset-figure" aria-labelledby="dataset-figure-caption">
+            <div class="dataset-panels">
+              <div class="dataset-panel" data-dataset-animation>
+                <h4>General visual data</h4>
+                <picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/general-data.png"><img src="./assets/datasets/general-data.gif" width="720" height="772" alt="Six general visual training clips: internet scenes, human activity, objects and egocentric video"></picture>
+                <div class="dataset-controls"><a href="./assets/datasets/general-data.gif" download>Download GIF ↓</a></div>
+              </div>
+              <div class="dataset-panel" data-dataset-animation>
+                <h4>Robot videos</h4>
+                <picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/robot-data.png"><img src="./assets/datasets/robot-data.gif" width="720" height="772" alt="Six training clips from DROID, Bridge, AgiBot, FMB, GR00T and RealOmni"></picture>
+                <div class="dataset-controls"><a href="./assets/datasets/robot-data.gif" download>Download GIF ↓</a></div>
+              </div>
+              <div class="dataset-panel" data-dataset-animation>
+                <h4>Paired observations + actions</h4>
+                <picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/paired-data.png"><img src="./assets/datasets/paired-data.gif" width="720" height="772" alt="Four YAM training clips in a 2 by 2 grid: ABC, World Engine, Molmo and GuestView, each above its matching recorded command poses"></picture>
+                <div class="dataset-controls"><a href="./assets/datasets/paired-data.gif" download>Download GIF ↓</a></div>
+              </div>
+            </div>
+            <figcaption id="dataset-figure-caption">Figure 2: Training data</figcaption>
+          </figure>
+          <h3 id="sequence-design-title">Sequence design</h3>
+
+          <section id="progress-interface" class="interface progress" aria-labelledby="progress-title">
+            <h3 id="progress-title">1. Progress tracking: How far are we from the goal?</h3>
+            <p>Given a current observation and a goal image, the model predicts a time difference, Δt , describing their temporal separation. This estimate provides a way to track progress toward the goal as the robot receives new observations.</p>
+          </section>
+
+          <section id="policy-interface" class="interface policy" aria-labelledby="policy-title">
+            <h3 id="policy-title">2. Policy inference: What should the robot do next?</h3>
+            <p>During training, the model learns to predict demonstrated action sequences from the current observation and a visual goal. At inference time, the model first predicts how far it is from a visual goal. This temporal information is then embedded into the goal image before action prediction.</p>
+          </section>
+
+          <section id="simulation-interface" class="interface simulation" aria-labelledby="simulation-title">
+            <h3 id="simulation-title">3. Simulation: What happens after an action?</h3>
+            <p>The model learns to predict the next visual observation autoregressively using one fixed initial ground-truth observation, its own rolling history, and the next action chunk.</p>
+          </section>
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+          <h2 id="results-title" class="section-number">04 / Results</h2>
+          <p>In this blog post we show qualitative results from our model for the capabilities described above.</p>
+          <h3 id="policy-and-progress-results">1. Policy and progress</h3>
+          <p>We observe striking generalization to new visual goals and objects. We also find that predicting time to goal first, and adding this temporal embedding to the goal image greatly improves action prediction compared with providing just the goal image, where the model may be forced into pixel matching. This visual goal conditioning can be thought of as a form of in-context learning from human demonstrations, where the demonstration is a goal image instead of a video.</p>
+          <div id="policy-results-viewer" class="results-demo">
+            <div class="results-toolbar"><label for="results-task">Task <select id="results-task"><option value="plate-stacking">Plate stacking</option><option value="toys-sorting">Toys sorting</option></select></label><span class="results-fixed-speed">Playback · 6×</span></div>
+            <div class="results-pair">
+              <div class="results-video-panel"><div class="results-panel-heading"><span class="results-task-title">Plate stacking</span><span class="results-clock">0:00</span></div><video playsinline muted preload="metadata" aria-label="Plate stacking policy video"></video></div>
+              <div class="results-graph-panel"><div class="results-panel-heading"><span>Progress tracking</span><span class="dt-readout">Δt —</span></div><svg class="dt-chart" viewBox="0 0 520 334" role="group" aria-label="Recorded Δt predictions"></svg></div>
+            </div>
+            <div class="video-controls"><button type="button" class="video-play policy-play" aria-label="Play policy video">▶ Play</button></div>
+            <div class="results-status" role="status">Loading task…</div>
+          </div>
+          <!-- Robometer progress-tracking results temporarily disabled; retain for later restoration.
+          <h3 id="progress-tracking-results">2. Progress tracking</h3>
+          <div class="benchmark-intro">
+            <p>Can the model recognize progress toward a goal across different robots and tasks? We evaluate this on 72 successful episodes drawn from six datasets in Robometer’s public release. For each episode, PSI receives the current observation and the episode’s final image as its goal, then predicts the time remaining to reach it. We also evaluate a subset of 16 episodes with an additional wrist-camera view.</p>
+            <p>We measure how well the model’s progress score, defined as negative predicted time-to-goal, follows the order of frames in the video. This correlation metric, VOC, rewards scores that increase as the episode advances. We compare V2 and WSM with Robometer and DINOv2, averaging scores equally across datasets. Robometer uses language and frames from the complete trajectory, so the models have different input information. This benchmark measures progress along successful trajectories; the next benchmark tests whether a task has actually been completed.</p>
+          </div>
+          <div class="results-demo benchmark-demo" data-benchmark="progress">
+            <p class="benchmark-kicker">Robometer public benchmark</p>
+            <div class="results-toolbar benchmark-toolbar">
+              <label for="progress-filter">Dataset<select id="progress-filter" class="benchmark-filter"></select></label>
+              <label for="progress-episode" class="episode-select">Episode<select id="progress-episode" class="benchmark-episode"></select></label>
+              <label for="progress-speed">Playback<select id="progress-speed" class="benchmark-speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            </div>
+            <div class="results-panel-heading benchmark-task-heading"><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
+            <div class="benchmark-media benchmark-paired">
+              <div class="benchmark-graph-panel">
+                <div class="benchmark-legend"><span class="benchmark-legend-label">Multiview Δt</span><span class="benchmark-wsm">● WSM <output class="benchmark-wsm-value">—</output></span></div>
+                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Multiview WSM predicted time-to-goal, revealed during playback"></svg>
+              </div>
+              <div class="benchmark-cameras">
+                <figure class="benchmark-camera"><figcaption>Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
+              </div>
+            </div>
+            <video class="benchmark-source" hidden autoplay loop muted playsinline preload="auto" aria-label="Robometer public benchmark synchronized playback"></video>
+            <div class="video-controls"><button type="button" class="video-play benchmark-play" aria-label="Play video">▶ Play</button></div>
+
+            <p class="benchmark-description"></p>
+            <div class="benchmark-table-wrap" tabindex="0" role="region" aria-label="Robometer public benchmark comparison results"><table class="benchmark-table"></table></div>
+            <p class="benchmark-table-note"></p>
+
+            <p class="benchmark-status" role="status">Loading benchmark…</p>
+          </div>
+          -->
+          <h3 id="failure-detection-results">2. Failure detection</h3>
+          <div class="benchmark-intro">
+            <p>Can the model distinguish reaching a goal from simply reaching the end of a video? We build an ABC simulation benchmark from six held-out successful episodes of turning mugs right side up. At 50%, 70%, or 90% of each episode, we simulate failures by branching into continuations that hold the robot in place or apply bounded random joint movements.</p>
+            <p>Every continuation is evaluated against the same successful source goal, and the simulator labels its outcome as successful or incomplete.</p>
+          </div>
+          <div class="results-demo benchmark-demo" data-benchmark="failure">
+            <p class="benchmark-kicker">ABC simulation benchmark</p>
+            <div class="results-toolbar benchmark-toolbar">
+              <label for="failure-filter">Failures<select id="failure-filter" class="benchmark-filter"></select></label>
+              <label for="failure-episode" class="episode-select">Failure episode<select id="failure-episode" class="benchmark-episode"></select></label>
+              <span class="results-fixed-speed">Playback · 2×</span>
+            </div>
+            <div class="results-panel-heading benchmark-task-heading"><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
+            <div class="benchmark-media benchmark-paired">
+              <div class="benchmark-graph-panel">
+                <div class="benchmark-legend"><span class="benchmark-legend-label">WSM · Multiview Δt</span><span class="benchmark-success">Success <output class="benchmark-success-value">—</output></span><span class="benchmark-failure">Failure <output class="benchmark-failure-value">—</output></span></div>
+                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Success and failure WSM time-to-goal curves, aligned to episode time and revealed during playback"></svg>
+              </div>
+              <div class="benchmark-cameras">
+                <figure class="benchmark-camera"><figcaption>Failure · Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
+              </div>
+            </div>
+            <video class="benchmark-source" hidden autoplay loop muted playsinline preload="auto" aria-label="ABC simulation benchmark synchronized playback"></video>
+            <div class="video-controls"><button type="button" class="video-play benchmark-play" aria-label="Play video">▶ Play</button></div>
+
+            <p class="benchmark-description"></p>
+            <!-- ABC comparison table temporarily disabled; retain all model rows for later.
+            <div class="benchmark-table-wrap" tabindex="0" role="region" aria-label="ABC simulation benchmark comparison results"><table class="benchmark-table"></table></div>
+            <p class="benchmark-table-note"></p>
+            -->
+
+            <p class="benchmark-status" role="status">Loading benchmark…</p>
+          </div>
+          <h3 id="simulation-results">3. Simulation</h3>
+          <p>Can the model imagine the consequences of its own actions? Below, we show simulation results for a set of held-out teleoperated episodes. We see that the model successfully simulates picking up and dropping off objects, and can simulate counterfactual scenarios.</p>
+          <div id="simulation-results-viewer" class="results-demo simulation-demo">
+            <div class="results-toolbar simulation-toolbar">
+              <label for="simulation-task">Task<select id="simulation-task"><option value="red-solo-cup">Red Solo cup</option></select></label>
+              <span class="simulation-recipe">970k · RGB · 2-frame history · 400 ms</span>
+            </div>
+            <div class="simulation-pair">
+              <figure><figcaption>Expert trajectory <span>MuJoCo YAM</span></figcaption><canvas class="simulation-expert" width="672" height="384" role="img" aria-label="Expert joint trajectory replayed on the ABC MuJoCo YAM robot"></canvas></figure>
+              <figure><figcaption>Simulated video <span>PSI 970k</span></figcaption><canvas class="simulation-prediction" width="672" height="384" role="img" aria-label="Action-conditioned video predicted by PSI"></canvas></figure>
+            </div>
+            <video class="simulation-source" hidden muted playsinline preload="auto"></video>
+            <div class="video-controls simulation-controls"><button type="button" class="video-play simulation-play" aria-label="Play aligned simulation videos">▶ Play</button><output class="simulation-clock">0.4 / 21.2 s</output></div>
+            <p class="simulation-description">Recorded expert joint commands replayed in MuJoCo alongside action-conditioned RGB predictions. Both views advance in 400 ms steps.</p>
+            <p class="simulation-status" role="status">Loading simulation…</p>
+          </div>
+        </section>
+
+        <section id="discussion" aria-labelledby="discussion-title">
+          <h2 id="discussion-title" class="section-number">05 / Discussion</h2>
+          <p>We introduced a common interface for robot learning, bringing policy inference, simulation, and progress tracking into a unified framework. Combining sampling with likelihood evaluation opens a path toward robots that explore alternative actions, evaluate their consequences, and learn from their own generated trajectories. Together, these capabilities provide a foundation for end-to-end systems that improve through experience.</p>
+        </section>
+
+        <section id="learn-more" aria-labelledby="learn-more-title">
+          <h2 id="learn-more-title" class="section-number">06 / Learn more</h2>
+          <p>We plan to release the model, code, and paper in the coming weeks. For the foundation of this work, read the <a href="https://arxiv.org/abs/2509.09737">PSI technical report</a> .</p>
+        </section>
+      </article>
     </div>
-  </body>
+  </main>
+
+
+  <footer class="site-footer"><a href="../index.html">PSI / Stanford NeuroAI Lab</a><a href="#article">Back to top ↑</a></footer>
+<script src="./results.js" defer></script>
+<script src="./benchmarks.js" defer></script>
+<script src="./simulation.js" defer></script>
+</body>
 </html>
