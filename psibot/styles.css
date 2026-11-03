@@ -413,7 +413,7 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
   .prose strong, .prose h2, .prose h3, .prose h4, .data-groups dt { color: var(--ink); }
   .prose > section + section { margin-top: 64px; padding-top: 42px; }
   .prose .section-number { display: flex; align-items: baseline; gap: 14px; font-size: clamp(25px, 2.4vw, 30px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; text-transform: none; color: var(--ink); margin: 0 0 25px; }
-  .section-number .section-index { font: 12px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--accent); letter-spacing: .04em; flex-shrink: 0; }
+  .section-number .section-index { font: 500 .8em/1.3 ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--accent); letter-spacing: .04em; flex-shrink: 0; }
   .prose h3 { font-size: 23px; }
   .data-groups dt { font-size: 17px; }
   .data-groups dd { font-size: 17px; color: #b4c5cd; }
@@ -558,7 +558,7 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
 /* Figure canvases follow the page, with balanced headings on both sides. */
 .model-overview, .dataset-panel, .dataset-panel img, .overview-model-mark > img { background: var(--paper); }
 .prose .overview-inputs h3, .overview-output-heading { font-size: 18px; font-weight: 600; line-height: 1.35; text-align: center; color: var(--ink); margin: 0 0 14px; }
-.overview-inputs h3 > span { font-size: 11px; }
+.overview-inputs h3 > span { font-size: .9em; }
 @media(max-width:680px) { .prose .overview-inputs h3, .overview-output-heading { font-size: 18px; } }
 
 .overview-model-mark > img { background: transparent; filter: none; }
