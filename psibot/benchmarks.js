@@ -133,7 +133,7 @@
     const toggle=()=>{if(video.paused)video.play().catch(()=>{});else video.pause();};
     const play=q('.benchmark-play');
     play.addEventListener('click',toggle);
-    const updatePlay=()=>{play.textContent=video.paused?'▶ Play':'Ⅱ Pause';play.setAttribute('aria-label',video.paused?'Play video':'Pause video');};
+    const updatePlay=()=>{play.textContent=video.paused?'▶':'Ⅱ';play.setAttribute('aria-label',video.paused?'Play video':'Pause video');};
     for(const event of ['play','pause','ended','emptied'])video.addEventListener(event,updatePlay);
     scene.addEventListener('click',toggle);scene.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();}});
     function paint(time=video.currentTime) {

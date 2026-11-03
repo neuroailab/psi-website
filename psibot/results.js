@@ -78,14 +78,14 @@
       root.querySelector('.results-task-title').textContent=data.title;
       video.setAttribute('aria-label',`${data.title} policy video`);
       svg.setAttribute('aria-label',`${data.title}: recorded Δt predictions with ${data.goals.length} new-goal markers. A vertical cursor follows the video.`);
-      status.textContent='Recorded Δt · seconds. Gaps indicate no recorded prediction.';sync();
-      if(autoplay){try{await video.play();}catch{if(ticket===serial)status.textContent='Press play to start. Recorded Δt is shown in seconds.';}}
+      status.textContent='';sync();
+      if(autoplay){try{await video.play();}catch{if(ticket===serial)status.textContent='';}}
     }catch(e){if(ticket===serial)status.textContent=e.message;}
   }
   select.addEventListener('change',()=>loadTask(select.value,true));
   const play=root.querySelector('.policy-play');
   play.addEventListener('click',()=>{if(video.paused)video.play().catch(()=>{});else video.pause();});
-  const updatePlay=()=>{play.textContent=video.paused?'▶ Play':'Ⅱ Pause';play.setAttribute('aria-label',video.paused?'Play policy video':'Pause policy video');};
+  const updatePlay=()=>{play.textContent=video.paused?'▶':'Ⅱ';play.setAttribute('aria-label',video.paused?'Play policy video':'Pause policy video');};
   for(const event of ['play','pause','ended','emptied'])video.addEventListener(event,updatePlay);
   const policySpeed=6;
   function setPolicySpeed(){

@@ -13,3 +13,8 @@ The local draft's temporary comment form is intentionally excluded because it
 requires a local API. The draft and review history remain in the authoring
 workspace. The toys-sorting web video is re-encoded to fit GitHub's file limit;
 its resolution, frame count and timestamps are preserved for chart alignment.
+
+The page defaults to dark mode. The header toggle saves the visitor's choice in
+local storage and switches both CSS colors and the figures' `data-dark-src` /
+`data-light-src` assets, including reduced-motion images. Code, Paper and Model
+are disabled resource buttons until release URLs are available.

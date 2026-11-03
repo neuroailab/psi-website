@@ -25,8 +25,8 @@
   video.addEventListener('loadeddata',()=>{loaded=true;paint();status.textContent='';if(autoplay){autoplay=false;video.play().catch(()=>{});}});
   video.addEventListener('seeked',()=>paint());
   video.addEventListener('ended',()=>paint());
-  video.addEventListener('play',()=>{play.textContent='Ⅱ Pause';play.setAttribute('aria-label','Pause aligned simulation videos');});
-  video.addEventListener('pause',()=>{play.textContent='▶ Play';play.setAttribute('aria-label','Play aligned simulation videos');});
+  video.addEventListener('play',()=>{play.textContent='Ⅱ';play.setAttribute('aria-label','Pause aligned simulation videos');});
+  video.addEventListener('pause',()=>{play.textContent='▶';play.setAttribute('aria-label','Play aligned simulation videos');});
   video.addEventListener('error',()=>{status.textContent='The simulation video could not load. Refresh to try again.';});
   play.addEventListener('click',()=>{if(video.paused)video.play().catch(()=>{});else video.pause();});
   select.addEventListener('change',()=>choose(true));
