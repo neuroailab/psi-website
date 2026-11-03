@@ -1,0 +1,32 @@
+.article-header { padding-top: 40px; padding-bottom: 30px; }
+.article-header h1 { max-width: none; margin: 24px 0 16px; }
+.hero-subtitle { margin: 0; font-size: clamp(18px, 1.8vw, 23px); line-height: 1.55; color: var(--muted); }
+.draft-label { padding: 3px 8px; border-color: var(--line); color: var(--muted); }
+.hero-demos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 34px 0 28px; }
+.hero-demo { min-width: 0; margin: 0; --demo-color: var(--policy); }
+.hero-simulation { --demo-color: var(--simulation); }
+.hero-progress { --demo-color: var(--progress); }
+.hero-demo figcaption { padding: 0 0 14px; }
+.hero-kind { color: var(--demo-color); font: 500 11px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; text-transform: uppercase; letter-spacing: .07em; }
+.hero-demo h2 { margin: 6px 0 0; font-size: clamp(18px, 1.8vw, 23px); font-weight: 550; letter-spacing: -.02em; }
+.hero-demo video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #0b1117; border: 1px solid var(--line); border-radius: 8px; }
+.hero-demo p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.hero-demo p span { white-space: nowrap; }
+.hero-demo video:focus-visible { outline: 3px solid var(--demo-color); outline-offset: 4px; }
+.writing-outline { border-left: 2px solid var(--accent); padding: 4px 0 4px 22px; }
+.prose .outline-label { margin-bottom: 14px; color: var(--accent); font: 600 11px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; text-transform: uppercase; letter-spacing: .08em; }
+.writing-outline ul { margin: 0; padding-left: 20px; }
+.writing-outline li { padding-left: 4px; margin: 0 0 16px; }
+.writing-outline li:last-child { margin-bottom: 0; }
+@media (max-width: 760px) {
+  .hero-demos { grid-template-columns: 1fr; gap: 26px; }
+  .hero-demo h2 { font-size: 23px; }
+  .hero-demo p { font-size: 12px; }
+  .article-header { padding-top: 30px; }
+  .article-header h1 { font-size: clamp(28px, 6vw, 36px); }
+  .hero-subtitle { font-size: 19px; }
+  .writing-outline { padding-left: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
