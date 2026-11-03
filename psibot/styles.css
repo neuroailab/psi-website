@@ -32,6 +32,11 @@ main { max-width: 1240px; margin: auto; padding: 0 40px; }
 .article-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; font-size: 12px; color: var(--muted); }
 .draft-label { color: var(--accent); border: 1px solid #b8d2c7; border-radius: 3px; padding: 5px 9px; }
 h1 { margin: 28px 0 24px; font-size: clamp(48px, 6.6vw, 88px); letter-spacing: -.055em; line-height: 1.04; font-weight: 650; }
+.resource-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 34px; padding: 0; list-style: none; }
+.resource-links a, .resource-links .is-pending { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px 14px; border: 1px solid rgba(17, 17, 17, .24); border-radius: 8px; color: var(--ink); font-size: .86rem; font-weight: 800; text-decoration: none; }
+.resource-links a:hover { background: #f0f1ec; }
+.resource-links .is-pending { color: var(--muted); border-style: dashed; }
+.resource-links small { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .standfirst { font: 24px/1.5 Georgia, "Times New Roman", serif; max-width: 740px; margin: 0 0 22px; color: #3b535b; }
 .draft-note { color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 700px; }
 .capability-index { display: flex; gap: 38px; padding: 24px 0; margin-top: 42px; border-top: 1px solid var(--line); font-size: 12px; font-weight: 600; letter-spacing: .02em; }
