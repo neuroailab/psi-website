@@ -24,7 +24,7 @@
       group.append(el('line',{x1:x(g.time),x2:x(g.time),y1:box.top-8,y2:box.bottom,class:'dt-goal-line'}));
       group.append(el('text',{x:Math.min(box.right-75,Math.max(box.left,x(g.time)-3)),y:i%2?39:20,class:'dt-goal-label'},'📷 New Goal'));
       group.append(el('title',{},`New Goal · ${stamp(g.time)} · frame ${g.frame}`));
-      const jump=()=>{video.currentTime=g.time;sync();};group.addEventListener('click',jump);group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
+      const jump=()=>{video.currentTime=g.time/(data.media_time_scale||1);sync();};group.addEventListener('click',jump);group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
       svg.append(group);goalNodes.push({node:group,time:g.time});
     }
     for(const track of data.tracks){
@@ -40,7 +40,7 @@
   }
   function sync(){
     if(!data)return;
-    const t=Math.min(data.duration,Math.max(0,video.currentTime||0)),xx=x(t);
+    const t=Math.min(data.duration,Math.max(0,video.ended?data.duration:(video.currentTime||0)*(data.media_time_scale||1))),xx=x(t);
     clock.textContent=`${stamp(t)} / ${stamp(data.duration)}`;
     svg.querySelector('#dt-playhead').setAttribute('x1',xx);svg.querySelector('#dt-playhead').setAttribute('x2',xx);
     for(const g of goalNodes){
@@ -87,7 +87,7 @@
   play.addEventListener('click',()=>{if(video.paused)video.play().catch(()=>{});else video.pause();});
   const updatePlay=()=>{play.textContent=video.paused?'▶':'Ⅱ';play.setAttribute('aria-label',video.paused?'Play policy video':'Pause policy video');};
   for(const event of ['play','pause','ended','emptied'])video.addEventListener(event,updatePlay);
-  const policySpeed=6;
+  const policySpeed=1;
   function setPolicySpeed(){
     if(video.defaultPlaybackRate!==policySpeed)video.defaultPlaybackRate=policySpeed;
     if(video.playbackRate!==policySpeed)video.playbackRate=policySpeed;
@@ -98,5 +98,6 @@
   for(const event of ['timeupdate','seeked','pause','ended'])video.addEventListener(event,sync);
   if('requestVideoFrameCallback' in video){const tick=()=>{sync();video.requestVideoFrameCallback(tick);};video.requestVideoFrameCallback(tick);}
   video.addEventListener('error',()=>{status.textContent='The video could not load. Reload the page to try again.';});
-  loadTask(select.value,false);
+  video.muted=true;video.loop=true;video.autoplay=true;video.playsInline=true;
+  loadTask(select.value,true);
 })();

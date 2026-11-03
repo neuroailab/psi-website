@@ -1,0 +1,59 @@
+{
+  "policy": {
+    "fps": 24.0,
+    "frames": 195,
+    "duration": 8.125,
+    "width": 342,
+    "height": 192,
+    "columns": 8,
+    "frames_per_atlas": 24,
+    "atlases": [
+      "policy-frames-00.webp",
+      "policy-frames-01.webp",
+      "policy-frames-02.webp",
+      "policy-frames-03.webp",
+      "policy-frames-04.webp",
+      "policy-frames-05.webp",
+      "policy-frames-06.webp",
+      "policy-frames-07.webp",
+      "policy-frames-08.webp"
+    ],
+    "source_sha256": "fc56401bd027d4eaf6ece072fd2f6bdcb322945e8a83047553d8a6494a375ddf"
+  },
+  "simulation": {
+    "fps": 2.5,
+    "frames": 53,
+    "duration": 21.2,
+    "width": 336,
+    "height": 192,
+    "columns": 8,
+    "frames_per_atlas": 24,
+    "atlases": [
+      "simulation-frames-00.webp",
+      "simulation-frames-01.webp",
+      "simulation-frames-02.webp"
+    ],
+    "source_sha256": "5cb8395ed70ceb6b32c6c087972f1c1c5c66fef480b04a9cfb3d78586771c1ae"
+  },
+  "progress": {
+    "fps": 24.0,
+    "frames": 195,
+    "duration": 8.125,
+    "width": 342,
+    "height": 192,
+    "columns": 8,
+    "frames_per_atlas": 24,
+    "atlases": [
+      "progress-frames-00.webp",
+      "progress-frames-01.webp",
+      "progress-frames-02.webp",
+      "progress-frames-03.webp",
+      "progress-frames-04.webp",
+      "progress-frames-05.webp",
+      "progress-frames-06.webp",
+      "progress-frames-07.webp",
+      "progress-frames-08.webp"
+    ],
+    "source_sha256": "5fc94d930d73f1dbe9c4a41cb80ad44a48a1baed257a62c566470166e3d48da8"
+  }
+}

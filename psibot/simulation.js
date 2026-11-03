@@ -33,6 +33,6 @@
   if('requestVideoFrameCallback' in video){const tick=(_now,metadata)=>{paint(metadata.mediaTime);video.requestVideoFrameCallback(tick);};video.requestVideoFrameCallback(tick);}
   else video.addEventListener('timeupdate',()=>paint());
   fetch('./assets/simulation/catalog.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Could not load simulation examples.');return r.json();}).then(data=>{
-    entries=data.episodes;select.replaceChildren(...entries.map(e=>new Option(e.title,e.id)));choose();
+    entries=data.episodes;select.replaceChildren(...entries.map(e=>new Option(e.title,e.id)));video.muted=true;video.loop=true;video.autoplay=true;video.playsInline=true;choose(true);
   }).catch(error=>{status.textContent=error.message;});
 })();

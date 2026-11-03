@@ -1,0 +1,40 @@
+{
+  "seconds": 20,
+  "rgb_time_seconds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "rgb_atlas": {
+    "file": "observations.webp",
+    "columns": 7,
+    "tile_width": 256,
+    "tile_height": 146
+  },
+  "action_atlas": {
+    "file": "actions.webp",
+    "columns": 20,
+    "tile_width": 224,
+    "tile_height": 128,
+    "frames_per_clip": 20
+  },
+  "interpretation": "Illustrative prompt construction from a recorded trajectory: observed RGB targets and executed commands, not a new model-generated rollout. Start and Goal are endpoints of the complete blue-plate stacking segment."
+}
