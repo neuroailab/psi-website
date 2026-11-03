@@ -30,7 +30,7 @@
     const series = success ? [
       {key:'success', entry:success, color:'#206b5d', label:'Success'},
       {key:'failure', entry, color:'#b6532a', label:'Failure'}
-    ] : [{key:'wsm', entry, color:'#206b5d', label:'WSM'}];
+    ] : [{key:'wsm', entry, color:'#206b5d', label:'PsiBorg'}];
     const xmax = Math.max(...series.map(s => s.entry.video_x.at(-1) || 1));
     const ymax = Math.max(1, Math.ceil(Math.max(...series.flatMap(s => s.entry.points.map(p => p.wsm)))));
     const X = x => 54 + Math.max(0,Math.min(xmax,x)) / xmax * 448;
@@ -101,7 +101,7 @@
     else [50,70,90].filter(percent => selectable.some(e => e.id.startsWith(`b0${percent}_`)))
       .forEach(percent => filter.append(option(`branch${percent}`, `${percent}% branch`)));
     const models = Object.entries(data.models);
-    const modelLabel = name => name.startsWith('PSI V2') ? 'PSI V2 · 820k' : 'PSI WSM · 1040k (BF16)';
+    const modelLabel = name => name.startsWith('PSI V2') ? 'PsiBorg V2 · 820k' : 'PsiBorg · 1040k (BF16)';
     function updateTable() {
       // Tables can be commented out independently while preserving all model results.
       if (!q('table')) return;
@@ -114,14 +114,14 @@
         const n = dataset === 'all' ? 72 : data.public_robometer.full.counts[dataset];
         const pairedN = dataset === 'all' ? 16 : (data.public_robometer.paired.counts[dataset] || 0);
         table(q('table'), `${dataset === 'all' ? 'Robometer public benchmark' : dataset} · ${n} episodes`, [`Single-view VOC ↑ (n=${n})`, `Paired-cohort VOC ↑ (n=${pairedN})`], rows);
-        q('.benchmark-table-note').textContent = 'VOC measures correlation with episode progress; higher is better. Paired-cohort PSI uses two cameras; Robometer retains its own offline protocol. — indicates an unavailable comparison. Videos show the agent view of the 16 paired-camera episodes; Δt curves still use both views. Tables retain the full benchmark and paired-cohort scores for the selected dataset.';
+        q('.benchmark-table-note').textContent = 'VOC measures correlation with episode progress; higher is better. Paired-cohort PsiBorg uses two cameras; Robometer retains its own offline protocol. — indicates an unavailable comparison. Videos show the agent view of the 16 paired-camera episodes; Δt curves still use both views. Tables retain the full benchmark and paired-cohort scores for the selected dataset.';
       } else {
         const rows = models.map(([name, m]) => ({label:modelLabel(name), ours:true, values:[m.abc.rgb.test.auroc, m.abc['rgb+rgblh'].test.auroc, m.abc['rgb+rgblh'].test.failure_f1]}));
         rows.push({label:'Robometer · success head', values:[data.abc_baselines['Robometer success'], null, null]});
         rows.push({label:'DINOv2', values:[data.abc_baselines.DINOv2, null, null]});
         rows.push({label:'Robometer · W5 detector*', values:[null, null, data.abc_detector_baselines[0].failure_f1]});
         table(q('table'), 'ABC simulation · all 72 held-out test continuations', ['Single-view AUROC ↑', 'Paired-view AUROC ↑', 'Failure F1 ↑'], rows);
-        q('.benchmark-table-note').textContent = 'AUROC evaluates terminal success ranking. PSI failure F1 uses paired views and a development-selected threshold. *Robometer W5 is a reconstruction of the paper’s detector. — indicates an unavailable comparison. Episode filters do not change this full-test-set table.';
+        q('.benchmark-table-note').textContent = 'AUROC evaluates terminal success ranking. PsiBorg failure F1 uses paired views and a development-selected threshold. *Robometer W5 is a reconstruction of the paper’s detector. — indicates an unavailable comparison. Episode filters do not change this full-test-set table.';
       }
     }
     let active=null, updateChart=null;

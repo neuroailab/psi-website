@@ -1,6 +1,6 @@
-# PSI0.5-r landing page
+# PsiBorg landing page
 
-The reviewed robotics post lives at `/psi-website/psibot/`, replacing the PSI Bot
+The reviewed robotics post lives at `/psi-website/psibot/`, replacing the original
 holding page. This is static HTML, CSS, JavaScript, GIFs and MP4s; no build step
 or backend is required. Serve the repository root with `python3 -m http.server`.
 

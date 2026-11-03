@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="PSI0.5-r unifies robot policy, action-conditioned simulation, and progress tracking through next-token prediction.">
+  <meta name="description" content="PsiBorg unifies robot policy, action-conditioned simulation, and progress tracking through next-token prediction.">
   <link rel="canonical" href="https://neuroailab.github.io/psi-website/psibot/">
   <link rel="icon" href="./assets/psi-mark.svg" type="image/svg+xml">
-  <meta property="og:title" content="PSI0.5-r">
+  <meta property="og:title" content="PsiBorg">
   <meta property="og:description" content="One model for robot policy, simulation, and progress tracking.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://neuroailab.github.io/psi-website/psibot/">
-  <title>PSI0.5-r · PSI</title>
+  <title>PsiBorg · PSI</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -23,7 +23,7 @@
   <main id="article">
     <header class="article-header">
       <div class="article-meta"><span>Robotics</span><time datetime="2026-11-02">November 2, 2026</time></div>
-      <h1>PSI0.5-r</h1>
+      <h1>PsiBorg</h1>
 
     </header>
 
@@ -60,7 +60,7 @@
                   <path d="M78 252C102 218 82 100 138 100"/><path d="M120 300H138"/><path d="M78 348C102 382 82 500 138 500"/>
                 </g>
               </svg>
-              <div class="overview-model-mark"><img src="./assets/psi-mark.svg" width="209" height="201" alt="PSI, the same model for all three queries"></div>
+              <div class="overview-model-mark"><img src="./assets/psi-mark.svg" width="209" height="201" alt="PsiBorg, the same model for all three queries"></div>
             </div>
             <div class="overview-row overview-progress" style="--row:1">
               <div class="overview-inputs"><h3><span>01</span> Progress tracking</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-current.png" width="448" height="256" alt="The same plate-stacking current observation."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img src="./assets/overview/plate-goal.png" width="448" height="256" alt="The same two-plate goal image."></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal</sub></span><span class="overview-tokens" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
@@ -76,12 +76,12 @@
             </div>
           </div>
 
-        <figcaption id="overview-caption">Figure 1: PSI0.5-r sequence design</figcaption>
+        <figcaption id="overview-caption">Figure 1: PsiBorg sequence design</figcaption>
         </figure>
 
         <section id="model" aria-labelledby="model-title">
           <h2 id="model-title" class="section-number">02 / Model</h2>
-          <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PSI Robot.</p>
+          <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PsiBorg.</p>
         </section>
 
         <section id="model-and-training" aria-labelledby="data-training-title">
@@ -142,7 +142,7 @@
           <!-- Robometer progress-tracking results temporarily disabled; retain for later restoration.
           <h3 id="progress-tracking-results">2. Progress tracking</h3>
           <div class="benchmark-intro">
-            <p>Can the model recognize progress toward a goal across different robots and tasks? We evaluate this on 72 successful episodes drawn from six datasets in Robometer’s public release. For each episode, PSI receives the current observation and the episode’s final image as its goal, then predicts the time remaining to reach it. We also evaluate a subset of 16 episodes with an additional wrist-camera view.</p>
+            <p>Can the model recognize progress toward a goal across different robots and tasks? We evaluate this on 72 successful episodes drawn from six datasets in Robometer’s public release. For each episode, PsiBorg receives the current observation and the episode’s final image as its goal, then predicts the time remaining to reach it. We also evaluate a subset of 16 episodes with an additional wrist-camera view.</p>
             <p>We measure how well the model’s progress score, defined as negative predicted time-to-goal, follows the order of frames in the video. This correlation metric, VOC, rewards scores that increase as the episode advances. We compare V2 and WSM with Robometer and DINOv2, averaging scores equally across datasets. Robometer uses language and frames from the complete trajectory, so the models have different input information. This benchmark measures progress along successful trajectories; the next benchmark tests whether a task has actually been completed.</p>
           </div>
           <div class="results-demo benchmark-demo" data-benchmark="progress">
@@ -155,8 +155,8 @@
             <div class="results-panel-heading benchmark-task-heading"><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
             <div class="benchmark-media benchmark-paired">
               <div class="benchmark-graph-panel">
-                <div class="benchmark-legend"><span class="benchmark-legend-label">Multiview Δt</span><span class="benchmark-wsm">● WSM <output class="benchmark-wsm-value">—</output></span></div>
-                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Multiview WSM predicted time-to-goal, revealed during playback"></svg>
+                <div class="benchmark-legend"><span class="benchmark-legend-label">Multiview Δt</span><span class="benchmark-wsm">● PsiBorg <output class="benchmark-wsm-value">—</output></span></div>
+                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Multiview PsiBorg predicted time-to-goal, revealed during playback"></svg>
               </div>
               <div class="benchmark-cameras">
                 <figure class="benchmark-camera"><figcaption>Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
@@ -187,8 +187,8 @@
             <div class="results-panel-heading benchmark-task-heading"><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
             <div class="benchmark-media benchmark-paired">
               <div class="benchmark-graph-panel">
-                <div class="benchmark-legend"><span class="benchmark-legend-label">WSM · Multiview Δt</span><span class="benchmark-success">Success <output class="benchmark-success-value">—</output></span><span class="benchmark-failure">Failure <output class="benchmark-failure-value">—</output></span></div>
-                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Success and failure WSM time-to-goal curves, aligned to episode time and revealed during playback"></svg>
+                <div class="benchmark-legend"><span class="benchmark-legend-label">PsiBorg · Multiview Δt</span><span class="benchmark-success">Success <output class="benchmark-success-value">—</output></span><span class="benchmark-failure">Failure <output class="benchmark-failure-value">—</output></span></div>
+                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Success and failure PsiBorg time-to-goal curves, aligned to episode time and revealed during playback"></svg>
               </div>
               <div class="benchmark-cameras">
                 <figure class="benchmark-camera"><figcaption>Failure · Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
@@ -214,7 +214,7 @@
             </div>
             <div class="simulation-pair">
               <figure><figcaption>Expert trajectory <span>MuJoCo YAM</span></figcaption><canvas class="simulation-expert" width="672" height="384" role="img" aria-label="Expert joint trajectory replayed on the ABC MuJoCo YAM robot"></canvas></figure>
-              <figure><figcaption>Simulated video <span>PSI 970k</span></figcaption><canvas class="simulation-prediction" width="672" height="384" role="img" aria-label="Action-conditioned video predicted by PSI"></canvas></figure>
+              <figure><figcaption>Simulated video <span>PsiBorg 970k</span></figcaption><canvas class="simulation-prediction" width="672" height="384" role="img" aria-label="Action-conditioned video predicted by PsiBorg"></canvas></figure>
             </div>
             <video class="simulation-source" hidden muted playsinline preload="auto"></video>
             <div class="video-controls simulation-controls"><button type="button" class="video-play simulation-play" aria-label="Play aligned simulation videos">▶ Play</button><output class="simulation-clock">0.4 / 21.2 s</output></div>
