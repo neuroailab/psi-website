@@ -4,9 +4,17 @@ Separate editorial draft of the PsiBorg post, based on `f4922e2`.
 Published at `/psi-website/psibot/klemen_draft1/`.
 
 Edit `index.html` for prose and `draft.css` for draft-specific presentation.
-The missing-pieces section is intentionally a writing outline. The parent
+The “Converting Capabilities Into Prompts” section is intentionally a writing outline. The parent
 post's styles, figures and full results assets are reused. Copies of its three
 players resolve their data and media relative to the parent directory.
+`policy.js` provides the separate action-execution player; `results.js` keeps
+the synchronized robot video and Δt chart in the Δt-prediction section.
+
+The draft uses a flat light background and a single article column. It has no
+top navigation, theme switch, sidebar, or release buttons. The section order
+is A Unified Model, Converting Capabilities Into Prompts, simulation, policy,
+Δt prediction, and Technical Details. The last section combines the model and
+data/training descriptions without the former Sequence design subsection.
 
 The three opening videos use existing results:
 

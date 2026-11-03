@@ -1,5 +1,14 @@
-.article-header { padding-top: 40px; padding-bottom: 30px; }
+[data-theme="light"] body { background: var(--paper); }
+.article-header { padding-top: 48px; padding-bottom: 24px; }
+.article-header::before, [data-theme="light"] .article-header::before { content: none; display: none; background: none; mask-image: none; }
+.article-meta > span:first-child::before { box-shadow: none; }
 .article-header h1 { max-width: none; margin: 24px 0 16px; }
+.article-layout { display: block; padding-top: 42px; }
+.prose { max-width: 960px; margin-inline: auto; }
+.prose > section { max-width: none; }
+.prose > section > p { max-width: 780px; }
+.prose #technical-details > h3:first-of-type { margin-top: 0; }
+.results-demo .policy-execution-video { max-width: 740px; margin-inline: auto; }
 .hero-subtitle { margin: 0; font-size: clamp(18px, 1.8vw, 23px); line-height: 1.55; color: var(--muted); }
 .draft-label { padding: 3px 8px; border-color: var(--line); color: var(--muted); }
 .hero-demos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 34px 0 28px; }

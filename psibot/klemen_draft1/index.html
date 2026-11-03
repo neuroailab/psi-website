@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html data-theme="dark" lang="en">
+<html data-theme="light" lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="#0b1117" name="theme-color"/>
+<meta content="#fbfaf7" name="theme-color"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="Prompt it to execute actions, simulate the future and track its progress." name="description"/>
 <link href="https://neuroailab.github.io/psi-website/psibot/klemen_draft1/" rel="canonical"/>
@@ -13,21 +13,16 @@
 <meta content="article" property="og:type"/>
 <meta content="https://neuroailab.github.io/psi-website/psibot/klemen_draft1/" property="og:url"/>
 <title>PsiBorg: A Unified Robot Foundation Model</title>
-<script>try { if (localStorage.getItem('psiborg-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (_) {}</script>
+
 <link href="../styles.css" rel="stylesheet"/>
-<meta content="noindex" name="robots"/><link href="./draft.css" rel="stylesheet"/></head>
+<meta content="noindex" name="robots"/><link href="./draft.css?v=2" rel="stylesheet"/></head>
 <body>
 <a class="skip-link" href="#article">Skip to article</a>
-<header class="site-header">
-<a aria-label="PSI research home" class="brand" href="../../index.html"><span aria-hidden="true" class="brand-symbol">Ψ</span><span>PSI <span class="brand-detail">/ Research notes</span></span></a>
-<div class="header-actions"><a class="results-link" href="#results">Robot results <span aria-hidden="true">↗</span></a><button aria-label="Switch to light mode" aria-pressed="false" class="theme-toggle" type="button"><span aria-hidden="true" class="theme-toggle-icon">☼</span><span class="theme-toggle-label">Light</span></button></div>
-</header>
+
 <main id="article">
 <header class="article-header">
 <div class="article-meta"><span>Robotics</span><time datetime="2026-11-02">November 2, 2026</time><span class="draft-label">Klemen · Draft 1</span></div>
 <h1><span class="title-name">PsiBorg:</span> A Unified Robot Foundation Model</h1><p class="hero-subtitle">Prompt it to execute actions, simulate the future and track its progress.</p>
-<!-- Add resource URLs and replace disabled buttons with anchors when available. -->
-
 
 <section aria-label="Three ways to prompt PsiBorg" class="hero-demos">
 <figure class="hero-demo hero-policy">
@@ -46,33 +41,18 @@
 <p>Predicted time remaining to the goal <span>6× speed</span></p>
 </figure>
 </section>
-<ul aria-label="PsiBorg resources" class="resource-links">
-<li><button aria-label="Code on GitHub, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"></path></svg><span class="resource-copy"><strong>Code</strong><small>GitHub</small></span><span class="resource-soon">Soon</span></button></li>
-<li><button aria-label="Paper on arXiv, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v6h5M8 13h8M8 17h6"></path></svg><span class="resource-copy"><strong>Paper</strong><small>arXiv</small></span><span class="resource-soon">Soon</span></button></li>
-<li><button aria-label="Model on Hugging Face, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><rect height="12" rx="2" width="12" x="6" y="6"></rect><path d="M10 10h4v4h-4zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"></path></svg><span class="resource-copy"><strong>Model</strong><small>Hugging Face</small></span><span class="resource-soon">Soon</span></button></li>
-</ul></header>
+</header>
 <div class="article-layout">
-<aside class="contents">
-<nav aria-label="On this page">
-<p class="contents-title">In this post</p>
-<a href="#introduction"><span>01</span> Introduction</a><a href="#missing-pieces"><span>02</span> Missing pieces</a>
-<a href="#model"><span>03</span> Model</a>
-<a href="#model-and-training"><span>04</span> Data &amp; training</a>
-<a href="#results"><span>05</span> Results</a>
 
-
-</nav>
-</aside>
 <article class="prose">
 <section aria-labelledby="introduction-title" id="introduction">
-<h2 class="section-number" id="introduction-title"><span class="section-index">01 /</span> Introduction</h2>
+<h2 class="section-number" id="introduction-title">A Unified Model</h2>
 <p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p>
-<p>Current robotic systems often distribute these capabilities across separate models, each with its own architecture, training data, and objective. Post training a vision-language or video model to robot control can also introduce a substantial change in its training distribution, particularly when broad pretraining data gives way to a much narrower set of robot demonstrations.</p>
-<p>We take a different approach to robot foundation model training by treating policy inference, simulation, and progress tracking as different queries to a single model, trained continuously using a diverse distribution of visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), we model relationships between visual observations and actions using next-token prediction, reframing robotics tasks as a set of sequence design problems.</p>
-<p>At inference time, we observe striking generalization beyond the training distribution, where the model flexibly manipulates unfamiliar objects, simulates counterfactuals given a set of actions, and measures its own progress.</p>
+
+<p>Robotic systems often split these capabilities across separate models. PsiBorg brings them together as prompts to a single model, trained continuously on diverse visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), it predicts observations and actions as tokens, with each capability defined by what the prompt asks it to fill in.</p>
 </section>
 <section aria-labelledby="missing-pieces-title" id="missing-pieces">
-<h2 class="section-number" id="missing-pieces-title"><span class="section-index">02 /</span> Different prompts, different missing pieces</h2>
+<h2 class="section-number" id="missing-pieces-title">Converting Capabilities Into Prompts</h2>
 <div class="writing-outline">
 <p class="outline-label">Writing outline</p>
 <ul>
@@ -80,12 +60,10 @@
 <li><strong>Policy — fill in the actions.</strong> Given the current observation and a goal with its time horizon, predict the actions that connect them.</li>
 <li><strong>Simulation — fill in the future observations.</strong> Given the visual history and an action sequence, predict what the robot will see next.</li>
 <li><strong>Progress — fill in the time difference.</strong> Given the current observation and a goal image, predict Δt: the estimated time remaining to reach the goal.</li>
-<li><strong>Bring the three together.</strong> Emphasize that the same model answers each query by changing which pieces are supplied and which are predicted. Connect this idea to the sequence design examples below.</li>
+<li><strong>Bring the three together.</strong> Emphasize that the same model answers each query by changing which pieces are supplied and which are predicted. Connect these prompts to the three capabilities demonstrated below.</li>
 </ul>
 </div>
-</section>
-
-<figure aria-label="PsiBorg sequence design" class="model-overview" id="model-overview">
+<figure aria-label="PsiBorg prompts for progress, policy, and simulation" class="model-overview" id="model-overview">
 <div class="overview-heading"><div aria-label="Token colors" class="overview-legend"><span class="rgb">RGB</span><span class="action">Action</span><span class="time">Time</span></div></div>
 <div class="overview-diagram">
 <div class="overview-model">
@@ -99,61 +77,66 @@
 <div class="overview-model-mark"><img alt="PsiBorg, the same model for all three queries" height="201" src="../assets/psi-mark.svg" width="209"/></div>
 </div>
 <div class="overview-row overview-progress" style="--row:1">
-<div class="overview-inputs"><h3><span>01</span> Progress tracking</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="The same plate-stacking current observation." height="256" src="../assets/overview/plate-current.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img alt="The same two-plate goal image." height="256" src="../assets/overview/plate-goal.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
-<div class="overview-output"><div class="overview-output-heading">Time to goal</div><div class="overview-card"><div class="overview-media"><picture><source data-dark-src="../assets/overview/time-to-goal-dark.png" data-light-src="../assets/overview/time-to-goal.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/time-to-goal-dark.png"/><img alt="Real intermediate plate-stacking frames fade in between the fully visible current image and goal. The bracket illustrates their temporal separation." data-dark-src="../assets/overview/time-to-goal-dark.gif" data-light-src="../assets/overview/time-to-goal.gif" height="384" src="../assets/overview/time-to-goal-dark.gif" width="672"/></picture></div><div class="overview-token-line time"><span class="overview-token-label">Δt</span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+<div class="overview-inputs"><h3><span>01</span> Progress tracking</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="The same plate-stacking current observation." height="256" src="../assets/overview/plate-current.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><img alt="The same two-plate goal image." height="256" src="../assets/overview/plate-goal.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
+<div class="overview-output"><div class="overview-output-heading">Time to goal</div>
+<div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/time-to-goal.png"/><img alt="Real intermediate plate-stacking frames fade in between the fully visible current image and goal. The bracket illustrates their temporal separation." height="384" src="../assets/overview/time-to-goal.gif" width="672"/></picture></div>
+<div class="overview-token-line time"><span class="overview-token-label">Δt</span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
 </div>
 <div class="overview-row overview-policy" style="--row:2">
-<div class="overview-inputs"><h3><span>02</span> Policy</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="The robot holds the blue plate above the brown plate." height="256" src="../assets/overview/plate-current.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img alt="The recorded goal: blue plate stacked on the brown plate." height="256" src="../assets/overview/plate-goal.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal_t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
-<div class="overview-output"><div class="overview-output-heading">1 s action chunk</div><div class="overview-card"><div class="overview-media"><picture><source data-dark-src="../assets/overview/policy-action-dark.png" data-light-src="../assets/overview/policy-action.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/policy-action-dark.png"/><img alt="MuJoCo replay of the exact one-second action chunk predicted for this plate observation and goal." data-dark-src="../assets/overview/policy-action-dark.gif" data-light-src="../assets/overview/policy-action.gif" height="384" src="../assets/overview/policy-action-dark.gif" width="672"/></picture></div><div class="overview-token-line action"><span class="overview-token-label">a<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+<div class="overview-inputs"><h3><span>02</span> Policy</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="The robot holds the blue plate above the brown plate." height="256" src="../assets/overview/plate-current.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><img alt="The recorded goal: blue plate stacked on the brown plate." height="256" src="../assets/overview/plate-goal.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>goal_t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div></div>
+<div class="overview-output"><div class="overview-output-heading">1 s action chunk</div>
+<div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/policy-action.png"/><img alt="MuJoCo replay of the exact one-second action chunk predicted for this plate observation and goal." height="384" src="../assets/overview/policy-action.gif" width="672"/></picture></div>
+<div class="overview-token-line action"><span class="overview-token-label">a<sub>0</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
 </div>
 <div class="overview-row overview-simulation" style="--row:3">
-<div class="overview-inputs"><h3><span>03</span> Simulation</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="Fixed initial ground-truth observation from the cup recording." height="256" src="../assets/overview/cup-initial.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0, GT</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img alt="Earlier model-generated frame 24, two steps before the current prediction." height="256" src="../assets/overview/cup-history-2.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−2</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img alt="Earlier model-generated frame 25, one step before the current prediction." height="256" src="../assets/overview/cup-history-1.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−1</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><img alt="Current model-generated frame 26 at the cup grasp." height="256" src="../assets/overview/cup-history-current.png" width="448"/></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div><div class="overview-card"><div class="overview-media"><picture><source data-dark-src="../assets/overview/cup-action-dark.png" data-light-src="../assets/overview/cup-action.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/cup-action-dark.png"/><img alt="The first 400 milliseconds of action chunk 26, rendered in MuJoCo." data-dark-src="../assets/overview/cup-action-dark.gif" data-light-src="../assets/overview/cup-action.gif" height="384" src="../assets/overview/cup-action-dark.gif" width="672"/></picture></div><div class="overview-token-line action"><span class="overview-token-label">a<sub>t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div></div></div>
-<div class="overview-output"><div class="overview-output-heading">Next generated frame</div><div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/cup-prediction.png"/><img alt="Saved model prediction 27 appears in its recorded patch generation order, conditioned on the fixed initial frame, predictions 24, 25, 26 and action 26." data-dark-src="../assets/overview/cup-prediction-dark.gif" data-light-src="../assets/overview/cup-prediction.gif" height="384" src="../assets/overview/cup-prediction-dark.gif" width="672"/></picture></div><div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t+1</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+<div class="overview-inputs"><h3><span>03</span> Simulation</h3><div class="overview-input-pair"><div class="overview-card"><div class="overview-media"><img alt="Fixed initial ground-truth observation from the cup recording." height="256" src="../assets/overview/cup-initial.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>0, GT</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><img alt="Earlier model-generated frame 24, two steps before the current prediction." height="256" src="../assets/overview/cup-history-2.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−2</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><img alt="Earlier model-generated frame 25, one step before the current prediction." height="256" src="../assets/overview/cup-history-1.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t−1</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><img alt="Current model-generated frame 26 at the cup grasp." height="256" src="../assets/overview/cup-history-current.png" width="448"/></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div>
+<div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/cup-action.png"/><img alt="The first 400 milliseconds of action chunk 26, rendered in MuJoCo." height="384" src="../assets/overview/cup-action.gif" width="672"/></picture></div>
+<div class="overview-token-line action"><span class="overview-token-label">a<sub>t</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i></span></div></div></div></div>
+<div class="overview-output"><div class="overview-output-heading">Next generated frame</div>
+<div class="overview-card"><div class="overview-media"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/overview/cup-prediction.png"/><img alt="Saved model prediction 27 appears in its recorded patch generation order, conditioned on the fixed initial frame, predictions 24, 25, 26 and action 26." height="384" src="../assets/overview/cup-prediction.gif" width="672"/></picture></div>
+<div class="overview-token-line rgb"><span class="overview-token-label">rgb<sub>t+1</sub></span><span aria-hidden="true" class="overview-tokens"><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
 </div>
 </div>
 </figure>
-<section aria-labelledby="model-title" id="model">
-<h2 class="section-number" id="model-title"><span class="section-index">03 /</span> Model</h2>
-<p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PsiBorg.</p>
 </section>
-<section aria-labelledby="data-training-title" id="model-and-training">
-<h2 class="section-number" id="data-training-title"><span class="section-index">04 /</span> Data &amp; training</h2>
-<p>Unlike current VLAs that post-train a VLM backbone on actions, we continuously train our base vision model using a diverse mixture of video and robot data. Specifically, our training data falls into three groups:</p>
-<p><strong>General visual data:</strong> Diverse internet videos and vision datasets used to train the base model, including human activity and egocentric video.</p>
-<p><strong>Robot videos:</strong> Open-source datasets spanning different robot embodiments and tasks. These broaden the model’s exposure to robot motion, object interactions, and task structure.</p>
-<p><strong>Paired observations and actions:</strong> YAM data from <a href="https://huggingface.co/datasets/XDOF/ABC-130k">ABC</a>, <a href="https://huggingface.co/datasets/WorldEngineAI/WEB-Dataset">World Engine</a>, <a href="https://huggingface.co/collections/allenai/molmoact2-bimanualyam-dataset">Molmo</a>, and diverse manipulation tasks collected on our own bimanual YAM setup. These datasets connect visual observations to actions in the YAM embodiment.</p>
-<figure aria-label="Training data" class="dataset-figure" id="training-data-figure">
-<div class="dataset-panels">
-<div class="dataset-panel" data-dataset-animation="">
-<h4>General visual data</h4>
-<picture><source data-dark-src="../assets/datasets/general-data-dark.png" data-light-src="../assets/datasets/general-data.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/general-data-dark.png"/><img alt="Six general visual training clips: internet scenes, human activity, objects and egocentric video" data-dark-src="../assets/datasets/general-data-dark.gif" data-light-src="../assets/datasets/general-data.gif" height="772" src="../assets/datasets/general-data-dark.gif" width="720"/></picture>
+<section aria-labelledby="simulation-title" id="simulation"><h2 class="section-number" id="simulation-title">The Model as a Simulator</h2>
+<p>Can the model imagine the consequences of its own actions? Below, we show simulation results for a set of held-out teleoperated episodes. We see that the model successfully simulates picking up and dropping off objects, and can simulate counterfactual scenarios.</p>
+<div class="results-demo simulation-demo" id="simulation-results-viewer">
+<div class="results-toolbar simulation-toolbar">
+<label for="simulation-task">Task<select id="simulation-task"><option value="red-solo-cup">Red Solo cup</option></select></label>
+<span class="simulation-recipe" hidden="">970k · RGB · 2-frame history · 400 ms</span>
 </div>
-<div class="dataset-panel" data-dataset-animation="">
-<h4>Robot videos</h4>
-<picture><source data-dark-src="../assets/datasets/robot-data-dark.png" data-light-src="../assets/datasets/robot-data.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/robot-data-dark.png"/><img alt="Six training clips from DROID, Bridge, AgiBot, FMB, GR00T and RealOmni" data-dark-src="../assets/datasets/robot-data-dark.gif" data-light-src="../assets/datasets/robot-data.gif" height="772" src="../assets/datasets/robot-data-dark.gif" width="720"/></picture>
+<div class="simulation-pair">
+<figure><figcaption hidden="">Expert trajectory <span>MuJoCo YAM</span></figcaption><canvas aria-label="Expert joint trajectory replayed on the ABC MuJoCo YAM robot" class="simulation-expert" height="384" role="img" width="672"></canvas></figure>
+<figure><figcaption hidden="">Simulated video <span>PsiBorg 970k</span></figcaption><canvas aria-label="Action-conditioned video predicted by PsiBorg" class="simulation-prediction" height="384" role="img" width="672"></canvas></figure>
 </div>
-<div class="dataset-panel" data-dataset-animation="">
-<h4>Paired observations + actions</h4>
-<picture><source data-dark-src="../assets/datasets/paired-data-dark.png" data-light-src="../assets/datasets/paired-data.png" media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/paired-data-dark.png"/><img alt="Four YAM training clips in a 2 by 2 grid: ABC, World Engine, Molmo and GuestView, each above its matching recorded command poses" data-dark-src="../assets/datasets/paired-data-dark.gif" data-light-src="../assets/datasets/paired-data.gif" height="772" src="../assets/datasets/paired-data-dark.gif" width="720"/></picture>
-</div>
-</div>
-</figure>
-<h3 id="sequence-design-title">Sequence design</h3>
-<section aria-labelledby="progress-title" class="interface progress" id="progress-interface">
-<p><strong id="progress-title">Progress tracking:</strong> Given a current observation and a goal image, the model predicts a time difference, Δt , describing their temporal separation. This estimate provides a way to track progress toward the goal as the robot receives new observations.</p>
-</section>
-<section aria-labelledby="policy-title" class="interface policy" id="policy-interface">
-<p><strong id="policy-title">Policy inference:</strong> During training, the model learns to predict demonstrated action sequences from the current observation and a visual goal. At inference time, the model first predicts how far it is from a visual goal. This temporal information is then embedded into the goal image before action prediction.</p>
-</section>
-<section aria-labelledby="simulation-title" class="interface simulation" id="simulation-interface">
-<p><strong id="simulation-title">Simulation:</strong> The model learns to predict the next visual observation autoregressively using one fixed initial ground-truth observation, its own rolling history, and the next action chunk.</p>
-</section>
-</section>
-<section aria-labelledby="results-title" id="results">
-<h2 class="section-number" id="results-title"><span class="section-index">05 /</span> Results</h2>
-<p>In this blog post we show qualitative results from our model for the capabilities described above.</p>
-<h3 id="policy-and-progress-results">1. Policy and progress</h3>
+<video class="simulation-source" hidden="" muted="" playsinline="" preload="auto"></video>
+<div class="video-controls simulation-controls"><button aria-label="Play aligned simulation videos" class="video-play simulation-play" type="button">▶</button><output class="simulation-clock" hidden="">0.4 / 21.2 s</output></div>
+<p class="simulation-description" hidden="">Recorded expert joint commands replayed in MuJoCo alongside action-conditioned RGB predictions. Both views advance in 400 ms steps.</p>
+<p class="simulation-status" role="status">Loading simulation…</p>
+</div></section>
+<section aria-labelledby="policy-title" id="policy"><h2 class="section-number" id="policy-title">The Model as a Policy</h2>
 <p>We observe striking generalization to new visual goals and objects. We also find that predicting time to goal first, and adding this temporal embedding to the goal image greatly improves action prediction compared with providing just the goal image, where the model may be forced into pixel matching. This visual goal conditioning can be thought of as a form of in-context learning from human demonstrations, where the demonstration is a goal image instead of a video.</p>
+<div class="results-demo" id="policy-execution-viewer">
+<div class="results-toolbar"><label for="policy-task">Task <select id="policy-task"><option value="plate-stacking">Plate stacking</option><option value="toys-sorting">Toys sorting</option></select></label><span class="results-fixed-speed">Playback · 6×</span></div>
+<video aria-label="Plate stacking policy video" class="policy-execution-video" controls="" muted="" playsinline="" poster="./assets/policy-poster.jpg" preload="metadata"></video>
+<p class="results-status" role="status">Loading task…</p>
+</div></section>
+<section aria-labelledby="dt-prediction-title" id="dt-prediction"><h2 class="section-number" id="dt-prediction-title">The Model as a Δt Predictor</h2>
+<p>Given a current observation and a goal image, PsiBorg predicts Δt: the estimated time remaining to reach the goal. These predictions track progress as the robot acts and update when it receives a new goal.</p>
 <div class="results-demo" id="policy-results-viewer">
 <div class="results-toolbar"><label for="results-task">Task <select id="results-task"><option value="plate-stacking">Plate stacking</option><option value="toys-sorting">Toys sorting</option></select></label><span class="results-fixed-speed" hidden="">Playback · 6×</span></div>
 <div class="results-pair">
@@ -162,42 +145,7 @@
 </div>
 <div class="video-controls"><button aria-label="Play policy video" class="video-play policy-play" type="button">▶</button></div>
 <div class="results-status" role="status">Loading task…</div>
-</div>
-<!-- Robometer progress-tracking results temporarily disabled; retain for later restoration.
-          <h3 id="progress-tracking-results">2. Progress tracking</h3>
-          <div class="benchmark-intro">
-            <p>Can the model recognize progress toward a goal across different robots and tasks? We evaluate this on 72 successful episodes drawn from six datasets in Robometer’s public release. For each episode, PsiBorg receives the current observation and the episode’s final image as its goal, then predicts the time remaining to reach it. We also evaluate a subset of 16 episodes with an additional wrist-camera view.</p>
-            <p>We measure how well the model’s progress score, defined as negative predicted time-to-goal, follows the order of frames in the video. This correlation metric, VOC, rewards scores that increase as the episode advances. We compare V2 and WSM with Robometer and DINOv2, averaging scores equally across datasets. Robometer uses language and frames from the complete trajectory, so the models have different input information. This benchmark measures progress along successful trajectories; the next benchmark tests whether a task has actually been completed.</p>
-          </div>
-          <div class="results-demo benchmark-demo" data-benchmark="progress">
-            <p class="benchmark-kicker" hidden>Robometer public benchmark</p>
-            <div class="results-toolbar benchmark-toolbar">
-              <label for="progress-filter">Dataset<select id="progress-filter" class="benchmark-filter"></select></label>
-              <label for="progress-episode" class="episode-select">Episode<select id="progress-episode" class="benchmark-episode"></select></label>
-              <label for="progress-speed">Playback<select id="progress-speed" class="benchmark-speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
-            </div>
-            <div class="results-panel-heading benchmark-task-heading" hidden><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
-            <div class="benchmark-media benchmark-paired">
-              <div class="benchmark-graph-panel">
-                <div class="benchmark-legend"><span class="benchmark-legend-label" hidden>Multiview Δt</span><span class="benchmark-wsm">● PsiBorg <output class="benchmark-wsm-value">—</output></span></div>
-                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Multiview PsiBorg predicted time-to-goal, revealed during playback"></svg>
-              </div>
-              <div class="benchmark-cameras">
-                <figure class="benchmark-camera"><figcaption hidden>Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
-              </div>
-            </div>
-            <video class="benchmark-source" hidden autoplay loop muted playsinline preload="auto" aria-label="Robometer public benchmark synchronized playback"></video>
-            <div class="video-controls"><button type="button" class="video-play benchmark-play" aria-label="Play video">▶</button></div>
-
-            <p class="benchmark-description" hidden></p>
-            <div class="benchmark-table-wrap" tabindex="0" role="region" aria-label="Robometer public benchmark comparison results"><table class="benchmark-table"></table></div>
-            <p class="benchmark-table-note"></p>
-
-            <p class="benchmark-status" role="status">Loading benchmark…</p>
-          </div>
-          -->
-<h3 id="failure-detection-results">2. Failure detection</h3>
-<div class="benchmark-intro">
+</div><h3 id="failure-detection-results">Failure detection</h3><div class="benchmark-intro">
 <p>Can the model distinguish reaching a goal from simply reaching the end of a video? We build an ABC simulation benchmark from six held-out successful episodes of turning mugs right side up. At 50%, 70%, or 90% of each episode, we simulate failures by branching into continuations that hold the robot in place or apply bounded random joint movements.</p>
 <p>Every continuation is evaluated against the same successful source goal, and the simulator labels its outcome as successful or incomplete.</p>
 </div>
@@ -226,57 +174,34 @@
             <p class="benchmark-table-note"></p>
             -->
 <p class="benchmark-status" role="status">Loading benchmark…</p>
+</div></section>
+<section aria-labelledby="technical-details-title" id="technical-details"><h2 class="section-number" id="technical-details-title">Technical Details</h2><h3>Model</h3><p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PsiBorg.</p><h3>Data and training</h3><p>Unlike current VLAs that post-train a VLM backbone on actions, we continuously train our base vision model using a diverse mixture of video and robot data. Specifically, our training data falls into three groups:</p>
+<p><strong>General visual data:</strong> Diverse internet videos and vision datasets used to train the base model, including human activity and egocentric video.</p>
+<p><strong>Robot videos:</strong> Open-source datasets spanning different robot embodiments and tasks. These broaden the model’s exposure to robot motion, object interactions, and task structure.</p>
+<p><strong>Paired observations and actions:</strong> YAM data from <a href="https://huggingface.co/datasets/XDOF/ABC-130k">ABC</a>, <a href="https://huggingface.co/datasets/WorldEngineAI/WEB-Dataset">World Engine</a>, <a href="https://huggingface.co/collections/allenai/molmoact2-bimanualyam-dataset">Molmo</a>, and diverse manipulation tasks collected on our own bimanual YAM setup. These datasets connect visual observations to actions in the YAM embodiment.</p>
+<figure aria-label="Training data" class="dataset-figure" id="training-data-figure">
+<div class="dataset-panels">
+<div class="dataset-panel" data-dataset-animation="">
+<h4>General visual data</h4>
+<picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/general-data.png"/><img alt="Six general visual training clips: internet scenes, human activity, objects and egocentric video" height="772" src="../assets/datasets/general-data.gif" width="720"/></picture>
 </div>
-<h3 id="simulation-results">3. Simulation</h3>
-<p>Can the model imagine the consequences of its own actions? Below, we show simulation results for a set of held-out teleoperated episodes. We see that the model successfully simulates picking up and dropping off objects, and can simulate counterfactual scenarios.</p>
-<div class="results-demo simulation-demo" id="simulation-results-viewer">
-<div class="results-toolbar simulation-toolbar">
-<label for="simulation-task">Task<select id="simulation-task"><option value="red-solo-cup">Red Solo cup</option></select></label>
-<span class="simulation-recipe" hidden="">970k · RGB · 2-frame history · 400 ms</span>
+<div class="dataset-panel" data-dataset-animation="">
+<h4>Robot videos</h4>
+<picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/robot-data.png"/><img alt="Six training clips from DROID, Bridge, AgiBot, FMB, GR00T and RealOmni" height="772" src="../assets/datasets/robot-data.gif" width="720"/></picture>
 </div>
-<div class="simulation-pair">
-<figure><figcaption hidden="">Expert trajectory <span>MuJoCo YAM</span></figcaption><canvas aria-label="Expert joint trajectory replayed on the ABC MuJoCo YAM robot" class="simulation-expert" height="384" role="img" width="672"></canvas></figure>
-<figure><figcaption hidden="">Simulated video <span>PsiBorg 970k</span></figcaption><canvas aria-label="Action-conditioned video predicted by PsiBorg" class="simulation-prediction" height="384" role="img" width="672"></canvas></figure>
+<div class="dataset-panel" data-dataset-animation="">
+<h4>Paired observations + actions</h4>
+<picture><source media="(prefers-reduced-motion: reduce)" srcset="../assets/datasets/paired-data.png"/><img alt="Four YAM training clips in a 2 by 2 grid: ABC, World Engine, Molmo and GuestView, each above its matching recorded command poses" height="772" src="../assets/datasets/paired-data.gif" width="720"/></picture>
 </div>
-<video class="simulation-source" hidden="" muted="" playsinline="" preload="auto"></video>
-<div class="video-controls simulation-controls"><button aria-label="Play aligned simulation videos" class="video-play simulation-play" type="button">▶</button><output class="simulation-clock" hidden="">0.4 / 21.2 s</output></div>
-<p class="simulation-description" hidden="">Recorded expert joint commands replayed in MuJoCo alongside action-conditioned RGB predictions. Both views advance in 400 ms steps.</p>
-<p class="simulation-status" role="status">Loading simulation…</p>
 </div>
-</section>
-
-
-</article>
+</figure>
+</section></article>
 </div>
 </main>
 <footer class="site-footer"><a href="../../index.html">PSI / Stanford NeuroAI Lab</a><a href="#article">Back to top ↑</a></footer>
 <script defer="" src="./results.js"></script>
 <script defer="" src="./benchmarks.js"></script>
 <script defer="" src="./simulation.js"></script>
-<script>
-  (() => {
-    const button = document.querySelector('.theme-toggle');
-    const applyTheme = theme => {
-      document.documentElement.dataset.theme = theme;
-      const isDark = theme === 'dark';
-      document.querySelectorAll('[data-dark-src]').forEach(media => {
-        const attribute = media.tagName === 'SOURCE' ? 'srcset' : 'src';
-        const source = isDark ? media.dataset.darkSrc : media.dataset.lightSrc;
-        if (media.getAttribute(attribute) !== source) media.setAttribute(attribute, source);
-      });
-      button.querySelector('.theme-toggle-icon').textContent = isDark ? '☼' : '☾';
-      button.querySelector('.theme-toggle-label').textContent = isDark ? 'Light' : 'Dark';
-      button.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
-      button.setAttribute('aria-pressed', String(!isDark));
-      document.querySelector('meta[name="theme-color"]').content = isDark ? '#0b1117' : '#fbfaf7';
-    };
-    applyTheme(document.documentElement.dataset.theme);
-    button.addEventListener('click', () => {
-      const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-      applyTheme(theme);
-      try { localStorage.setItem('psiborg-theme', theme); } catch (_) {}
-    });
-  })();
-  </script>
-</body>
+
+<script defer="" src="./policy.js"></script></body>
 </html>
