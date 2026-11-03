@@ -81,8 +81,7 @@
 
         <section id="model" aria-labelledby="model-title">
           <h2 id="model-title" class="section-number">02 / Model</h2>
-          <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix.</p>
-          <p>Autoregressive token prediction leads to the model learning a conditional distribution over action sequences. At inference time, we sample action chunks from this distribution.</p>
+          <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PSI Robot.</p>
         </section>
 
         <section id="model-and-training" aria-labelledby="data-training-title">
@@ -114,18 +113,15 @@
           <h3 id="sequence-design-title">Sequence design</h3>
 
           <section id="progress-interface" class="interface progress" aria-labelledby="progress-title">
-            <h3 id="progress-title">1. Progress tracking: How far are we from the goal?</h3>
-            <p>Given a current observation and a goal image, the model predicts a time difference, Δt , describing their temporal separation. This estimate provides a way to track progress toward the goal as the robot receives new observations.</p>
+            <p><strong id="progress-title">Progress tracking:</strong> Given a current observation and a goal image, the model predicts a time difference, Δt , describing their temporal separation. This estimate provides a way to track progress toward the goal as the robot receives new observations.</p>
           </section>
 
           <section id="policy-interface" class="interface policy" aria-labelledby="policy-title">
-            <h3 id="policy-title">2. Policy inference: What should the robot do next?</h3>
-            <p>During training, the model learns to predict demonstrated action sequences from the current observation and a visual goal. At inference time, the model first predicts how far it is from a visual goal. This temporal information is then embedded into the goal image before action prediction.</p>
+            <p><strong id="policy-title">Policy inference:</strong> During training, the model learns to predict demonstrated action sequences from the current observation and a visual goal. At inference time, the model first predicts how far it is from a visual goal. This temporal information is then embedded into the goal image before action prediction.</p>
           </section>
 
           <section id="simulation-interface" class="interface simulation" aria-labelledby="simulation-title">
-            <h3 id="simulation-title">3. Simulation: What happens after an action?</h3>
-            <p>The model learns to predict the next visual observation autoregressively using one fixed initial ground-truth observation, its own rolling history, and the next action chunk.</p>
+            <p><strong id="simulation-title">Simulation:</strong> The model learns to predict the next visual observation autoregressively using one fixed initial ground-truth observation, its own rolling history, and the next action chunk.</p>
           </section>
         </section>
 
