@@ -31,7 +31,7 @@ main { max-width: 1240px; margin: auto; padding: 0 40px; }
 .article-header { padding: 72px 0 0; max-width: 1030px; }
 .article-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; font-size: 12px; color: var(--muted); }
 .draft-label { color: var(--accent); border: 1px solid #b8d2c7; border-radius: 3px; padding: 5px 9px; }
-h1 { margin: 28px 0 24px; font-size: clamp(48px, 6.6vw, 88px); letter-spacing: -.055em; line-height: 1.04; font-weight: 650; }
+h1 { margin: 28px 0 24px; font-size: clamp(32px, 3.6vw, 44px); letter-spacing: -.035em; line-height: 1.16; font-weight: 650; }
 .resource-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 34px; padding: 0; list-style: none; }
 .resource-links a, .resource-links .is-pending { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px 14px; border: 1px solid rgba(17, 17, 17, .24); border-radius: 8px; color: var(--ink); font-size: .86rem; font-weight: 800; text-decoration: none; }
 .resource-links a:hover { background: #f0f1ec; }
@@ -86,7 +86,7 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
   .site-header { min-height: 78px; }
   .brand-detail { display: none; }
   .article-header { padding-top: 44px; }
-  h1 { font-size: clamp(40px, 10vw, 60px); margin-top: 24px; }
+  h1 { font-size: clamp(28px, 6vw, 34px); margin-top: 24px; }
   .standfirst { font-size: 21px; }
   .article-meta { font-size: 11px; gap: 10px 13px; }
   .capability-index { gap: 14px; flex-wrap: wrap; font-size: 11px; margin-top: 30px; }
