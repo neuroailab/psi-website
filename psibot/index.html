@@ -9,8 +9,10 @@
 <meta content="noindex" name="robots"/>
 <title>PsiBorg: A Unified Robot Foundation Model</title>
 <script>try { if (localStorage.getItem('psiborg-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (_) {}</script>
-<link href="./styles.css?v=7b004a8a69b5" rel="stylesheet"/>
-</head>
+<link href="./styles.css?v=5d6445063e44" rel="stylesheet"/>
+<link href="./hero.css?v=823528c10edd" rel="stylesheet"/>
+<script defer="" src="./hero.js?v=8e729ed256f6"></script>
+<link href="./carousel.css?v=2119909c387e" rel="stylesheet"/></head>
 <body>
 <a class="skip-link" href="#article">Skip to article</a>
 <header class="site-header">
@@ -24,20 +26,13 @@
 <li><button aria-label="Code on GitHub, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"></path></svg><span class="resource-copy"><strong>Code</strong><small>GitHub</small></span><span class="resource-soon">Soon</span></button></li>
 <li><button aria-label="Paper on arXiv, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v6h5M8 13h8M8 17h6"></path></svg><span class="resource-copy"><strong>Paper</strong><small>arXiv</small></span><span class="resource-soon">Soon</span></button></li>
 <li><button aria-label="Model on Hugging Face, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><rect height="12" rx="2" width="12" x="6" y="6"></rect><path d="M10 10h4v4h-4zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"></path></svg><span class="resource-copy"><strong>Model</strong><small>Hugging Face</small></span><span class="resource-soon">Soon</span></button></li>
-</ul><section aria-label="PsiBorg demos" class="hero-demos">
-<figure class="hero-demo hero-policy" data-hero="policy"><div class="hero-media">
-<video aria-label="Policy demo" autoplay loop muted playsinline webkit-playsinline poster="./assets/hero/policy-poster.jpg" preload="auto"><source src="./assets/hero/policy.mp4" type="video/mp4"></video>
-<canvas class="hero-fallback" hidden aria-hidden="true"></canvas><button class="hero-toggle" type="button" aria-label="Pause policy video">Ⅱ</button>
-</div></figure>
-<figure class="hero-demo hero-simulation" data-hero="simulation"><div class="hero-media">
-<video aria-label="Simulation demo" autoplay loop muted playsinline webkit-playsinline poster="./assets/hero/simulation-poster.jpg" preload="auto"><source src="./assets/hero/simulation.mp4" type="video/mp4"></video>
-<canvas class="hero-fallback" hidden aria-hidden="true"></canvas><button class="hero-toggle" type="button" aria-label="Pause simulation video">Ⅱ</button>
-</div></figure>
-<figure class="hero-demo hero-progress" data-hero="progress"><div class="hero-media">
-<video aria-label="Progress demo" autoplay loop muted playsinline webkit-playsinline poster="./assets/hero/progress-poster.jpg" preload="auto"><source src="./assets/hero/progress.mp4" type="video/mp4"></video>
-<canvas class="hero-fallback" hidden aria-hidden="true"></canvas><button class="hero-toggle" type="button" aria-label="Pause progress video">Ⅱ</button>
-</div></figure>
-</section>
+</ul><figure aria-label="PsiBorg capabilities in action" class="hero-feature">
+<div aria-label="Animated PsiBorg demonstrations" class="hero-feature-screen" id="hero-feature-player" role="group"></div>
+<figcaption class="hero-feature-controls">
+<span aria-live="polite" class="hero-feature-status"></span>
+<div><button aria-controls="hero-feature-player" aria-label="Pause PsiBorg animation" class="hero-feature-play" type="button"><span aria-hidden="true">Ⅱ</span> <span class="hero-feature-play-label">Pause</span></button><button aria-controls="hero-feature-player" aria-label="Replay PsiBorg animation" class="hero-feature-replay" type="button"><span aria-hidden="true">↻</span> Replay</button></div>
+</figcaption>
+</figure>
 </header>
 <div class="article-layout">
 <article class="prose">
@@ -45,97 +40,49 @@
 <p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p><p>Current robotic systems often distribute these capabilities across separate models, each with its own architecture, training data, and objective. Post training a vision-language or video model to robot control can also introduce a substantial change in its training distribution, particularly when broad pretraining data gives way to a much narrower set of robot demonstrations.</p><p>We take a different approach to robot foundation model training by treating policy inference, simulation, and progress tracking as different queries to a single model, trained continuously using a diverse distribution of visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), we model relationships between visual observations and actions using next-token prediction, reframing robotics tasks as a set of sequence design problems.</p><p>At inference time, we observe striking generalization beyond the training distribution, where the model flexibly manipulates unfamiliar objects, simulates counterfactuals given a set of actions, and measures its own progress.</p>
 --><p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p><p>Robotic systems often split these capabilities across separate models. PsiBorg brings them together as prompts to a single model, trained continuously on diverse visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), it predicts observations and actions as tokens, with each capability defined by what the prompt asks it to fill in.</p></section>
 <h2 class="capabilities-heading">Converting Capabilities Into Prompts</h2>
-<figure aria-label="Policy, simulation and progress highlighted on one recorded trajectory" class="trajectory-film" id="model-overview"><canvas aria-label="Ground-truth frames4,8,12,16 appear sequentially at four times recorded speed. Highlighted examples then move into three rows with tokens and paths through one shared model." role="img"></canvas><div class="trajectory-footer"><p class="trajectory-note">Ground-truth trajectory · 4–16 s.</p><div class="trajectory-controls"><button aria-label="Replay animation" class="trajectory-replay" type="button">↺</button><button aria-label="Pause animation" class="trajectory-play" type="button">Ⅱ</button></div></div></figure>
-<section aria-label="results" id="results">
-<!-- Temporarily omitted copy: <p>In this blog post we show qualitative results from our model for the capabilities described above.</p> -->
-<p><a href="http://node8-ccn2cluster.stanford.edu:8791/flow-selection/">Choose robot and general-video examples for the optical-flow pilot ↗</a> · <a href="http://node8-ccn2cluster.stanford.edu:8860/">Live generation results ↗</a></p>
-<div class="result-chapter" id="simulation-chapter"><p>Can the model imagine the consequences of its own actions? Below, we show simulation results for a set of held-out teleoperated episodes. We see that the model successfully simulates picking up and dropping off objects, and can simulate counterfactual scenarios.</p><div class="results-demo simulation-demo" id="simulation-results-viewer">
-<div class="results-toolbar simulation-toolbar">
-<label for="simulation-task">Task<select id="simulation-task"><option value="red-solo-cup">Red Solo cup</option></select></label>
-<span class="simulation-recipe" hidden="">970k · RGB · 2-frame history · 400 ms</span>
+<figure aria-label="Policy, simulation and progress highlighted on one recorded trajectory" class="trajectory-film" id="model-overview"><canvas aria-label="Three model paths appear at double speed, followed by a recorded trajectory and one query at a time for policy, simulation and progress tracking. All action clips loop." role="img"></canvas><div class="trajectory-footer"><p class="trajectory-note"></p><div class="trajectory-controls"><button aria-label="Replay animation" class="trajectory-replay" type="button">↺</button><button aria-label="Pause animation" class="trajectory-play" type="button">Ⅱ</button></div></div></figure>
+<section aria-label="Results" id="results">
+<div aria-label="Explore PsiBorg capabilities" class="capability-tabs" role="tablist">
+<button aria-controls="panel-policy" aria-selected="true" data-tab="policy" id="tab-policy" role="tab" tabindex="0" type="button">Policy and progress</button>
+<button aria-controls="panel-simulation" aria-selected="false" data-tab="simulation" id="tab-simulation" role="tab" tabindex="-1" type="button">Simulation</button>
+<!-- Failure detection tab retained for later.
+<button aria-controls="panel-failure" aria-selected="false" data-tab="failure" id="tab-failure" role="tab" tabindex="-1" type="button">Failure detection</button>
+-->
+<button aria-controls="panel-progress" aria-selected="false" data-tab="progress" id="tab-progress" role="tab" tabindex="-1" type="button">Progress tracking</button>
 </div>
-<div class="simulation-pair">
-<figure><figcaption hidden="">Expert trajectory <span>MuJoCo YAM</span></figcaption><canvas aria-label="Expert joint trajectory replayed on the ABC MuJoCo YAM robot" class="simulation-expert" height="384" role="img" width="672"></canvas></figure>
-<figure><figcaption hidden="">Simulated video <span>PsiBorg 970k</span></figcaption><canvas aria-label="Action-conditioned video predicted by PsiBorg" class="simulation-prediction" height="384" role="img" width="672"></canvas></figure>
+<div aria-labelledby="tab-policy" class="capability-panel" id="panel-policy" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="policy-and-progress-results">
+<h3 class="capability-heading">Policy and progress tracking</h3>
+<p>Given a current observation and a goal image, PsiBorg first predicts Δt, the estimated time remaining to reach the goal. It then uses Δt to temporally embed the goal frame and predict the next action chunk.</p>
+<p>We find that predicting time to goal first and incorporating this temporal information into the goal image greatly improves action prediction compared with conditioning on the goal image alone. This form of visual goal conditioning can be viewed as in-context learning from human demonstrations, with a goal image serving as the demonstration rather than a video.</p>
 </div>
-<video autoplay="" loop="" class="simulation-source" hidden="" muted="" playsinline="" preload="auto"></video>
-<div class="video-controls simulation-controls"><button aria-label="Play aligned simulation videos" class="video-play simulation-play" type="button">▶</button><output class="simulation-clock" hidden="">0.4 / 21.2 s</output></div>
-<p class="simulation-description" hidden="">Recorded expert joint commands replayed in MuJoCo alongside action-conditioned RGB predictions. Both views advance in 400 ms steps.</p>
-<p class="simulation-status" role="status">Loading simulation…</p>
-</div></div>
-<p>We observe striking generalization to new visual goals and objects. We also find that predicting time to goal first, and adding this temporal embedding to the goal image greatly improves action prediction compared with providing just the goal image, where the model may be forced into pixel matching. This visual goal conditioning can be thought of as a form of in-context learning from human demonstrations, where the demonstration is a goal image instead of a video.</p>
-<p>Given a current observation and a goal image, PsiBorg predicts Δt: the estimated time remaining to reach the goal. These predictions track progress as the robot acts and update when it receives a new goal.</p><div class="results-demo" id="policy-results-viewer">
-<div class="results-toolbar"><label for="results-task">Task <select id="results-task"><option value="plate-stacking">Plate stacking</option><option value="toys-sorting">Toys sorting</option></select></label><span class="results-fixed-speed" hidden="">Playback · 6×</span></div>
-<div class="results-pair">
-<div class="results-video-panel"><div class="results-panel-heading" hidden=""><span class="results-task-title">Plate stacking</span><span class="results-clock">0:00</span></div><video autoplay="" loop="" aria-label="Plate stacking policy video" muted="" playsinline="" preload="metadata"></video></div>
-<div class="results-graph-panel"><div class="results-panel-heading" hidden=""><span>Progress tracking</span><span class="dt-readout">Δt —</span></div><svg aria-label="Recorded Δt predictions" class="dt-chart" role="group" viewbox="0 0 520 334"></svg></div>
+<div aria-label="Policy and progress videos" class="capability-carousel" data-carousel="policy"><p class="carousel-status" role="status">Loading videos…</p></div>
 </div>
-<div class="video-controls"><button aria-label="Play policy video" class="video-play policy-play" type="button">▶</button></div>
-<div class="results-status" role="status">Loading task…</div>
+<div aria-labelledby="tab-simulation" class="capability-panel" hidden="" id="panel-simulation" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="simulation-results">
+<h3 class="capability-heading">Simulation</h3>
+<p>Can the model imagine the consequences of its own actions? Below, we show simulation results for a set of held-out teleoperated episodes. We see that the model successfully simulates picking up and dropping off objects, and can simulate counterfactual scenarios.</p>
 </div>
-<!-- Robometer progress-tracking results temporarily disabled; retain for later restoration.
-          <h3 id="progress-tracking-results">2. Progress tracking</h3>
-          <div class="benchmark-intro">
-            <p>Can the model recognize progress toward a goal across different robots and tasks? We evaluate this on 72 successful episodes drawn from six datasets in Robometer’s public release. For each episode, PsiBorg receives the current observation and the episode’s final image as its goal, then predicts the time remaining to reach it. We also evaluate a subset of 16 episodes with an additional wrist-camera view.</p>
-            <p>We measure how well the model’s progress score, defined as negative predicted time-to-goal, follows the order of frames in the video. This correlation metric, VOC, rewards scores that increase as the episode advances. We compare V2 and WSM with Robometer and DINOv2, averaging scores equally across datasets. Robometer uses language and frames from the complete trajectory, so the models have different input information. This benchmark measures progress along successful trajectories; the next benchmark tests whether a task has actually been completed.</p>
-          </div>
-          <div class="results-demo benchmark-demo" data-benchmark="progress">
-            <p class="benchmark-kicker" hidden>Robometer public benchmark</p>
-            <div class="results-toolbar benchmark-toolbar">
-              <label for="progress-filter">Dataset<select id="progress-filter" class="benchmark-filter"></select></label>
-              <label for="progress-episode" class="episode-select">Episode<select id="progress-episode" class="benchmark-episode"></select></label>
-              <label for="progress-speed">Playback<select id="progress-speed" class="benchmark-speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
-            </div>
-            <div class="results-panel-heading benchmark-task-heading" hidden><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
-            <div class="benchmark-media benchmark-paired">
-              <div class="benchmark-graph-panel">
-                <div class="benchmark-legend"><span class="benchmark-legend-label" hidden>Multiview Δt</span><span class="benchmark-wsm">● PsiBorg <output class="benchmark-wsm-value">—</output></span></div>
-                <svg class="benchmark-chart" viewBox="0 0 520 400" role="img" aria-label="Multiview PsiBorg predicted time-to-goal, revealed during playback"></svg>
-              </div>
-              <div class="benchmark-cameras">
-                <figure class="benchmark-camera"><figcaption hidden>Agent view</figcaption><div class="benchmark-camera-frame"><canvas class="benchmark-scene" width="342" height="256" role="img" aria-label="Agent camera frame"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"><figcaption>Goal</figcaption></figure></div></figure>
-              </div>
-            </div>
-            <video class="benchmark-source" hidden autoplay loop muted playsinline preload="auto" aria-label="Robometer public benchmark synchronized playback"></video>
-            <div class="video-controls"><button type="button" class="video-play benchmark-play" aria-label="Play video">▶</button></div>
+<div aria-label="Simulation videos" class="capability-carousel" data-carousel="simulation"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+<div aria-labelledby="tab-progress" class="capability-panel" hidden="" id="panel-progress" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="progress-tracking-results">
+<h3 class="capability-heading">Progress tracking</h3>
+<p>Given a current observation and a goal image, PsiBorg predicts Δt, the estimated time remaining to reach the goal. This estimate provides a way to track progress toward the goal as new observations arrive.</p>
+</div>
+<div aria-label="Progress tracking videos" class="capability-carousel" data-carousel="progress"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+<!-- Failure detection section retained for later; its video data remains in catalog.json.
+<div aria-labelledby="tab-failure" class="capability-panel" hidden="" id="panel-failure" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="failure-detection-results">
+<h3 class="capability-heading">Failure detection</h3>
+<p>Can the model distinguish reaching a goal from simply reaching the end of a video? We build an ABC simulation benchmark from six held-out successful episodes of turning mugs right side up. At 50% of each episode, we simulate failures by branching into continuations that hold the robot in place or apply bounded random joint movements.</p>
+<p>Every continuation is evaluated against the same successful source goal, and the simulator labels its outcome as successful or incomplete. Compare each failure’s time-to-goal predictions with its successful reference as the video plays.</p>
+</div>
+<div aria-label="Failure detection videos" class="capability-carousel" data-carousel="failure"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+-->
 
-            <p class="benchmark-description" hidden></p>
-            <div class="benchmark-table-wrap" tabindex="0" role="region" aria-label="Robometer public benchmark comparison results"><table class="benchmark-table"></table></div>
-            <p class="benchmark-table-note"></p>
-
-            <p class="benchmark-status" role="status">Loading benchmark…</p>
-          </div>
-          -->
-<div class="benchmark-intro">
-<p>Can the model distinguish reaching a goal from simply reaching the end of a video? We build an ABC simulation benchmark from six held-out successful episodes of turning mugs right side up. At 50%, 70%, or 90% of each episode, we simulate failures by branching into continuations that hold the robot in place or apply bounded random joint movements.</p>
-<p>Every continuation is evaluated against the same successful source goal, and the simulator labels its outcome as successful or incomplete.</p>
-</div>
-<div class="results-demo benchmark-demo" data-benchmark="failure">
-<p class="benchmark-kicker" hidden="">ABC simulation benchmark</p>
-<div class="results-toolbar benchmark-toolbar">
-<label for="failure-filter">Failures<select class="benchmark-filter" id="failure-filter"></select></label>
-<label class="episode-select" for="failure-episode">Failure episode<select class="benchmark-episode" id="failure-episode"></select></label>
-<span class="results-fixed-speed" hidden="">Playback · 2×</span>
-</div>
-<div class="results-panel-heading benchmark-task-heading" hidden=""><span class="benchmark-task"></span><span class="benchmark-outcome"></span></div>
-<div class="benchmark-media benchmark-paired">
-<div class="benchmark-graph-panel">
-<div class="benchmark-legend"><span class="benchmark-success">Success <output class="benchmark-success-value">—</output></span><span class="benchmark-failure">Failure <output class="benchmark-failure-value">—</output></span></div>
-<svg aria-label="Success and failure PsiBorg time-to-goal curves, aligned to episode time and revealed during playback" class="benchmark-chart" role="img" viewbox="0 0 520 400"></svg>
-</div>
-<div class="benchmark-cameras">
-<figure class="benchmark-camera"><figcaption hidden="">Failure · Agent view</figcaption><div class="benchmark-camera-frame"><canvas aria-label="Agent camera frame" class="benchmark-scene" height="256" role="img" width="342"></canvas><figure class="benchmark-goal"><img alt="Matching successful goal"/><figcaption>Goal</figcaption></figure></div></figure>
-</div>
-</div>
-<video aria-label="ABC simulation benchmark synchronized playback" autoplay="" class="benchmark-source" hidden="" loop="" muted="" playsinline="" preload="auto"></video>
-<div class="video-controls"><button aria-label="Play video" class="video-play benchmark-play" type="button">▶</button></div>
-<p class="benchmark-description" hidden=""></p>
-<!-- ABC comparison table temporarily disabled; retain all model rows for later.
-            <div class="benchmark-table-wrap" tabindex="0" role="region" aria-label="ABC simulation benchmark comparison results"><table class="benchmark-table"></table></div>
-            <p class="benchmark-table-note"></p>
-            -->
-<p class="benchmark-status" role="status">Loading benchmark…</p>
-</div>
 </section><section aria-label="model" id="model"><h2 id="technical-details-title">Technical Details</h2><h3>Model</h3>
 <p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PsiBorg.</p>
 </section>
@@ -176,10 +123,7 @@
 </article>
 </div>
 </main>
-<footer class="site-footer"><a href="../index.html">PSI / Research documentation</a><a href="#article">Back to top ↑</a></footer>
-<script defer="" src="./results.js?v=c6604bc9018c"></script>
-<script defer="" src="./benchmarks.js?v=d893424ec726"></script>
-<script defer="" src="./simulation.js?v=05511b571ae8"></script>
+<footer class="site-footer"><a href="../index.html">PSI / Home</a><a href="#article">Back to top ↑</a></footer>
 <script>
   (() => {
     const button = document.querySelector('.theme-toggle');
@@ -209,12 +153,13 @@
  'use strict';
  const root=document.querySelector('.trajectory-film');if(!root)return;
  const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d'),play=root.querySelector('.trajectory-play'),replay=root.querySelector('.trajectory-replay'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
- const total=26,samples=[4,8,12,16],clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t;
- let rgb,actions,mark,meta,ready=false,manualMotion=false,playing=!reduced.matches,visible=true,time=0,last=0,paintAt=0,W=1100,H=230,p={};
+ const INTRO=6,total=34,samples=[4,8,12,16],clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t;
+ let rgb,actions,mark,meta,ready=false,manualMotion=false,playing=!reduced.matches,visible=true,time=0,last=0,paintAt=0,W=1100,H=300,p={};
  function colors(){const css=getComputedStyle(root),light=document.documentElement.dataset.theme==='light';p={ink:css.getPropertyValue('--ink').trim(),muted:css.getPropertyValue('--muted').trim(),line:css.getPropertyValue('--line').trim(),rgb:light?'#246cb2':'#83bfff',action:light?'#7950a6':'#c4a2ec',time:light?'#94600c':'#f2c579'};}
  function size(height){const dpr=Math.min(devicePixelRatio||1,2);height=Math.round(height);if(canvas.width!==Math.round(W*dpr)||H!==height){H=height;canvas.style.height=H+'px';canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}}
  function resize(){W=root.clientWidth;colors();draw();}
  function text(str,x,y,size=13,color=p.ink,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.textAlign='center';ctx.font=`${size}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;ctx.fillText(str,x,y);ctx.restore();}
+ function actionIndex(start,count,rate=1){const clock=time<INTRO?time*2:(time-INTRO)*rate;return start+Math.floor(clock*20)%count;}
  function sprite(kind,index,x,y,w,alpha=1){const a=kind==='rgb'?meta.rgb_atlas:meta.action_atlas,h=w*.57,col=kind==='rgb'?index%a.columns:index%20,row=kind==='rgb'?Math.floor(index/a.columns):Math.floor(index/20);ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(kind==='rgb'?rgb:actions,col*a.tile_width,row*a.tile_height,a.tile_width,a.tile_height,x-w/2,y-h/2,w,h);ctx.restore();}
  function layout(){const mobile=W<600,pad=mobile?6:20,gap=mobile?5:15,w=Math.min(150,(W-2*pad-6*gap)/6.25),aw=w*.75,span=4*w+3*aw+6*gap,y=mobile?97:123;let x=(W-span)/2,r=[],a=[];for(let i=0;i<4;i++){r.push({x:x+w/2,y,w});x+=w;if(i<3){x+=gap;a.push({x:x+aw/2,y,w:aw});x+=aw+gap;}}return{r,a,w,aw,mobile};}
  function box(items,color,alpha=1){const pad=W<600?3:9,left=Math.min(...items.map(v=>v.x-v.w/2))-pad,right=Math.max(...items.map(v=>v.x+v.w/2))+pad,top=Math.min(...items.map(v=>v.y-v.w*.285))-pad,bottom=Math.max(...items.map(v=>v.y+v.w*.285))+pad;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=W<600?1.5:2;ctx.globalAlpha=alpha;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.beginPath();ctx.roundRect(left,top,right-left,bottom-top,5);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=alpha*.06;ctx.fillStyle=color;ctx.fill();ctx.restore();}
@@ -224,64 +169,64 @@
  function trajectory(t,opacity,l){const{r,a,w,aw,mobile}=l,phase=phaseAt(t),isFirst=t<3,sourceTime=t*4;
   ctx.save();ctx.globalAlpha=opacity;
   // No arrows or tokens in this stage: the recorded frames and actions appear in order.
-  for(let i=0;i<4;i++){let alpha=isFirst?ease((sourceTime-i*4)/.35+1):1;if(t>=5&&t<11){const chosen=phase==='policy'?i===0||i===3:phase==='simulation'?i<2:i===0||i===3;alpha=chosen?1:.25;}sprite('rgb',samples[i],r[i].x,r[i].y,w,opacity*alpha);text(i===0?'Start · 4 s':i===3?'Goal · 16 s':`${samples[i]} s`,r[i].x,r[i].y-w*.285-13,mobile?8:13,p.muted,opacity*alpha);}
-  for(let i=0;i<3;i++){let elapsed=clamp((sourceTime-i*4)/4)*4,alpha=isFirst?ease((sourceTime-i*4-.3)/.35):phase==='trajectory-hold'?1:.22;if(t>=5&&i===0){alpha=phase==='progress'?.22:1;elapsed=phase==='policy'?Math.min(t-5,.999):phase==='simulation'?Math.min((t-7)*2,3.999):4;}sprite('action',(4+i*4)*20+Math.min(79,Math.floor(elapsed*20)),a[i].x,a[i].y,aw,opacity*alpha);}
+  for(let i=0;i<4;i++){let alpha=isFirst?ease((sourceTime-i*4)/.35+1):1;if(t>=5&&t<11){const chosen=phase==='policy'?i===0||i===3:phase==='simulation'?i<2:i===0||i===3;alpha=chosen?1:.25;}sprite('rgb',samples[i],r[i].x,r[i].y,w,opacity*alpha);if(i===0||i===3)text(i===0?'Start':'Goal',r[i].x,r[i].y-w*.285-(mobile?15:18),mobile?13:20,p.ink,opacity*alpha);}
+  for(let i=0;i<3;i++){let elapsed=clamp((sourceTime-i*4)/4)*4,alpha=isFirst?ease((sourceTime-i*4-.3)/.35):phase==='trajectory-hold'?1:.22;if(t>=5&&i===0){alpha=phase==='progress'?.22:1;elapsed=phase==='policy'?Math.min(t-5,.999):phase==='simulation'?Math.min((t-7)*2,3.999):4;}sprite('action',actionIndex((4+i*4)*20,80,isFirst?4:1),a[i].x,a[i].y,aw,opacity*alpha);}
   const labelY=mobile?22:25;
-  if(phase==='policy'){text('Policy',W/2,labelY,mobile?15:21,p.action,opacity);box([r[0],a[0]],p.action,opacity);box([r[3]],p.action,opacity);}
-  if(phase==='simulation'){text('Simulation',W/2,labelY,mobile?15:21,p.rgb,opacity);box([r[0],a[0],r[1]],p.rgb,opacity);}
-  if(phase==='progress'){text('Δt · 12 s',W/2,labelY,mobile?15:21,p.time,opacity);box([r[0]],p.time,opacity);box([r[3]],p.time,opacity);ctx.save();ctx.globalAlpha=opacity;ctx.strokeStyle=p.time;ctx.lineWidth=1.5;const y=mobile?48:50;ctx.beginPath();ctx.moveTo(r[0].x,y+5);ctx.lineTo(r[0].x,y);ctx.lineTo(r[3].x,y);ctx.lineTo(r[3].x,y+5);ctx.stroke();ctx.restore();}
+  if(phase==='policy'){text('Policy',W/2,labelY,mobile?20:28,p.action,opacity);box([r[0],a[0]],p.action,opacity);box([r[3]],p.action,opacity);}
+  if(phase==='simulation'){text('Simulation',W/2,labelY,mobile?20:28,p.rgb,opacity);box([r[0],a[0],r[1]],p.rgb,opacity);}
+  if(phase==='progress'){text('Δt · 12 s',W/2,labelY,mobile?20:28,p.time,opacity);box([r[0]],p.time,opacity);box([r[3]],p.time,opacity);ctx.save();ctx.globalAlpha=opacity;ctx.strokeStyle=p.time;ctx.lineWidth=1.5;const y=labelY+10;ctx.beginPath();ctx.moveTo(r[0].x,y+5);ctx.lineTo(r[0].x,y);ctx.lineTo(r[3].x,y);ctx.lineTo(r[3].x,y+5);ctx.stroke();ctx.restore();}
   ctx.restore();
  }
- function rows(t,q,l,staticView){const mobile=l.mobile,w=Math.min(150,W*.17),ys=mobile?[72,202,332]:[95,240,385],x1=W*.115,x2=W*.315,xo=W*.85,m={x:W*.56,y:ys[1]},radius=mobile?21:36,phase=phaseAt(t),active=phase==='policy-query'?0:phase==='simulation-query'?1:phase==='progress-query'?2:-1;
+ function rows(t,q,l,staticView){const mobile=l.mobile,w=Math.min(150,W*.17),ys=mobile?[80,240,400]:[105,300,495],x1=W*.115,x2=W*.315,xo=W*.85,m={x:W*.56,y:ys[1]},radius=mobile?21:36,phase=phaseAt(t),active=phase==='policy-query'?0:phase==='simulation-query'?1:phase==='progress-query'?2:-1;
   const all=staticView||phase==='shared-model'||phase==='return',names=['Policy','Simulation','Progress'],inks=[p.action,p.rgb,p.time];root.dataset.tokensVisible=String((staticView||t>13)&&q>0);
-  function media(kind,index,from,to,label,alpha,color,tokenTime){const pos={x:mix(from.x,to.x,q),y:mix(from.y,to.y,q)},width=mix(from.w,w,q);sprite(kind,index,pos.x,pos.y,width,alpha*q);const captionAlpha=alpha*ease((q-.55)/.45);text(label,pos.x,pos.y+width*.285+(mobile?12:17),mobile?8:12,p.muted,captionAlpha);tokens(pos.x,pos.y+width*.285+(mobile?19:27),color,captionAlpha,tokenTime);}
-  for(let i=0;i<3;i++){const alpha=active<0||active===i?1:.38,y=ys[i],color=inks[i],stream=staticView?10:t-[13,16,20][i];text(names[i],(x1+x2)/2,y-w*.285-(mobile?18:25),mobile?12:17,color,alpha*ease(q));media('rgb',4,l.r[0],{x:x1,y},'RGB₀',alpha,p.rgb,stream);
-   if(i===1){const elapsed=staticView?3.999:Math.max(0,Math.min(t-16,3.999));media('action',80+Math.min(79,Math.floor(elapsed*20)),l.a[0],{x:x2,y},'4 × 1 s actions',alpha,p.action,stream-.35);}
+  function media(kind,index,from,to,label,alpha,color,tokenTime){const pos={x:mix(from.x,to.x,q),y:mix(from.y,to.y,q)},width=mix(from.w,w,q);sprite(kind,index,pos.x,pos.y,width,alpha*q);const captionAlpha=alpha*ease((q-.55)/.45);text(label,pos.x,pos.y+width*.285+(mobile?22:27),mobile?12:18,p.muted,captionAlpha);tokens(pos.x,pos.y+width*.285+(mobile?36:40),color,captionAlpha,tokenTime);}
+  for(let i=0;i<3;i++){const alpha=active<0||active===i?1:.38,y=ys[i],color=inks[i],stream=staticView?10:t-[13,16,20][i];media('rgb',4,l.r[0],{x:x1,y},'RGB₀',alpha,p.rgb,stream);
+   if(i===1){const elapsed=staticView?3.999:Math.max(0,Math.min(t-16,3.999));media('action',actionIndex(80,80),l.a[0],{x:x2,y},'Action',alpha,p.action,stream-.35);}
    else media('rgb',16,l.r[3],{x:x2,y},i===0?'Goalₜ':'Goal',alpha,p.rgb,stream-.35);
-   if(i===0){media('action',80+Math.min(19,Math.floor(Math.max(0,t-13)*20)),l.a[0],{x:xo,y},'1 s action',alpha,p.action,stream-1.55);}
-   else if(i===1)media('rgb',8,l.r[1],{x:xo,y},'Next RGB · 8 s',alpha,p.rgb,stream-1.55);
-   else{const tx=mix((l.r[0].x+l.r[3].x)/2,xo,q),ty=mix(50,y,q);text('12 s',tx,ty+8,mobile?23:33,p.time,alpha*q);text('Δt',tx,ty+(mobile?28:36),mobile?10:14,p.muted,alpha*q);tokens(tx,ty+(mobile?38:48),p.time,alpha*ease(q),stream-1.55);}
+   if(i===0){media('action',actionIndex(80,20),l.a[0],{x:xo,y},'Action',alpha,p.action,stream-1.55);}
+   else if(i===1)media('rgb',8,l.r[1],{x:xo,y},'Next RGB',alpha,p.rgb,stream-1.55);
+   else{const tx=mix((l.r[0].x+l.r[3].x)/2,xo,q),ty=mix(50,y,q);text('12 s',tx,ty+8,mobile?30:42,p.time,alpha*q);text('Δt',tx,ty+(mobile?36:44),mobile?15:20,p.muted,alpha*q);tokens(tx,ty+(mobile?49:59),p.time,alpha*ease(q),stream-1.55);}
    const from={x:x2+w/2+9,y},entry={x:m.x-radius-8,y:m.y},exit={x:m.x+radius+8,y:m.y},to={x:xo-w/2-9,y};const wireAlpha=alpha*ease((q-.5)/.5);curve(from,entry,color,wireAlpha*.35);curve(exit,to,color,wireAlpha*.35);
    if(active===i||all){const elapsed=all?5:t-(i===0?13:i===1?16:20);curve(from,entry,color,wireAlpha,ease(elapsed/.85),2.5);curve(exit,to,color,wireAlpha,ease((elapsed-.85)/.9),2.5);}
   }
   ctx.save();ctx.globalAlpha=ease((q-.3)/.7);ctx.drawImage(mark,m.x-radius,m.y-radius,radius*2,radius*2);ctx.restore();
  }
- function draw(){if(!ready)return;const staticView=reduced.matches&&!manualMotion,t=staticView?24:time,l=layout(),phase=phaseAt(t),q=t<11?0:t<13?ease((t-11)/2):t<25?1:1-ease(t-25);size(mix(l.mobile?170:230,l.mobile?425:490,q));ctx.clearRect(0,0,W,H);root.dataset.filmTime=t.toFixed(2);root.dataset.filmPhase=phase;root.dataset.rgbSamples=samples.join(',');root.dataset.playbackRate='4';root.dataset.trajectoryRows='1';root.dataset.tokensVisible='false';root.dataset.modelCount=q>0?'1':'0';
-  if(q<1)trajectory(Math.min(t,10.99),1-q,l);if(q>0)rows(t,q,l,staticView);
+
+ function stage(t){
+  if(t<5)return{phase:t<3?'trajectory':'trajectory-hold',q:0,trajectory:t,type:0,elapsed:-1};
+  const type=t<12?0:t<20?1:2,start=[5,12,20][type],morph=start+2,query=morph+1,back=[11,19,26][type];
+  let q=t<morph?0:t<query?ease(t-morph):t<back?1:t<back+1?1-ease(t-back):0;
+  return{type,q,elapsed:t-query,trajectory:[5,7,9][type]+Math.min(1.999,Math.max(0,t-start)),phase:['policy','simulation','progress'][type]+(t<morph?'-trajectory':t<query?'-enter':t<back?'-query':t<back+1?'-return':'-hold')};
+ }
+ function single(s,l,staticView){const {q,type}=s,mobile=l.mobile,w=Math.min(150,W*.17),y=mobile?140:155,x1=W*.115,x2=W*.315,xo=W*.85,m={x:W*.56,y},radius=mobile?23:40,color=[p.action,p.rgb,p.time][type],stream=staticView?10:s.elapsed;
+  root.dataset.tokensVisible=String(stream>0&&q>0);
+  function media(kind,index,from,x,label,ink,clock){const pos={x:mix(from.x,x,q),y:mix(from.y,y,q)},width=mix(from.w,w,q);sprite(kind,index,pos.x,pos.y,width,q);const a=ease((q-.5)/.5);text(label,pos.x,pos.y+width*.285+(mobile?22:28),mobile?12:18,p.muted,a);tokens(pos.x,pos.y+width*.285+(mobile?36:43),ink,a,clock);}
+  media('rgb',4,l.r[0],x1,'RGB₀',p.rgb,stream);
+  if(type===1)media('action',actionIndex(80,80),l.a[0],x2,'Action',p.action,stream-.35);
+  else media('rgb',16,l.r[3],x2,type===0?'Goalₜ':'Goal',p.rgb,stream-.35);
+  if(type===0)media('action',actionIndex(80,20),l.a[0],xo,'Action',p.action,stream-1.55);
+  else if(type===1)media('rgb',8,l.r[1],xo,'Next RGB',p.rgb,stream-1.55);
+  else{const x=mix((l.r[0].x+l.r[3].x)/2,xo,q),ty=mix(50,y,q);text('12 s',x,ty+10,mobile?32:44,p.time,q);text('Δt',x,ty+45,mobile?16:20,p.muted,q);tokens(x,ty+62,p.time,q,stream-1.55);}
+  const a=ease((q-.45)/.55),from={x:x2+w/2+9,y},entry={x:m.x-radius-8,y},exit={x:m.x+radius+8,y},to={x:xo-w/2-9,y};
+  curve(from,entry,color,a*.22);curve(exit,to,color,a*.22);
+  curve(from,entry,color,a,ease(stream/.85),2.5);curve(exit,to,color,a,ease((stream-.85)/.9),2.5);
+  ctx.save();ctx.globalAlpha=a;ctx.drawImage(mark,m.x-radius,m.y-radius,radius*2,radius*2);ctx.restore();
+ }
+ function draw(){if(!ready)return;const staticView=reduced.matches&&!manualMotion,t=staticView?5.25:time,l=layout(),intro=t<INTRO;
+  const fade=intro?1-ease((t-5.5)/.5):1,local=Math.max(0,t-INTRO),s=stage(local);
+  canvas.style.transition='height .4s ease';canvas.style.opacity=String(intro?fade:ease(local/.25));size(intro?(l.mobile?490:620):(l.mobile?270:320));ctx.clearRect(0,0,W,H);
+  root.dataset.filmTime=t.toFixed(2);root.dataset.introSpeed='2';root.dataset.actionLoop='true';root.dataset.rgbSamples=samples.join(',');root.dataset.tokensVisible='false';
+  if(intro){const rt=13+t*2;root.dataset.filmPhase='intro-'+phaseAt(rt);root.dataset.capability='all';root.dataset.modelCount='1';root.dataset.capabilityRows='3';ctx.save();ctx.globalAlpha=fade;rows(rt,1,l,staticView);ctx.restore();}
+  else{root.dataset.filmPhase=s.phase;root.dataset.capability=['policy','simulation','progress'][s.type];root.dataset.modelCount=s.q>0?'1':'0';root.dataset.capabilityRows=s.q>0?'1':'0';if(s.q<1)trajectory(s.trajectory,1-s.q,l);if(s.q>0)single(s,l,staticView);}
   play.textContent=playing?'Ⅱ':'▶';play.setAttribute('aria-label',playing?'Pause animation':'Play animation');
  }
- function tick(now){if(!last)last=now;if(ready&&playing&&visible&&!document.hidden&&(!reduced.matches||manualMotion))time=(time+Math.min(now-last,150)/1000)%total;last=now;if(now-paintAt>25){draw();paintAt=now;}requestAnimationFrame(tick);}
+ function tick(now){if(!last)last=now;if(ready&&playing&&visible&&!document.hidden&&(!reduced.matches||manualMotion))time=(time+Math.min(now-last,150)/1000)%total;last=now;if(ready&&playing&&visible&&!document.hidden&&(!reduced.matches||manualMotion)&&now-paintAt>25){draw();paintAt=now;}requestAnimationFrame(tick);}
  play.addEventListener('click',()=>{playing=!playing;if(reduced.matches&&playing){manualMotion=true;time=0;}last=performance.now();draw();});replay.addEventListener('click',()=>{time=0;manualMotion=true;playing=true;last=performance.now();draw();});
  new ResizeObserver(()=>{if(Math.abs(root.clientWidth-W)>1)resize()}).observe(root);new MutationObserver(()=>{colors();draw()}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;last=performance.now()},{threshold:.05}).observe(root);document.addEventListener('visibilitychange',()=>{last=performance.now()});reduced.addEventListener('change',()=>{manualMotion=false;playing=!reduced.matches;draw()});
  const load=url=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Animation media could not load.'));im.src=url;});
- Promise.all([fetch('./assets/trajectory/sequence-clean.json').then(r=>r.json()),load('./assets/trajectory/observations.webp'),load('./assets/trajectory/actions-clean.webp'),load('./assets/psi-mark.svg')]).then(([m,r,a,logo])=>{meta=m;rgb=r;actions=a;mark=logo;ready=true;resize();requestAnimationFrame(tick);}).catch(e=>root.querySelector('.trajectory-note').textContent=e.message);colors();
-})();
-</script><script>
-(() => {
- 'use strict';
- // Preserve the original MP4s; use their decoded frames when media autoplay is blocked.
- let manifest;
- const getManifest=()=>manifest||(manifest=fetch('./assets/hero/animation-index.json').then(r=>{if(!r.ok)throw Error('Missing hero frames');return r.json();}));
- document.querySelectorAll('.hero-demo').forEach(card=>{
-  const name=card.dataset.hero,video=card.querySelector('video'),canvas=card.querySelector('canvas'),ctx=canvas.getContext('2d'),button=card.querySelector('.hero-toggle');
-  let paused=false,visible=false,fallback=false,meta,clock=0,last=0,timer,loading=false,painted=-1;
-  const images=new Map();
-  video.muted=true;video.defaultMuted=true;video.loop=true;video.playsInline=true;
-  function update(){const running=!paused&&(fallback||!video.paused);button.textContent=running?'Ⅱ':'▶';button.setAttribute('aria-label',`${running?'Pause':'Play'} ${name} video`);card.dataset.playbackMode=fallback?'frames':'video';}
-  function atlas(index){if(!images.has(index)){const image=new Image();const record={image,ready:false};images.set(index,record);image.onload=()=>{record.ready=true;};image.onerror=()=>images.delete(index);image.src='./assets/hero/'+meta.atlases[index];}return images.get(index);}
-  async function useFrames(){if(paused||!visible||document.hidden||!video.paused||loading||fallback)return;loading=true;try{meta=(await getManifest())[name];if(paused||!video.paused)return;clock=video.currentTime||0;canvas.width=meta.width;canvas.height=meta.height;fallback=true;last=0;atlas(Math.floor(clock*meta.fps/meta.frames_per_atlas));update();}catch(_){update();}finally{loading=false;}}
-  function start(){if(paused||!visible||document.hidden)return;video.muted=true;clearTimeout(timer);const attempt=video.play();if(attempt)attempt.catch(useFrames);timer=setTimeout(useFrames,1400);}
-  video.addEventListener('playing',()=>{clearTimeout(timer);fallback=false;canvas.hidden=true;images.clear();update();});
-  video.addEventListener('pause',()=>{update();if(!paused&&visible&&!document.hidden){clearTimeout(timer);timer=setTimeout(useFrames,350);}});
-  video.addEventListener('loadeddata',()=>{if(!fallback)start();});
-  video.addEventListener('ended',()=>{if(!paused){video.currentTime=0;start();}});
-  button.addEventListener('click',()=>{paused=!paused;if(paused)video.pause();else{if(fallback)video.currentTime=clock;start();}last=0;update();});
-  new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;last=0;if(visible)start();else video.pause();},{threshold:.05}).observe(card);
-  document.addEventListener('visibilitychange',()=>{last=0;if(document.hidden)video.pause();else start();});
-  function tick(now){if(fallback&&visible&&!document.hidden&&!paused){if(last)clock=(clock+Math.min((now-last)/1000,.15))%meta.duration;const frame=Math.min(meta.frames-1,Math.floor(clock*meta.fps)),index=Math.floor(frame/meta.frames_per_atlas),next=(index+1)%meta.atlases.length,current=atlas(index);atlas(next);for(const key of images.keys())if(key!==index&&key!==next)images.delete(key);if(current.ready&&frame!==painted){const tile=frame%meta.frames_per_atlas;ctx.drawImage(current.image,(tile%meta.columns)*meta.width,Math.floor(tile/meta.columns)*meta.height,meta.width,meta.height,0,0,meta.width,meta.height);canvas.hidden=false;painted=frame;card.dataset.frame=String(frame);}card.dataset.animationTime=clock.toFixed(3);}last=now;requestAnimationFrame(tick);}
-  update();requestAnimationFrame(tick);
- });
+ const bundled={meta:null,observations:'./assets/trajectory/observations.webp',actions:'./assets/trajectory/actions-clean.webp',mark:'./assets/psi-mark.svg'};
+ Promise.all([fetch('./assets/trajectory/sequence-clean.json').then(r=>r.json()),load(bundled.observations),load(bundled.actions),load(bundled.mark)]).then(([m,r,a,logo])=>{meta=m;rgb=r;actions=a;mark=logo;ready=true;resize();requestAnimationFrame(tick);}).catch(e=>root.querySelector('.trajectory-note').textContent=e.message);colors();
 })();
 </script>
-</body>
+<script defer="" src="./carousel.js?v=28eb02db3c7a"></script></body>
 </html>

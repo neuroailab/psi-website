@@ -1,0 +1,402 @@
+{
+  "version": 9,
+  "progress_prediction_interval_ms": 200,
+  "progress_graph_render": {
+    "asset_size": [
+      1824,
+      1024
+    ],
+    "supersampling": 3,
+    "line_width": 1.5,
+    "dataset_labels": false
+  },
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "duration_frames": 2716,
+  "timing": {
+    "policy_in": 0,
+    "simulation_in": 60,
+    "progress_in": 120,
+    "policy_focus": 210,
+    "policy_feature_in": 276,
+    "policy_1": 296,
+    "policy_2": 460,
+    "policy_3": 615,
+    "simulation_focus": 788,
+    "simulation_feature_in": 854,
+    "simulation_1": 874,
+    "simulation_2": 1083,
+    "simulation_3": 1784,
+    "progress_focus": 1955,
+    "progress_feature_in": 2021,
+    "progress_1": 2041,
+    "progress_2": 2228,
+    "progress_3": 2443,
+    "return_overview": 2620
+  },
+  "chapters": {
+    "policy": {
+      "focus_start": 210,
+      "full_grid": 246,
+      "cycles": [
+        {
+          "tile": 0,
+          "highlight": 258,
+          "expand": 276,
+          "play": 296,
+          "frames": 99,
+          "collapse": 395,
+          "end": 413
+        },
+        {
+          "tile": 4,
+          "highlight": 422,
+          "expand": 440,
+          "play": 460,
+          "frames": 90,
+          "collapse": 550,
+          "end": 568
+        },
+        {
+          "tile": 5,
+          "highlight": 577,
+          "expand": 595,
+          "play": 615,
+          "frames": 146,
+          "collapse": 761,
+          "end": 779
+        }
+      ],
+      "focus_end": 788
+    },
+    "simulation": {
+      "focus_start": 788,
+      "full_grid": 824,
+      "cycles": [
+        {
+          "tile": 0,
+          "highlight": 836,
+          "expand": 854,
+          "play": 874,
+          "frames": 144,
+          "collapse": 1018,
+          "end": 1036
+        },
+        {
+          "tile": 4,
+          "highlight": 1045,
+          "expand": 1063,
+          "play": 1083,
+          "frames": 636,
+          "collapse": 1719,
+          "end": 1737
+        },
+        {
+          "tile": 5,
+          "highlight": 1746,
+          "expand": 1764,
+          "play": 1784,
+          "frames": 144,
+          "collapse": 1928,
+          "end": 1946
+        }
+      ],
+      "focus_end": 1955
+    },
+    "progress": {
+      "focus_start": 1955,
+      "full_grid": 1991,
+      "cycles": [
+        {
+          "tile": 0,
+          "highlight": 2003,
+          "expand": 2021,
+          "play": 2041,
+          "frames": 122,
+          "collapse": 2163,
+          "end": 2181
+        },
+        {
+          "tile": 4,
+          "highlight": 2190,
+          "expand": 2208,
+          "play": 2228,
+          "frames": 150,
+          "collapse": 2378,
+          "end": 2396
+        },
+        {
+          "tile": 5,
+          "highlight": 2405,
+          "expand": 2423,
+          "play": 2443,
+          "frames": 150,
+          "collapse": 2593,
+          "end": 2611
+        }
+      ],
+      "focus_end": 2620
+    }
+  },
+  "feature_tiles": [
+    0,
+    4,
+    5
+  ],
+  "policy": [
+    {
+      "id": "video-79ed1fb441d5-1",
+      "title": "Plate stacking \u00b7 1",
+      "dataset": null,
+      "recording": "0066",
+      "asset": "assets/policy-1.mp4",
+      "poster": "assets/policy-1.jpg",
+      "frames": 99,
+      "duration": 3.3
+    },
+    {
+      "id": "video-1-3",
+      "title": "Demo 0010",
+      "dataset": null,
+      "recording": "rene-2769406da03495bb",
+      "asset": "assets/policy-2.mp4",
+      "poster": "assets/policy-2.jpg",
+      "frames": 248,
+      "duration": 8.266666666666667
+    },
+    {
+      "id": "video-8085c1a14106-1",
+      "title": "Toy-box sorting \u00b7 1",
+      "dataset": null,
+      "recording": "0063",
+      "asset": "assets/policy-3.mp4",
+      "poster": "assets/policy-3.jpg",
+      "frames": 99,
+      "duration": 3.3
+    },
+    {
+      "id": "video-1-1",
+      "title": "Demo 0004",
+      "dataset": null,
+      "recording": "rene-0cf8c74fe3401464",
+      "asset": "assets/policy-4.mp4",
+      "poster": "assets/policy-4.jpg",
+      "frames": 86,
+      "duration": 2.8666666666666667
+    },
+    {
+      "id": "video-8085c1a14106-2",
+      "title": "Toy-box sorting \u00b7 2",
+      "dataset": null,
+      "recording": "0065",
+      "asset": "assets/policy-5.mp4",
+      "poster": "assets/policy-5.jpg",
+      "frames": 90,
+      "duration": 3.0
+    },
+    {
+      "id": "video-1-5",
+      "title": "Demo 0033",
+      "dataset": null,
+      "recording": "rene-b55d0e7f6a9e1801",
+      "asset": "assets/policy-6.mp4",
+      "poster": "assets/policy-6.jpg",
+      "frames": 146,
+      "duration": 4.866666666666666
+    },
+    {
+      "id": "video-1-2",
+      "title": "Demo 0005",
+      "dataset": null,
+      "recording": "rene-dd086915bc1d71f8",
+      "asset": "assets/policy-7.mp4",
+      "poster": "assets/policy-7.jpg",
+      "frames": 248,
+      "duration": 8.266666666666667
+    },
+    {
+      "id": "video-8085c1a14106-4",
+      "title": "Toy-box sorting \u00b7 4",
+      "dataset": null,
+      "recording": "0065",
+      "asset": "assets/policy-8.mp4",
+      "poster": "assets/policy-8.jpg",
+      "frames": 99,
+      "duration": 3.3
+    },
+    {
+      "id": "video-1-6",
+      "title": "Demo 0033 \u00b7 2",
+      "dataset": null,
+      "recording": "rene-b55d0e7f6a9e1801",
+      "asset": "assets/policy-9.mp4",
+      "poster": "assets/policy-9.jpg",
+      "frames": 348,
+      "duration": 11.6
+    }
+  ],
+  "progress": [
+    {
+      "id": "droid-2431bb1f5c",
+      "title": "DROID 03",
+      "dataset": "DROID",
+      "recording": null,
+      "asset": "assets/progress-1.mp4",
+      "poster": "assets/progress-1.jpg",
+      "frames": 122,
+      "duration": 4.066666666666666
+    },
+    {
+      "id": "yam-molmo-732cb63930",
+      "title": "YAM \u00b7 Molmo 15",
+      "dataset": "YAM \u00b7 Molmo",
+      "recording": null,
+      "asset": "assets/progress-2.mp4",
+      "poster": "assets/progress-2.jpg",
+      "frames": 150,
+      "duration": 5.0
+    },
+    {
+      "id": "egodex-737da3a426",
+      "title": "EgoDex 03",
+      "dataset": "EgoDex",
+      "recording": null,
+      "asset": "assets/progress-3.mp4",
+      "poster": "assets/progress-3.jpg",
+      "frames": 77,
+      "duration": 2.566666666666667
+    },
+    {
+      "id": "bridge-93ff60fd02",
+      "title": "Bridge 01",
+      "dataset": "Bridge",
+      "recording": null,
+      "asset": "assets/progress-4.mp4",
+      "poster": "assets/progress-4.jpg",
+      "frames": 117,
+      "duration": 3.9
+    },
+    {
+      "id": "yam-abc-7eee6dc7d3",
+      "title": "YAM \u00b7 ABC 04",
+      "dataset": "YAM \u00b7 ABC",
+      "recording": "/ccn2b/dataset/brd/processed/abc/train_put_the_trash_bags_into_the_trash_bin_episode_3a311932-d0d5-43e0-9c88-e16b6c76d2cd_episode__top-camera.mp4",
+      "asset": "assets/progress-5.mp4",
+      "poster": "assets/progress-5.jpg",
+      "frames": 150,
+      "duration": 5.0
+    },
+    {
+      "id": "yam-abc-02253f933a",
+      "title": "YAM \u00b7 ABC 11",
+      "dataset": "YAM \u00b7 ABC",
+      "recording": "/ccn2b/dataset/brd/processed/abc/train_place_and_organize_the_fake_fruits_in_the_fruit_bowl_episode_e41842ec-fc62-4efc-9f5a-2edd21ff2ce3_episode__top-camera.mp4",
+      "asset": "assets/progress-6.mp4",
+      "poster": "assets/progress-6.jpg",
+      "frames": 150,
+      "duration": 5.0
+    },
+    {
+      "id": "droid-cc22a5a07d",
+      "title": "DROID 06",
+      "dataset": "DROID",
+      "recording": null,
+      "asset": "assets/progress-7.mp4",
+      "poster": "assets/progress-7.jpg",
+      "frames": 118,
+      "duration": 3.933333333333333
+    },
+    {
+      "id": "bridge-db05619ac2",
+      "title": "Bridge 07",
+      "dataset": "Bridge",
+      "recording": null,
+      "asset": "assets/progress-8.mp4",
+      "poster": "assets/progress-8.jpg",
+      "frames": 84,
+      "duration": 2.8
+    },
+    {
+      "id": "handpicked-e839d8bdcf",
+      "title": "Handpicked videos 27",
+      "dataset": "Handpicked videos",
+      "recording": null,
+      "asset": "assets/progress-9.mp4",
+      "poster": "assets/progress-9.jpg",
+      "frames": 80,
+      "duration": 2.6666666666666665
+    }
+  ],
+  "policy_grid": "assets/policy-grid.mp4",
+  "progress_grid": "assets/progress-grid.mp4",
+  "policy_speed": 10,
+  "progress_speed": 1,
+  "policy_hold_seconds": 0.8,
+  "simulation": [
+    {
+      "id": "maxctx:yam-worldengine-fc31991faf:t1",
+      "episode_id": "yam-worldengine-fc31991faf",
+      "title": "YAM \u00b7 World Engine 02",
+      "dataset": "YAM \u00b7 World Engine",
+      "variant": "maxctx",
+      "temperature": 1,
+      "frame_gap_ms": 400,
+      "asset": "assets/simulation-1.mp4",
+      "poster": "assets/simulation-1.jpg",
+      "frames": 144,
+      "duration": 4.8
+    },
+    {
+      "id": "maxctx:yam-worldengine-467b8e03f1:t0p7",
+      "episode_id": "yam-worldengine-467b8e03f1",
+      "title": "YAM \u00b7 World Engine 13",
+      "dataset": "YAM \u00b7 World Engine",
+      "variant": "maxctx",
+      "temperature": 0.7,
+      "frame_gap_ms": 400,
+      "asset": "assets/simulation-2.mp4",
+      "poster": "assets/simulation-2.jpg",
+      "frames": 144,
+      "duration": 4.8
+    },
+    null,
+    null,
+    {
+      "id": "legacy970:solo-cup-full:t0",
+      "episode_id": "28b0013788ce40e2ae1dba2ab8bc3e75",
+      "title": "Red Solo cup \u00b7 full pick and place",
+      "dataset": "YAM \u00b7 Guest view",
+      "variant": "legacy970",
+      "temperature": 0,
+      "frame_gap_ms": 400,
+      "asset": "assets/simulation-5.mp4",
+      "poster": "assets/simulation-5.jpg",
+      "frames": 636,
+      "duration": 21.2
+    },
+    {
+      "id": "maxctx:yam-worldengine-1094960a6c:t0p7",
+      "episode_id": "yam-worldengine-1094960a6c",
+      "title": "YAM \u00b7 World Engine 11",
+      "dataset": "YAM \u00b7 World Engine",
+      "variant": "maxctx",
+      "temperature": 0.7,
+      "frame_gap_ms": 400,
+      "asset": "assets/simulation-6.mp4",
+      "poster": "assets/simulation-6.jpg",
+      "frames": 144,
+      "duration": 4.8
+    },
+    null,
+    null,
+    null
+  ],
+  "simulation_grid": "assets/simulation-grid.mp4",
+  "simulation_speed": 1,
+  "grid_frames": {
+    "policy": 1991,
+    "simulation": 2716,
+    "progress": 1864
+  }
+}

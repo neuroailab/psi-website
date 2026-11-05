@@ -1,0 +1,47 @@
+/* Results: one capability, one selected film. */
+#results { margin-top: 20px; }
+.capability-tabs { display: grid; grid-template-columns: 1.35fr 1fr 1.2fr; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 14px; margin: 0 0 30px; background: var(--surface, var(--paper)); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.capability-tabs button { min-width: 0; border: 0; border-radius: 9px; padding: 15px 8px; background: transparent; color: var(--muted); font: 600 15px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; transition: background .2s, color .2s; }
+.capability-tabs button:hover { color: var(--ink); }
+.capability-tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.capability-tabs button:focus-visible, .capability-carousel button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.capability-panel[hidden] { display: none; }
+.capability-panel:focus { outline: none; }
+.capability-panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; }
+.prose .capability-copy p { text-align: left; }
+.capability-carousel { margin: 28px 0 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.carousel-strip { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 20px; align-items: center; padding: 8px 4px; }
+.carousel-card { min-width: 0; padding: 0; background: transparent; border: 0; color: var(--muted); cursor: pointer; opacity: .35; transform: scale(.93); transition: opacity .2s, transform .2s; text-align: left; font: 500 12px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.carousel-card:hover { opacity: .75; }
+.carousel-card.is-current { opacity: 1; transform: scale(1); color: var(--ink); }
+.carousel-thumbnail { width: 100%; aspect-ratio: 16 / 9; display: block; object-fit: contain; background: #10151c; border-radius: 8px; }
+.carousel-card.is-current .carousel-thumbnail { outline: 2px solid var(--accent); outline-offset: 4px; }
+.carousel-card span { display: block; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.carousel-nav { display: flex; justify-content: center; align-items: center; gap: 24px; margin: 16px 0 24px; }
+.carousel-nav button, .carousel-play { display: inline-flex; justify-content: center; align-items: center; border: 1px solid var(--line); border-radius: 50%; width: 42px; height: 42px; padding: 0; color: var(--ink); background: transparent; cursor: pointer; font: 18px/1 sans-serif; }
+.carousel-nav button:hover, .carousel-play:hover { border-color: var(--accent); color: var(--accent); }
+.carousel-counter { font: 12px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--muted); min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+.carousel-stage { position: relative; max-width: 912px; margin: 0 auto; background: #10151c; overflow: hidden; border-radius: 10px; }
+.prose .carousel-canvas { display: block; width: 100%; height: auto; margin: 0; background: #10151c; }
+.carousel-video[hidden] { display: none; }
+.carousel-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: 912px; margin: 16px auto 0; }
+.carousel-play { flex-shrink: 0; width: auto; min-width: 42px; padding: 0 14px; border-radius: 22px; font-size: 12px; }
+.carousel-title { color: var(--ink); font: 500 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.carousel-readout { color: var(--muted); font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin-left: auto; font-variant-numeric: tabular-nums; }
+.prose .carousel-status { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--muted); margin: 10px auto 0; max-width: 912px; }
+.carousel-status:empty { display: none; }
+@media (max-width: 680px) {
+  .capability-tabs { gap: 2px; padding: 4px; border-radius: 11px; margin-bottom: 24px; }
+  .capability-tabs button { font-size: 11px; padding: 13px 3px; border-radius: 7px; }
+  .carousel-strip { gap: 10px; }
+  .carousel-card { font-size: 10px; }
+  .carousel-card span { margin-top: 8px; }
+  .carousel-nav { margin: 12px 0 18px; }
+  .carousel-stage { border-radius: 6px; }
+  .carousel-title { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel-card, .capability-tabs button { transition: none; }
+}
+
+.prose .capability-copy .capability-heading { margin: 0 0 14px; font-weight: 700; text-align: left; }

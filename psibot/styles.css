@@ -241,41 +241,6 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
 .video-play:hover { background:#eaf0ec; }
 .video-play:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
 
-/* Temporary, server-saved editorial comments; separate from the article. */
-.review-section { border-top:1px solid var(--line); padding:32px 0 64px; margin-bottom:32px; font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-.review-heading,.review-list-heading,.review-card-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; }
-.review-kicker { color:var(--accent); font-size:10px; font-weight:650; text-transform:uppercase; letter-spacing:.1em; margin:0 0 5px; }
-.review-section h2 { margin:0; font-size:28px; letter-spacing:-.025em; font-weight:600; }
-.review-section h3 { font-size:16px; font-weight:600; margin:0 0 18px; }
-.review-count { color:var(--muted); font-size:12px; white-space:nowrap; }
-.review-intro { color:var(--muted); max-width:760px; margin:16px 0 28px; }
-.review-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:36px; }
-.review-section label { display:block; margin:16px 0 6px; font-weight:550; font-size:12px; }
-.review-section label span { color:var(--muted); font-weight:400; }
-.review-section select,.review-section textarea { width:100%; min-width:0; border:1px solid #c4d1cb; border-radius:6px; padding:10px 12px; font:inherit; color:var(--ink); background:var(--paper); }
-.review-section textarea { resize:vertical; display:block; }
-.review-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
-.review-section button { font:inherit; font-size:12px; cursor:pointer; border:1px solid #c4d1cb; border-radius:5px; padding:7px 12px; background:var(--paper); color:var(--accent); }
-.review-section button.review-primary { background:var(--accent); border-color:var(--accent); color:white; }
-.review-section button:hover { filter:brightness(.96); }
-.review-section button:disabled { opacity:.6; cursor:wait; }
-.review-section :focus-visible,.review-launcher:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
-#review-status { min-height:24px; color:var(--accent); font-size:12px; }
-#review-status.review-error { color:#963b2f; }
-.review-list-heading h3 { margin:0; }
-.review-section .review-filter { display:flex; align-items:center; gap:8px; font-weight:400; color:var(--muted); margin:15px 0; }
-.review-filter input { accent-color:var(--accent); }
-.review-card { border:1px solid var(--line); padding:18px; border-radius:7px; margin:0 0 16px; overflow-wrap:anywhere; }
-.review-card-heading { align-items:flex-start; font-size:12px; font-weight:600; }
-.review-card blockquote { font-family:Georgia,serif; font-size:14px; color:var(--muted); border-left:2px solid #c4d1cb; padding-left:12px; margin:14px 0; white-space:pre-wrap; max-height:180px; overflow:auto; }
-.review-comment-text { white-space:pre-wrap; margin:14px 0; }
-.review-card time { font-size:11px; color:var(--muted); }
-.review-badge { color:var(--muted); font-weight:400; }
-.review-empty { color:var(--muted); padding:20px 0; }
-.review-launcher { position:fixed; right:24px; bottom:22px; z-index:20; border:1px solid var(--accent); border-radius:24px; padding:11px 18px; background:var(--accent); color:white; font:500 13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; cursor:pointer; box-shadow:0 3px 14px #172a3020; }
-@media(max-width:680px) { .review-grid { grid-template-columns:minmax(0,1fr); gap:30px; } .review-heading { align-items:flex-start; flex-wrap:wrap; } .review-launcher { right:14px; bottom:14px; max-width:calc(100vw - 28px); } .review-section { padding-bottom:64px; } }
-@media print { .review-section,.review-launcher { display:none; } }
-
 /* The paper's real training examples, animated in three equal panels. */
 .dataset-figure { margin:30px 0 36px; font:13px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
 .dataset-panels { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
@@ -456,8 +421,6 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
   .benchmark-event { stroke: #a7bac4; }
   .benchmark-paired .benchmark-goal { border-color: var(--surface); }
   .benchmark-paired .benchmark-goal figcaption { background: var(--surface); }
-  .review-section button.review-primary, .review-launcher { color: #0b211f; }
-  .review-section select, .review-section textarea, .review-section button { border-color: #3b505b; }
   .site-footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
   @media (max-width: 680px) {
     .article-header { padding: 38px 0 26px; }
@@ -548,8 +511,6 @@ code { font: .95em/1.8 ui-monospace, "SFMono-Regular", Consolas, monospace; over
   [data-theme="light"] .resource-copy strong { color: var(--ink); }
   [data-theme="light"] .resource-links .resource-copy small { color: #58707d; }
   [data-theme="light"] .resource-soon { background: #ffffff80; }
-  [data-theme="light"] .review-section button.review-primary, [data-theme="light"] .review-launcher { color: white; }
-  [data-theme="light"] .review-section select, [data-theme="light"] .review-section textarea, [data-theme="light"] .review-section button { border-color: #bcced6; }
 }
 @media(max-width:680px) { .site-header { gap: 12px; } .header-actions { gap: 6px; } .results-link { font-size: 11px; padding: 8px; } .theme-toggle { padding: 8px; font-size: 11px; gap: 5px; } }
 
