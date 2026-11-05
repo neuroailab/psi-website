@@ -12,7 +12,8 @@
 <link href="./styles.css?v=5d6445063e44" rel="stylesheet"/>
 <link href="./hero.css?v=823528c10edd" rel="stylesheet"/>
 <script defer="" src="./hero.js?v=8e729ed256f6"></script>
-<link href="./carousel.css?v=2119909c387e" rel="stylesheet"/></head>
+<link href="./carousel.css?v=2119909c387e" rel="stylesheet"/><link href="./prompt.css?v=918defc002e1" rel="stylesheet"/>
+</head>
 <body>
 <a class="skip-link" href="#article">Skip to article</a>
 <header class="site-header">
@@ -40,7 +41,7 @@
 <p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p><p>Current robotic systems often distribute these capabilities across separate models, each with its own architecture, training data, and objective. Post training a vision-language or video model to robot control can also introduce a substantial change in its training distribution, particularly when broad pretraining data gives way to a much narrower set of robot demonstrations.</p><p>We take a different approach to robot foundation model training by treating policy inference, simulation, and progress tracking as different queries to a single model, trained continuously using a diverse distribution of visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), we model relationships between visual observations and actions using next-token prediction, reframing robotics tasks as a set of sequence design problems.</p><p>At inference time, we observe striking generalization beyond the training distribution, where the model flexibly manipulates unfamiliar objects, simulates counterfactuals given a set of actions, and measures its own progress.</p>
 --><p>Humans can imagine different courses of action, anticipate their consequences, and choose how to act to achieve their goals. Robots with general intelligence need to answer the same questions: What should I do next? What will happen if I do it? Am I making progress towards my goal?</p><p>Robotic systems often split these capabilities across separate models. PsiBorg brings them together as prompts to a single model, trained continuously on diverse visuomotor data. Building on Probabilistic Structure Integration (<a href="https://arxiv.org/abs/2509.09737">PSI</a>), it predicts observations and actions as tokens, with each capability defined by what the prompt asks it to fill in.</p></section>
 <h2 class="capabilities-heading">Converting Capabilities Into Prompts</h2>
-<figure aria-label="Policy, simulation and progress highlighted on one recorded trajectory" class="trajectory-film" id="model-overview"><canvas aria-label="Three model paths appear at double speed, followed by a recorded trajectory and one query at a time for policy, simulation and progress tracking. All action clips loop." role="img"></canvas><div class="trajectory-footer"><p class="trajectory-note"></p><div class="trajectory-controls"><button aria-label="Replay animation" class="trajectory-replay" type="button">↺</button><button aria-label="Pause animation" class="trajectory-play" type="button">Ⅱ</button></div></div></figure>
+<figure aria-label="Policy, simulation and progress highlighted on one recorded trajectory" class="trajectory-film" id="model-overview"><div id="prompt-feature-player" aria-label="Policy, simulation and progress prompts"></div><div class="trajectory-footer"><p class="trajectory-note"></p><div class="trajectory-controls"><button aria-label="Replay animation" class="trajectory-replay" type="button">↺</button><button aria-label="Pause animation" class="trajectory-play" type="button">Ⅱ</button></div></div></figure>
 <section aria-label="Results" id="results">
 <div aria-label="Explore PsiBorg capabilities" class="capability-tabs" role="tablist">
 <button aria-controls="panel-policy" aria-selected="true" data-tab="policy" id="tab-policy" role="tab" tabindex="0" type="button">Policy and progress</button>
@@ -149,84 +150,6 @@
     });
   })();
   </script>
-<script>(() => {
- 'use strict';
- const root=document.querySelector('.trajectory-film');if(!root)return;
- const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d'),play=root.querySelector('.trajectory-play'),replay=root.querySelector('.trajectory-replay'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
- const INTRO=6,total=34,samples=[4,8,12,16],clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t;
- let rgb,actions,mark,meta,ready=false,manualMotion=false,playing=!reduced.matches,visible=true,time=0,last=0,paintAt=0,W=1100,H=300,p={};
- function colors(){const css=getComputedStyle(root),light=document.documentElement.dataset.theme==='light';p={ink:css.getPropertyValue('--ink').trim(),muted:css.getPropertyValue('--muted').trim(),line:css.getPropertyValue('--line').trim(),rgb:light?'#246cb2':'#83bfff',action:light?'#7950a6':'#c4a2ec',time:light?'#94600c':'#f2c579'};}
- function size(height){const dpr=Math.min(devicePixelRatio||1,2);height=Math.round(height);if(canvas.width!==Math.round(W*dpr)||H!==height){H=height;canvas.style.height=H+'px';canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}}
- function resize(){W=root.clientWidth;colors();draw();}
- function text(str,x,y,size=13,color=p.ink,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.textAlign='center';ctx.font=`${size}px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif`;ctx.fillText(str,x,y);ctx.restore();}
- function actionIndex(start,count,rate=1){const clock=time<INTRO?time*2:(time-INTRO)*rate;return start+Math.floor(clock*20)%count;}
- function sprite(kind,index,x,y,w,alpha=1){const a=kind==='rgb'?meta.rgb_atlas:meta.action_atlas,h=w*.57,col=kind==='rgb'?index%a.columns:index%20,row=kind==='rgb'?Math.floor(index/a.columns):Math.floor(index/20);ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(kind==='rgb'?rgb:actions,col*a.tile_width,row*a.tile_height,a.tile_width,a.tile_height,x-w/2,y-h/2,w,h);ctx.restore();}
- function layout(){const mobile=W<600,pad=mobile?6:20,gap=mobile?5:15,w=Math.min(150,(W-2*pad-6*gap)/6.25),aw=w*.75,span=4*w+3*aw+6*gap,y=mobile?97:123;let x=(W-span)/2,r=[],a=[];for(let i=0;i<4;i++){r.push({x:x+w/2,y,w});x+=w;if(i<3){x+=gap;a.push({x:x+aw/2,y,w:aw});x+=aw+gap;}}return{r,a,w,aw,mobile};}
- function box(items,color,alpha=1){const pad=W<600?3:9,left=Math.min(...items.map(v=>v.x-v.w/2))-pad,right=Math.max(...items.map(v=>v.x+v.w/2))+pad,top=Math.min(...items.map(v=>v.y-v.w*.285))-pad,bottom=Math.max(...items.map(v=>v.y+v.w*.285))+pad;ctx.save();ctx.strokeStyle=color;ctx.lineWidth=W<600?1.5:2;ctx.globalAlpha=alpha;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.beginPath();ctx.roundRect(left,top,right-left,bottom-top,5);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=alpha*.06;ctx.fillStyle=color;ctx.fill();ctx.restore();}
- function tokens(x,y,color,alpha,elapsed,count=5){const z=W<600?6:11,gap=W<600?3:5;ctx.save();ctx.fillStyle=color;for(let k=0;k<count;k++){ctx.globalAlpha=alpha*ease((elapsed-k*.07)/.09);ctx.fillRect(x-(count*z+(count-1)*gap)/2+k*(z+gap),y,z,z);}ctx.restore();}
- function curve(a,b,color,alpha=1,reveal=1,width=1.5){const mid=(a.x+b.x)/2;const point=t=>{const u=1-t;return{x:u*u*u*a.x+3*u*u*t*mid+3*u*t*t*mid+t*t*t*b.x,y:u*u*u*a.y+3*u*u*t*a.y+3*u*t*t*b.y+t*t*t*b.y};};ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(a.x,a.y);for(let i=1;i<=Math.ceil(50*reveal);i++){const c=point(Math.min(i/50,reveal));ctx.lineTo(c.x,c.y);}ctx.stroke();if(reveal>.98){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x-5,b.y-3);ctx.lineTo(b.x-5,b.y+3);ctx.fill();}else if(reveal>0){const c=point(reveal);ctx.fillStyle=color;ctx.beginPath();ctx.arc(c.x,c.y,2.8,0,Math.PI*2);ctx.fill();}ctx.restore();}
- function phaseAt(t){return t<3?'trajectory':t<5?'trajectory-hold':t<7?'policy':t<9?'simulation':t<11?'progress':t<13?'rearrange':t<16?'policy-query':t<20?'simulation-query':t<23?'progress-query':t<25?'shared-model':'return';}
- function trajectory(t,opacity,l){const{r,a,w,aw,mobile}=l,phase=phaseAt(t),isFirst=t<3,sourceTime=t*4;
-  ctx.save();ctx.globalAlpha=opacity;
-  // No arrows or tokens in this stage: the recorded frames and actions appear in order.
-  for(let i=0;i<4;i++){let alpha=isFirst?ease((sourceTime-i*4)/.35+1):1;if(t>=5&&t<11){const chosen=phase==='policy'?i===0||i===3:phase==='simulation'?i<2:i===0||i===3;alpha=chosen?1:.25;}sprite('rgb',samples[i],r[i].x,r[i].y,w,opacity*alpha);if(i===0||i===3)text(i===0?'Start':'Goal',r[i].x,r[i].y-w*.285-(mobile?15:18),mobile?13:20,p.ink,opacity*alpha);}
-  for(let i=0;i<3;i++){let elapsed=clamp((sourceTime-i*4)/4)*4,alpha=isFirst?ease((sourceTime-i*4-.3)/.35):phase==='trajectory-hold'?1:.22;if(t>=5&&i===0){alpha=phase==='progress'?.22:1;elapsed=phase==='policy'?Math.min(t-5,.999):phase==='simulation'?Math.min((t-7)*2,3.999):4;}sprite('action',actionIndex((4+i*4)*20,80,isFirst?4:1),a[i].x,a[i].y,aw,opacity*alpha);}
-  const labelY=mobile?22:25;
-  if(phase==='policy'){text('Policy',W/2,labelY,mobile?20:28,p.action,opacity);box([r[0],a[0]],p.action,opacity);box([r[3]],p.action,opacity);}
-  if(phase==='simulation'){text('Simulation',W/2,labelY,mobile?20:28,p.rgb,opacity);box([r[0],a[0],r[1]],p.rgb,opacity);}
-  if(phase==='progress'){text('Δt · 12 s',W/2,labelY,mobile?20:28,p.time,opacity);box([r[0]],p.time,opacity);box([r[3]],p.time,opacity);ctx.save();ctx.globalAlpha=opacity;ctx.strokeStyle=p.time;ctx.lineWidth=1.5;const y=labelY+10;ctx.beginPath();ctx.moveTo(r[0].x,y+5);ctx.lineTo(r[0].x,y);ctx.lineTo(r[3].x,y);ctx.lineTo(r[3].x,y+5);ctx.stroke();ctx.restore();}
-  ctx.restore();
- }
- function rows(t,q,l,staticView){const mobile=l.mobile,w=Math.min(150,W*.17),ys=mobile?[80,240,400]:[105,300,495],x1=W*.115,x2=W*.315,xo=W*.85,m={x:W*.56,y:ys[1]},radius=mobile?21:36,phase=phaseAt(t),active=phase==='policy-query'?0:phase==='simulation-query'?1:phase==='progress-query'?2:-1;
-  const all=staticView||phase==='shared-model'||phase==='return',names=['Policy','Simulation','Progress'],inks=[p.action,p.rgb,p.time];root.dataset.tokensVisible=String((staticView||t>13)&&q>0);
-  function media(kind,index,from,to,label,alpha,color,tokenTime){const pos={x:mix(from.x,to.x,q),y:mix(from.y,to.y,q)},width=mix(from.w,w,q);sprite(kind,index,pos.x,pos.y,width,alpha*q);const captionAlpha=alpha*ease((q-.55)/.45);text(label,pos.x,pos.y+width*.285+(mobile?22:27),mobile?12:18,p.muted,captionAlpha);tokens(pos.x,pos.y+width*.285+(mobile?36:40),color,captionAlpha,tokenTime);}
-  for(let i=0;i<3;i++){const alpha=active<0||active===i?1:.38,y=ys[i],color=inks[i],stream=staticView?10:t-[13,16,20][i];media('rgb',4,l.r[0],{x:x1,y},'RGB₀',alpha,p.rgb,stream);
-   if(i===1){const elapsed=staticView?3.999:Math.max(0,Math.min(t-16,3.999));media('action',actionIndex(80,80),l.a[0],{x:x2,y},'Action',alpha,p.action,stream-.35);}
-   else media('rgb',16,l.r[3],{x:x2,y},i===0?'Goalₜ':'Goal',alpha,p.rgb,stream-.35);
-   if(i===0){media('action',actionIndex(80,20),l.a[0],{x:xo,y},'Action',alpha,p.action,stream-1.55);}
-   else if(i===1)media('rgb',8,l.r[1],{x:xo,y},'Next RGB',alpha,p.rgb,stream-1.55);
-   else{const tx=mix((l.r[0].x+l.r[3].x)/2,xo,q),ty=mix(50,y,q);text('12 s',tx,ty+8,mobile?30:42,p.time,alpha*q);text('Δt',tx,ty+(mobile?36:44),mobile?15:20,p.muted,alpha*q);tokens(tx,ty+(mobile?49:59),p.time,alpha*ease(q),stream-1.55);}
-   const from={x:x2+w/2+9,y},entry={x:m.x-radius-8,y:m.y},exit={x:m.x+radius+8,y:m.y},to={x:xo-w/2-9,y};const wireAlpha=alpha*ease((q-.5)/.5);curve(from,entry,color,wireAlpha*.35);curve(exit,to,color,wireAlpha*.35);
-   if(active===i||all){const elapsed=all?5:t-(i===0?13:i===1?16:20);curve(from,entry,color,wireAlpha,ease(elapsed/.85),2.5);curve(exit,to,color,wireAlpha,ease((elapsed-.85)/.9),2.5);}
-  }
-  ctx.save();ctx.globalAlpha=ease((q-.3)/.7);ctx.drawImage(mark,m.x-radius,m.y-radius,radius*2,radius*2);ctx.restore();
- }
 
- function stage(t){
-  if(t<5)return{phase:t<3?'trajectory':'trajectory-hold',q:0,trajectory:t,type:0,elapsed:-1};
-  const type=t<12?0:t<20?1:2,start=[5,12,20][type],morph=start+2,query=morph+1,back=[11,19,26][type];
-  let q=t<morph?0:t<query?ease(t-morph):t<back?1:t<back+1?1-ease(t-back):0;
-  return{type,q,elapsed:t-query,trajectory:[5,7,9][type]+Math.min(1.999,Math.max(0,t-start)),phase:['policy','simulation','progress'][type]+(t<morph?'-trajectory':t<query?'-enter':t<back?'-query':t<back+1?'-return':'-hold')};
- }
- function single(s,l,staticView){const {q,type}=s,mobile=l.mobile,w=Math.min(150,W*.17),y=mobile?140:155,x1=W*.115,x2=W*.315,xo=W*.85,m={x:W*.56,y},radius=mobile?23:40,color=[p.action,p.rgb,p.time][type],stream=staticView?10:s.elapsed;
-  root.dataset.tokensVisible=String(stream>0&&q>0);
-  function media(kind,index,from,x,label,ink,clock){const pos={x:mix(from.x,x,q),y:mix(from.y,y,q)},width=mix(from.w,w,q);sprite(kind,index,pos.x,pos.y,width,q);const a=ease((q-.5)/.5);text(label,pos.x,pos.y+width*.285+(mobile?22:28),mobile?12:18,p.muted,a);tokens(pos.x,pos.y+width*.285+(mobile?36:43),ink,a,clock);}
-  media('rgb',4,l.r[0],x1,'RGB₀',p.rgb,stream);
-  if(type===1)media('action',actionIndex(80,80),l.a[0],x2,'Action',p.action,stream-.35);
-  else media('rgb',16,l.r[3],x2,type===0?'Goalₜ':'Goal',p.rgb,stream-.35);
-  if(type===0)media('action',actionIndex(80,20),l.a[0],xo,'Action',p.action,stream-1.55);
-  else if(type===1)media('rgb',8,l.r[1],xo,'Next RGB',p.rgb,stream-1.55);
-  else{const x=mix((l.r[0].x+l.r[3].x)/2,xo,q),ty=mix(50,y,q);text('12 s',x,ty+10,mobile?32:44,p.time,q);text('Δt',x,ty+45,mobile?16:20,p.muted,q);tokens(x,ty+62,p.time,q,stream-1.55);}
-  const a=ease((q-.45)/.55),from={x:x2+w/2+9,y},entry={x:m.x-radius-8,y},exit={x:m.x+radius+8,y},to={x:xo-w/2-9,y};
-  curve(from,entry,color,a*.22);curve(exit,to,color,a*.22);
-  curve(from,entry,color,a,ease(stream/.85),2.5);curve(exit,to,color,a,ease((stream-.85)/.9),2.5);
-  ctx.save();ctx.globalAlpha=a;ctx.drawImage(mark,m.x-radius,m.y-radius,radius*2,radius*2);ctx.restore();
- }
- function draw(){if(!ready)return;const staticView=reduced.matches&&!manualMotion,t=staticView?5.25:time,l=layout(),intro=t<INTRO;
-  const fade=intro?1-ease((t-5.5)/.5):1,local=Math.max(0,t-INTRO),s=stage(local);
-  canvas.style.transition='height .4s ease';canvas.style.opacity=String(intro?fade:ease(local/.25));size(intro?(l.mobile?490:620):(l.mobile?270:320));ctx.clearRect(0,0,W,H);
-  root.dataset.filmTime=t.toFixed(2);root.dataset.introSpeed='2';root.dataset.actionLoop='true';root.dataset.rgbSamples=samples.join(',');root.dataset.tokensVisible='false';
-  if(intro){const rt=13+t*2;root.dataset.filmPhase='intro-'+phaseAt(rt);root.dataset.capability='all';root.dataset.modelCount='1';root.dataset.capabilityRows='3';ctx.save();ctx.globalAlpha=fade;rows(rt,1,l,staticView);ctx.restore();}
-  else{root.dataset.filmPhase=s.phase;root.dataset.capability=['policy','simulation','progress'][s.type];root.dataset.modelCount=s.q>0?'1':'0';root.dataset.capabilityRows=s.q>0?'1':'0';if(s.q<1)trajectory(s.trajectory,1-s.q,l);if(s.q>0)single(s,l,staticView);}
-  play.textContent=playing?'Ⅱ':'▶';play.setAttribute('aria-label',playing?'Pause animation':'Play animation');
- }
- function tick(now){if(!last)last=now;if(ready&&playing&&visible&&!document.hidden&&(!reduced.matches||manualMotion))time=(time+Math.min(now-last,150)/1000)%total;last=now;if(ready&&playing&&visible&&!document.hidden&&(!reduced.matches||manualMotion)&&now-paintAt>25){draw();paintAt=now;}requestAnimationFrame(tick);}
- play.addEventListener('click',()=>{playing=!playing;if(reduced.matches&&playing){manualMotion=true;time=0;}last=performance.now();draw();});replay.addEventListener('click',()=>{time=0;manualMotion=true;playing=true;last=performance.now();draw();});
- new ResizeObserver(()=>{if(Math.abs(root.clientWidth-W)>1)resize()}).observe(root);new MutationObserver(()=>{colors();draw()}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;last=performance.now()},{threshold:.05}).observe(root);document.addEventListener('visibilitychange',()=>{last=performance.now()});reduced.addEventListener('change',()=>{manualMotion=false;playing=!reduced.matches;draw()});
- const load=url=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Animation media could not load.'));im.src=url;});
- const bundled={meta:null,observations:'./assets/trajectory/observations.webp',actions:'./assets/trajectory/actions-clean.webp',mark:'./assets/psi-mark.svg'};
- Promise.all([fetch('./assets/trajectory/sequence-clean.json').then(r=>r.json()),load(bundled.observations),load(bundled.actions),load(bundled.mark)]).then(([m,r,a,logo])=>{meta=m;rgb=r;actions=a;mark=logo;ready=true;resize();requestAnimationFrame(tick);}).catch(e=>root.querySelector('.trajectory-note').textContent=e.message);colors();
-})();
-</script>
-<script defer="" src="./carousel.js?v=28eb02db3c7a"></script></body>
+<script defer="" src="./carousel.js?v=28eb02db3c7a"></script><script defer="" src="./prompt.js?v=221be077b4f2"></script></body>
 </html>

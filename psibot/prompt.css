@@ -1,0 +1,4 @@
+/* Reserve the largest scene once per breakpoint to keep article text still. */
+#prompt-feature-player {display:block; width:100%; height:620px; overflow:hidden; background:transparent;}
+#prompt-feature-player canvas {display:block; width:100%; height:100%; background:transparent;}
+@media (max-width:599px) {#prompt-feature-player {height:490px;}}

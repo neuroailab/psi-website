@@ -27,3 +27,9 @@ Uncomment both retained HTML blocks to restore that section.
 The prompt animation uses the recorded trajectory assets. Training-data figures
 switch between their existing dark/light variants. Code, Paper, and Model
 buttons remain disabled until their release URLs are supplied.
+
+The prompting figure also runs in Remotion via `prompt-animation/PromptFilm.jsx`
+and the bundled `prompt.js`. The blog and social film share its exact 15-frame
+(0.5-second) RGB/action reveal spacing. Source observations, command samples,
+query phases, and action-loop speeds are preserved. Rebuild with
+`node prompt-animation/build.mjs`; keep the fixed stage bounds in `prompt.css`.
