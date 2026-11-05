@@ -1,6 +1,9 @@
 /* The source animation fills the page and shares its exact theme background. */
 .article-header { padding-top: 20px; padding-bottom: 0; }
-.article-header h1 { margin-top: 12px; }
+.article-header h1 { margin-top: 12px; max-width: none; }
+@media(min-width:681px) {
+ .article-header h1 { white-space: nowrap; font-size: min(44px, calc((100vw - 80px) * .0375)); }
+}
 .article-header .resource-links { margin-bottom: 0; }
 .hero-feature { position: relative; width: min(1800px, calc(100vw - 48px)); max-width: none; margin: 24px 0 20px 50%; transform: translateX(-50%); text-align: left; }
 .hero-feature-screen { aspect-ratio: 1920 / 874; width: 100%; min-height: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
