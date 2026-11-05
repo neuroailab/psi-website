@@ -337,7 +337,7 @@
       }
     };
   }
-  fetch('./assets/carousel/catalog.json?v=b735c105731f').then(response => {
+  fetch('./assets/carousel/catalog.json?v=e4cd0bc736dd').then(response => {
     if (!response.ok) throw Error('The video collection could not load. Refresh the page to try again.');
     return response.json();
   }).then(data => {

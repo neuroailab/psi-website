@@ -1,11 +1,11 @@
 import React from 'react';
 import {AbsoluteFill, Composition, Loop, OffthreadVideo, registerRoot, staticFile} from 'remotion';
 
-const trimmedFrames = 516;
+const trimmedFrames = 456;
 const full = {width: '100%', height: '100%', objectFit: 'fill', display: 'block'};
 function SoloCup() {
   return <OffthreadVideo muted src={staticFile('original-simulation-5.mp4')}
-    trimBefore={120} trimAfter={636} style={full}/>;
+    trimBefore={180} trimAfter={636} style={full}/>;
 }
 function SimulationGrid() {
   return <AbsoluteFill>

@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "progress_prediction_interval_ms": 200,
   "progress_graph_render": {
     "asset_size": [
@@ -13,7 +13,7 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "duration_frames": 2596,
+  "duration_frames": 2536,
   "timing": {
     "policy_in": 0,
     "simulation_in": 60,
@@ -27,13 +27,13 @@
     "simulation_feature_in": 854,
     "simulation_1": 874,
     "simulation_2": 1083,
-    "simulation_3": 1664,
-    "progress_focus": 1835,
-    "progress_feature_in": 1901,
-    "progress_1": 1921,
-    "progress_2": 2108,
-    "progress_3": 2323,
-    "return_overview": 2500
+    "simulation_3": 1604,
+    "progress_focus": 1775,
+    "progress_feature_in": 1841,
+    "progress_1": 1861,
+    "progress_2": 2048,
+    "progress_3": 2263,
+    "return_overview": 2440
   },
   "chapters": {
     "policy": {
@@ -88,55 +88,55 @@
           "highlight": 1045,
           "expand": 1063,
           "play": 1083,
-          "frames": 516,
-          "collapse": 1599,
-          "end": 1617
+          "frames": 456,
+          "collapse": 1539,
+          "end": 1557
         },
         {
           "tile": 5,
-          "highlight": 1626,
-          "expand": 1644,
-          "play": 1664,
+          "highlight": 1566,
+          "expand": 1584,
+          "play": 1604,
           "frames": 144,
-          "collapse": 1808,
-          "end": 1826
+          "collapse": 1748,
+          "end": 1766
         }
       ],
-      "focus_end": 1835
+      "focus_end": 1775
     },
     "progress": {
-      "focus_start": 1835,
-      "full_grid": 1871,
+      "focus_start": 1775,
+      "full_grid": 1811,
       "cycles": [
         {
           "tile": 0,
-          "highlight": 1883,
-          "expand": 1901,
-          "play": 1921,
+          "highlight": 1823,
+          "expand": 1841,
+          "play": 1861,
           "frames": 122,
-          "collapse": 2043,
-          "end": 2061
+          "collapse": 1983,
+          "end": 2001
         },
         {
           "tile": 4,
-          "highlight": 2070,
-          "expand": 2088,
-          "play": 2108,
+          "highlight": 2010,
+          "expand": 2028,
+          "play": 2048,
           "frames": 150,
-          "collapse": 2258,
-          "end": 2276
+          "collapse": 2198,
+          "end": 2216
         },
         {
           "tile": 5,
-          "highlight": 2285,
-          "expand": 2303,
-          "play": 2323,
+          "highlight": 2225,
+          "expand": 2243,
+          "play": 2263,
           "frames": 150,
-          "collapse": 2473,
-          "end": 2491
+          "collapse": 2413,
+          "end": 2431
         }
       ],
-      "focus_end": 2500
+      "focus_end": 2440
     }
   },
   "feature_tiles": [
@@ -370,11 +370,11 @@
       "variant": "legacy970",
       "temperature": 0,
       "frame_gap_ms": 400,
-      "asset": "assets/simulation-5-trim4.mp4",
-      "poster": "assets/simulation-5-trim4.jpg",
-      "frames": 516,
-      "duration": 17.2,
-      "source_trim_start_seconds": 4
+      "asset": "assets/simulation-5-trim6.mp4",
+      "poster": "assets/simulation-5-trim6.jpg",
+      "frames": 456,
+      "duration": 15.2,
+      "source_trim_start_seconds": 6
     },
     {
       "id": "maxctx:yam-worldengine-1094960a6c:t0p7",
@@ -393,7 +393,7 @@
     null,
     null
   ],
-  "simulation_grid": "assets/simulation-trim4-grid.mp4",
+  "simulation_grid": "assets/simulation-trim6-grid.mp4",
   "simulation_speed": 1,
   "grid_frames": {
     "policy": 1991,

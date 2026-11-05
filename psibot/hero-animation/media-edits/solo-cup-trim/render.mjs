@@ -67,7 +67,7 @@ for (const [id, name] of [['SoloCupTrimmed', 'simulation-5'], ['SimulationGridTr
   });
   await renderStill({...base, composition, frame: 0, imageFormat: 'jpeg', jpegQuality: 95, output: path.join(out, name + '.jpg')});
   reports.push({renderer: 'Remotion 4.0.523', composition: id, frames: total, fps: composition.fps,
-    width: composition.width, height: composition.height, sourceTrimFrames: 120, sourceTrimSeconds: 4,
+    width: composition.width, height: composition.height, sourceTrimFrames: 180, sourceTrimSeconds: 6,
     output, poster: path.join(out, name + '.jpg'), codec: 'h264', crf: 16, x264Preset: 'ultrafast', audio: false,
     remotionSampleStep: sampleStep, remotionSamples: requested.length,
     cadence: sampleStep === 12 ? 'Original 400 ms prediction holds; sampled every 12 frames and repeated at 30 fps' : 'Every source frame rendered'});
@@ -76,8 +76,8 @@ for (const [id, name] of [['SoloCupTrimmed', 'simulation-5'], ['SimulationGridTr
 }
 const sha = async p => createHash('sha256').update(await readFile(path.join(here, p))).digest('hex');
 await writeFile(path.join(out, 'render-receipt.json'), JSON.stringify({
-  createdAt: new Date().toISOString(), renderer: 'Remotion', trim: {frames: 120, fps: 30, seconds: 4},
-  grid: {preservedFrames: 2716, replacementTile: 4, x: 420, y: 242, width: 408, height: 230, loopFrames: 516},
+  createdAt: new Date().toISOString(), renderer: 'Remotion', trim: {frames: 180, fps: 30, seconds: 6, firstSourceFrame: 180, lastSourceFrame: 635},
+  grid: {preservedFrames: 2716, replacementTile: 4, x: 420, y: 242, width: 408, height: 230, loopFrames: 456},
   inputs: {clip: await sha('public/original-simulation-5.mp4'), grid: await sha('public/original-simulation-grid.mp4')},
   sourceSha256: await sha('remotion/index.jsx'), reports
 }, null, 2) + '\n');
