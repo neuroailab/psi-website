@@ -44,7 +44,7 @@ const C = {
   progress: 'var(--progress, #94600c)',
 };
 const DATA = {
-  policy: {heading: 'Execute new tasks', prompt: 'One goal image → actions'},
+  policy: {heading: 'Execute new tasks from a single goal image'},
   simulation: {heading: 'Imagine possible futures', prompt: 'Actions → future video'},
   progress: {heading: 'Track progress', prompt: 'Observation + goal → Δt'},
 };
@@ -127,38 +127,31 @@ function Overview({mobile, markSrc}) {
     <Connections mobile={mobile} opacity={appear}/>
     {kinds.map((kind, i) => {
       const d = DATA[kind];
+      const policy = kind === 'policy';
       const width = mobile ? 280 : 572;
       return <div key={kind} data-opening-panel={kind} style={{
         position: 'absolute', left: mobile ? mobilePositions[i][0] : 72 + i * 602,
         top: mobile ? mobilePositions[i][1] : 226, width, opacity: appear,
         transform: `translateY(${(1 - ease(f, 0, 24)) * (mobile ? 5 : 10)}px)`,
       }}>
-        <div style={{
-          fontSize: mobile ? 21 : 31, lineHeight: mobile ? '24px' : '36px',
+        <div aria-label={policy ? d.heading : undefined} style={{
+          fontSize: mobile ? 21 : 31,
+          lineHeight: mobile ? (policy ? '23px' : '24px') : '36px',
+          height: policy ? (mobile ? 46 : 73) : undefined,
           fontWeight: 600, color: C[kind], letterSpacing: mobile ? -.45 : -.7,
-          textAlign: 'center', whiteSpace: 'nowrap',
-        }}>{d.heading}</div>
-        <div style={{
+          textAlign: 'center', whiteSpace: policy ? 'pre-line' : 'nowrap',
+        }}>{policy ? d.heading.replace(' from ', '\nfrom ') : d.heading}</div>
+        {!policy && <div style={{
           fontSize: mobile ? 15 : 22, lineHeight: mobile ? '18px' : '25px',
           marginTop: mobile ? 4 : 12, color: C.muted, textAlign: 'center', whiteSpace: 'nowrap',
-        }}>{d.prompt}</div>
+        }}>{d.prompt}</div>}
         <div style={{
           marginTop: mobile ? 6 : 27, width, height: mobile ? 160 : 327,
           overflow: 'hidden', borderRadius: mobile ? 6 : 10,
         }}><OpeningGrid kind={kind}/></div>
       </div>;
     })}
-    {!mobile && <div style={{
-      position: 'absolute', top: 737, left: 72, right: 72,
-      textAlign: 'center', opacity: ease(f, 24, 20),
-    }}>
-      <div data-text="overview-hook" style={{fontSize: 32, fontWeight: 500, letterSpacing: -.6}}>
-        Specify the outcome with one image.
-      </div>
-      <div style={{fontSize: 25, color: C.muted, marginTop: 11}}>
-        Generate actions, predict consequences, and estimate progress.
-      </div>
-    </div>}
+
   </>;
 }
 

@@ -9,7 +9,7 @@ const W = 1248, H = 714, LABEL_H = 132, TOP = 14;
 const OVERVIEW_SCALE = 620 / W;
 const kinds = ['policy', 'simulation', 'progress'];
 const headings = {
-  policy: 'Execute new tasks',
+  policy: 'Execute new tasks from a single goal image',
   simulation: 'Imagine possible futures',
   progress: 'Track progress'
 };
@@ -187,19 +187,23 @@ export function Story({mobile = false}) {
         const expansion = cycle ? ease(f, cycle.expand, 20) * (1 - ease(f, cycle.collapse, 18)) : 0;
         const titleEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 4, 24);
         const accentEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 12, 28);
+        const mobilePolicy = mobile && kind === 'policy';
         return <div key={kind} data-panel={kind} aria-hidden={mobile && opacity === 0 ? true : undefined}
           style={{position: 'absolute', left, top,
           width: W, height: H + LABEL_H, transform: `scale(${scale})`, transformOrigin: 'top left',
           opacity, zIndex: Math.round(own * 100) + kinds.indexOf(kind)}}>
           <div style={{position: 'relative', height: LABEL_H}}>
-            <div className="psi-hero-title" style={{fontSize: mobile ? mix(76, 60, own) : 60, lineHeight: 1.2, fontWeight: 560,
-              textAlign: 'center', whiteSpace: 'nowrap', letterSpacing: -1,
+            <div className="psi-hero-title" aria-label={mobilePolicy ? headings[kind] : undefined}
+              style={{fontSize: mobile ? mix(mobilePolicy ? 64 : 76, 60, own) : 60,
+              lineHeight: mobilePolicy ? 1 : 1.2, fontWeight: 560,
+              textAlign: 'center', whiteSpace: mobilePolicy ? 'pre-line' : 'nowrap', letterSpacing: -1,
               color: 'var(--ink, #172a30)', opacity: titleEntry,
               transform: `translateY(${(1 - titleEntry) * 12}px)`}}>
-              {headings[kind]}
+              {mobilePolicy ? headings[kind].replace(' from ', '\nfrom ') : headings[kind]}
             </div>
             <div aria-hidden="true" style={{position: 'absolute', left: (W - 112) / 2,
-              top: 100, width: 112, height: 3, borderRadius: 2, background: colors[kind],
+              top: mobilePolicy ? mix(128, 124, own) : 100,
+              width: 112, height: 3, borderRadius: 2, background: colors[kind],
               opacity: .75 * accentEntry, transform: `scaleX(${accentEntry})`, transformOrigin: 'center'}}/>
           </div>
           <div style={{position: 'relative', width: W, height: H}}>
