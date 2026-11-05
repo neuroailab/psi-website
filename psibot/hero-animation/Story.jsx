@@ -77,11 +77,11 @@ function GridVideo({kind}) {
 
 function Clip({clip, start, f}) {
   if (f < start) return <Img src={asset(clip.poster)} style={videoStyle}/>;
-  if (f >= start + clip.frames) return <Freeze frame={clip.frames - 1}>
-    <OffthreadVideo muted src={asset(clip.asset)} style={videoStyle}/>
-  </Freeze>;
-  return <Sequence from={start} durationInFrames={clip.frames} layout="none">
-    <OffthreadVideo muted poster={asset(clip.poster)} src={asset(clip.asset)} style={videoStyle}/>
+  // Keep the decoded video mounted when playback ends and the tile shrinks.
+  return <Sequence from={start} layout="none">
+    <Freeze frame={clip.frames - 1} active={f >= start + clip.frames}>
+      <OffthreadVideo muted poster={asset(clip.poster)} src={asset(clip.asset)} style={videoStyle}/>
+    </Freeze>
   </Sequence>;
 }
 

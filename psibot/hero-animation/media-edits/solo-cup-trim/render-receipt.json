@@ -1,0 +1,103 @@
+{
+  "createdAt": "2026-11-05T01:16:26.352Z",
+  "renderer": "Remotion",
+  "trim": {
+    "frames": 120,
+    "fps": 30,
+    "seconds": 4
+  },
+  "grid": {
+    "preservedFrames": 2716,
+    "replacementTile": 4,
+    "x": 420,
+    "y": 242,
+    "width": 408,
+    "height": 230,
+    "loopFrames": 516
+  },
+  "inputs": {
+    "clip": "72c641ae0766969ca75425794d0a2d31574d96350b0397c321058b761913cfdc",
+    "grid": "14147b2ac5af7835d00865224e97695c70eebd9de86a6014cec8244388f3ca7e"
+  },
+  "sourceSha256": "d3e4f09b575dde5573266513366e9ad7c45cc992aefe99784a5cb8d6cbdb60c8",
+  "reports": [
+    {
+      "renderer": "Remotion 4.0.523",
+      "composition": "SoloCupTrimmed",
+      "frames": 516,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "sourceTrimFrames": 120,
+      "sourceTrimSeconds": 4,
+      "output": "/tmp/psiborg-solo-trim-media/output/simulation-5.mp4",
+      "poster": "/tmp/psiborg-solo-trim-media/output/simulation-5.jpg",
+      "codec": "h264",
+      "crf": 16,
+      "x264Preset": "ultrafast",
+      "audio": false,
+      "remotionSampleStep": 1,
+      "remotionSamples": 516,
+      "cadence": "Every source frame rendered"
+    },
+    {
+      "renderer": "Remotion 4.0.523",
+      "composition": "SimulationGridTrimmed",
+      "frames": 2716,
+      "fps": 30,
+      "width": 1248,
+      "height": 714,
+      "sourceTrimFrames": 120,
+      "sourceTrimSeconds": 4,
+      "output": "/tmp/psiborg-solo-trim-media/output/simulation-grid.mp4",
+      "poster": "/tmp/psiborg-solo-trim-media/output/simulation-grid.jpg",
+      "codec": "h264",
+      "crf": 16,
+      "x264Preset": "ultrafast",
+      "audio": false,
+      "remotionSampleStep": 12,
+      "remotionSamples": 227,
+      "cadence": "Original 400 ms prediction holds; sampled every 12 frames and repeated at 30 fps"
+    }
+  ],
+  "validation": {
+    "validation": "passed",
+    "clip_frames_checked": 10,
+    "grid_frames_checked": 15,
+    "clip_max_mae": 1.420071785910088,
+    "unchanged_grid_max_mae": 1.3792434322756737,
+    "unchanged_grid_render_max_mae": 0.6168263023394277,
+    "cup_grid_max_mae": 2.09533603296391,
+    "original_grid_hold_max_mae": 0.6518466895305131,
+    "posters": {
+      "simulation-5": {
+        "mae": 1.4185576857182018,
+        "rmse": 1.7826170836940418,
+        "max_abs": 15
+      },
+      "simulation-grid": {
+        "mae": 1.1510966566113625,
+        "rmse": 1.6754600411366907,
+        "max_abs": 33
+      }
+    }
+  },
+  "outputs": {
+    "simulation-5.mp4": {
+      "sha256": "8ece76f20423fbb93c4c87ed488230995e156676cc9773bd08082277499e6871",
+      "bytes": 2552205
+    },
+    "simulation-5.jpg": {
+      "sha256": "9f1c5f1919e6ad3f10e6262743a0444cf6e9059d8dd1a2875655ca66aec90dbf",
+      "bytes": 62407
+    },
+    "simulation-grid.mp4": {
+      "sha256": "bd24da5cc8c35b686230cc03679316b5d105920e0ef19a05e4b2cb225efb7484",
+      "bytes": 37993221
+    },
+    "simulation-grid.jpg": {
+      "sha256": "ac730c27e5cc704e6352a93cc7761aad2bb7b1241b0481b93bd8beea185992e8",
+      "bytes": 115764
+    }
+  }
+}

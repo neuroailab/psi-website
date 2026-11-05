@@ -1,0 +1,62 @@
+[
+  {
+    "block_start": 0,
+    "max_mae_within_hold": 0.050047209054561996,
+    "max_pixel_delta": 9
+  },
+  {
+    "block_start": 12,
+    "max_mae_within_hold": 0.12172641492494433,
+    "max_pixel_delta": 14
+  },
+  {
+    "block_start": 120,
+    "max_mae_within_hold": 0.02046860410830999,
+    "max_pixel_delta": 11
+  },
+  {
+    "block_start": 132,
+    "max_mae_within_hold": 0.08143000790059614,
+    "max_pixel_delta": 13
+  },
+  {
+    "block_start": 144,
+    "max_mae_within_hold": 0.6004112649333238,
+    "max_pixel_delta": 30
+  },
+  {
+    "block_start": 504,
+    "max_mae_within_hold": 0.6518466895305131,
+    "max_pixel_delta": 28
+  },
+  {
+    "block_start": 516,
+    "max_mae_within_hold": 0.11320671430965548,
+    "max_pixel_delta": 16
+  },
+  {
+    "block_start": 624,
+    "max_mae_within_hold": 0.6314315790418732,
+    "max_pixel_delta": 25
+  },
+  {
+    "block_start": 636,
+    "max_mae_within_hold": 0.09608688560894443,
+    "max_pixel_delta": 16
+  },
+  {
+    "block_start": 648,
+    "max_mae_within_hold": 0.08018431731667026,
+    "max_pixel_delta": 12
+  },
+  {
+    "block_start": 1032,
+    "max_mae_within_hold": 0.1353579359094065,
+    "max_pixel_delta": 14
+  },
+  {
+    "block_start": 2700,
+    "max_mae_within_hold": 0.016904357897004955,
+    "max_pixel_delta": 13
+  }
+]
