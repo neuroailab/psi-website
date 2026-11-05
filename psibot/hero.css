@@ -23,7 +23,7 @@
  .hero-feature-controls { gap: 8px; font-size: 11px; }
 }
 
-@media(max-width:647px) { .hero-feature-screen { aspect-ratio: 640 / 1332; } }
+@media(max-width:647px) { .hero-feature-screen { aspect-ratio: 640 / 450; } }
 
 /* Theme-aware depth for the Remotion close-up, without an outer video frame. */
 .hero-feature { --hero-feature-shadow: 0 8px 18px -8px rgba(0, 0, 0, .24); }

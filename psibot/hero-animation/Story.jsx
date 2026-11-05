@@ -28,6 +28,25 @@ export function layoutAt(f, mobile = false) {
     simulation: ease(f, T.simulation_focus, 36) * (1 - ease(f, T.progress_focus, 36)),
     progress: ease(f, T.progress_focus, 36) * (1 - ease(f, T.return_overview, 36))
   };
+  if (mobile) {
+    // A compact overview fits all three capabilities in the same phone viewport.
+    // Each chapter expands into this area; hidden grids stay decoded for handoffs.
+    const positions = [[16, 14], [328, 14], [172, 232]];
+    const panels = kinds.map((kind, i) => {
+      const own = focus[kind];
+      const other = Math.max(...kinds.filter(k => k !== kind).map(k => focus[k]));
+      const entry = spring({fps: story.fps, frame: f - T[kind + '_in'], config: {
+        damping: 22, stiffness: 130, mass: .9
+      }, durationInFrames: 32});
+      return {kind, own,
+        opacity: ease(f, T[kind + '_in'], 20) * (1 - other),
+        left: mix(positions[i][0], 16, own) + (1 - entry) * 8,
+        top: mix(positions[i][1], TOP, own),
+        scale: mix(296 / W, 608 / W, own) * mix(.985, 1, entry)
+      };
+    });
+    return {panels, height: 450, width: 640, mobile: true};
+  }
   const overviewScale = mobile ? 608 / W : OVERVIEW_SCALE;
   const panelHeight = (H + LABEL_H) * overviewScale;
   const mobileFocus = Math.max(...Object.values(focus));
@@ -166,13 +185,14 @@ export function Story({mobile = false}) {
       {layout.panels.map(({kind, own, opacity, left, top, scale}) => {
         const cycle = story.chapters[kind].cycles.find(c => f >= c.highlight && f < c.end);
         const expansion = cycle ? ease(f, cycle.expand, 20) * (1 - ease(f, cycle.collapse, 18)) : 0;
-        const titleEntry = ease(f, T[kind + '_in'] + 4, 24);
-        const accentEntry = ease(f, T[kind + '_in'] + 12, 28);
-        return <div key={kind} data-panel={kind} style={{position: 'absolute', left, top,
+        const titleEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 4, 24);
+        const accentEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 12, 28);
+        return <div key={kind} data-panel={kind} aria-hidden={mobile && opacity === 0 ? true : undefined}
+          style={{position: 'absolute', left, top,
           width: W, height: H + LABEL_H, transform: `scale(${scale})`, transformOrigin: 'top left',
           opacity, zIndex: Math.round(own * 100) + kinds.indexOf(kind)}}>
           <div style={{position: 'relative', height: LABEL_H}}>
-            <div className="psi-hero-title" style={{fontSize: 60, lineHeight: 1.2, fontWeight: 560,
+            <div className="psi-hero-title" style={{fontSize: mobile ? mix(76, 60, own) : 60, lineHeight: 1.2, fontWeight: 560,
               textAlign: 'center', whiteSpace: 'nowrap', letterSpacing: -1,
               color: 'var(--ink, #172a30)', opacity: titleEntry,
               transform: `translateY(${(1 - titleEntry) * 12}px)`}}>

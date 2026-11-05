@@ -4,9 +4,9 @@ import {Player} from '@remotion/player';
 import {Story, story, layoutAt} from './Story';
 
 const mount = document.getElementById('hero-feature-player');
-// Maximal content bounds across every revision 9 frame, including entrances.
-// Reserve these once per breakpoint so zooming never reflows the article.
-const stageHeight = mobile => mobile ? 1332 : 874;
+// Reserve one mobile panel or the desktop zoom bounds for the entire loop.
+// Capability changes never reflow the surrounding article.
+const stageHeight = mobile => mobile ? 450 : 874;
 function HeroPlayer() {
   const ref = useRef(null);
   const [mobile, setMobile] = useState(() => mount.clientWidth < 600);
