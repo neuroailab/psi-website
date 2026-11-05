@@ -2,7 +2,7 @@
 .article-header { padding-top: 20px; padding-bottom: 0; }
 .article-header h1 { margin-top: 12px; max-width: none; }
 @media(min-width:681px) {
- .article-header h1 { white-space: nowrap; font-size: min(44px, calc((100vw - 80px) * .0375)); }
+ .article-header h1 { position: relative; left: 50%; transform: translateX(-50%); width: min(1800px, calc(100vw - 48px)); margin-left: 0; margin-right: 0; white-space: nowrap; font-size: min(40px, calc((100vw - 64px) * .023)); }
 }
 .article-header .resource-links { margin-bottom: 0; }
 .hero-feature { position: relative; width: min(1800px, calc(100vw - 48px)); max-width: none; margin: 24px 0 20px 50%; transform: translateX(-50%); text-align: left; }
@@ -23,8 +23,11 @@
  .hero-feature-controls { gap: 8px; font-size: 11px; }
 }
 
-@media(max-width:647px) { .hero-feature-screen { aspect-ratio: 640 / 450; } }
+@media(max-width:647px) { .hero-feature-screen { aspect-ratio: 640 / 560; } }
 
 /* Theme-aware depth for the Remotion close-up, without an outer video frame. */
 .hero-feature { --hero-feature-shadow: 0 8px 18px -8px rgba(0, 0, 0, .24); }
 html[data-theme=light] .hero-feature { --hero-feature-shadow: 0 8px 18px -8px rgba(24, 45, 54, .12); }
+
+.hero-feature-download { display: inline-flex; align-items: center; padding: 4px 10px; min-height: 36px; color: var(--muted); font-size: 12px; text-underline-offset: 3px; }
+.hero-feature-download:hover { color: var(--ink); }

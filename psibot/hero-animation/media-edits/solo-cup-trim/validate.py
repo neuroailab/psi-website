@@ -32,11 +32,11 @@ clip_src = ROOT / 'public/original-simulation-5.mp4'
 grid_src = ROOT / 'public/original-simulation-grid.mp4'
 clip = OUT / 'simulation-5.mp4'
 grid = OUT / 'simulation-grid.mp4'
-report = {'trim': {'frames': 180, 'seconds': 6, 'first_source_frame': 180, 'last_source_frame': 635, 'retained_frames': 456},
+report = {'trim': {'frames': 240, 'seconds': 8, 'first_source_frame': 240, 'last_source_frame': 635, 'retained_frames': 396},
           'media': {}, 'clip_frames': [], 'grid_frames': [], 'posters': {}}
 assert int(info(clip_src)['nb_frames']) == 636
 assert int(info(grid_src)['nb_frames']) == 2716
-for path, count, width, height in [(clip, 456, 912, 512), (grid, 2716, 1248, 714)]:
+for path, count, width, height in [(clip, 396, 912, 512), (grid, 2716, 1248, 714)]:
     data = info(path)
     assert int(data['nb_frames']) == count and data['width'] == width and data['height'] == height, data
     assert data['r_frame_rate'] == '30/1', data
@@ -44,26 +44,26 @@ for path, count, width, height in [(clip, 456, 912, 512), (grid, 2716, 1248, 714
     data['sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
     report['media'][path.name] = data
 
-for index in [0, 1, 11, 12, 59, 60, 119, 120, 227, 443, 444, 455]:
-    result = metric(frame(clip, index), frame(clip_src, index + 180))
+for index in [0, 1, 11, 12, 59, 60, 119, 120, 227, 383, 384, 395]:
+    result = metric(frame(clip, index), frame(clip_src, index + 240))
     assert result['mae'] < 5, (index, result)
-    report['clip_frames'].append({'frame': index, 'source_frame': index + 180, **result})
+    report['clip_frames'].append({'frame': index, 'source_frame': index + 240, **result})
 
 mask = Image.new('L', (1248, 714), 255)
 ImageDraw.Draw(mask).rectangle((420, 242, 827, 471), fill=0)
-for index in [0, 1, 11, 12, 119, 120, 455, 456, 457, 911, 912, 913, 1367, 1368, 1369, 1823, 1824, 1825, 2279, 2280, 2281, 2715]:
+for index in sorted({0, 1, 11, 12, 119, 120, 2715} | {i + delta for i in range(396, 2716, 396) for delta in [-1, 0, 1]}):
     actual = frame(grid, index)
     original = frame(grid_src, index)
     sampled = index // 12 * 12
     rendered = Image.open(OUT / 'simulation-grid-frames' / f'element-{sampled:04d}.png').convert('RGB')
     unchanged = metric(actual, original, mask)
     unchanged_render = metric(rendered, original, mask)
-    expected_cup = frame(clip_src, 180 + index % 456).resize((408, 230), Image.Resampling.BILINEAR)
+    expected_cup = frame(clip_src, 240 + index % 396).resize((408, 230), Image.Resampling.BILINEAR)
     cup = metric(actual.crop((420, 242, 828, 472)), expected_cup)
     assert unchanged['mae'] < 5 and unchanged_render['mae'] < 2 and cup['mae'] < 8, (index, unchanged, unchanged_render, cup)
     if sampled == index:
         assert unchanged_render['max_abs'] == 0, (index, unchanged_render)
-    report['grid_frames'].append({'frame': index, 'remotion_sample_frame': sampled, 'cup_source_frame': 180 + index % 456,
+    report['grid_frames'].append({'frame': index, 'remotion_sample_frame': sampled, 'cup_source_frame': 240 + index % 396,
         'unchanged_cells': unchanged, 'unchanged_cells_lossless_render': unchanged_render, 'cup': cup})
 
 for name in ['simulation-5', 'simulation-grid']:
@@ -89,16 +89,33 @@ receipt['validation'] = {
 receipt['outputs'] = {name: {'sha256': hashlib.sha256((OUT / name).read_bytes()).hexdigest(),
                            'bytes': (OUT / name).stat().st_size}
                       for name in ['simulation-5.mp4', 'simulation-5.jpg', 'simulation-grid.mp4', 'simulation-grid.jpg']}
+cadence_path = OUT / 'cadence-validation.json'
+cadence = json.loads(cadence_path.read_text())
+assert cadence['status'] == 'passed'
+assert cadence['replacement_loop_frames'] == 396
+assert cadence['sources'][clip_src.name]['sha256'] == receipt['inputs']['clip']
+assert cadence['sources'][grid_src.name]['sha256'] == receipt['inputs']['grid']
+receipt['cadence_validation'] = {
+    'manifest': cadence_path.name,
+    'sha256': hashlib.sha256(cadence_path.read_bytes()).hexdigest(),
+    'status': 'passed', 'sample_step': 12, 'sample_count': 227,
+    'loop_boundaries': cadence['loop_boundaries'],
+}
+grid_samples = sorted((OUT / 'simulation-grid-frames').glob('element-*.png'))
+assert len(grid_samples) == 227
+assert [int(path.stem.split('-')[1]) for path in grid_samples] == list(range(0, 2716, 12))
+receipt['grid']['fresh_remotion_samples'] = len(grid_samples)
+receipt['grid']['loopBoundariesChecked'] = cadence['loop_boundaries']
 cache_path = OUT / 'cache-reuse.json'
 if cache_path.exists():
     cache = json.loads(cache_path.read_text())
-    assert len(cache['frames']) == 456
+    assert len(cache['frames']) == 396
     for entry in cache['frames']:
-        assert entry['original_source_frame'] == entry['frame'] + 180
+        assert entry['original_source_frame'] == entry['frame'] + 240
         cached_path = OUT / 'simulation-5-frames' / f"element-{entry['frame']:03d}.png"
         assert hashlib.sha256(cached_path.read_bytes()).hexdigest() == entry['sha256']
     receipt['lossless_cache_reuse'] = {'manifest': 'cache-reuse.json', 'sha256': hashlib.sha256(cache_path.read_bytes()).hexdigest(),
-                                       'frames': 456, 'previous_trim_frames': 120, 'additional_trim_frames': 60}
+                                       'frames': 396, 'previous_trim_frames': 180, 'additional_trim_frames': 60}
 receipt_path.write_text(json.dumps(receipt, indent=2) + '\n')
 print(json.dumps({'status': report['status'], 'media': report['media'],
     'clip_frames_checked': len(report['clip_frames']), 'grid_frames_checked': len(report['grid_frames'])}, indent=2))

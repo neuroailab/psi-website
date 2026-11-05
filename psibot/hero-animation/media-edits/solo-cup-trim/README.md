@@ -1,9 +1,9 @@
-# Solo cup six-second trim
+# Solo cup eight-second trim
 
-This reproducible Remotion edit removes the first 180 frames (6 seconds at 30
+This reproducible Remotion edit removes the first 240 frames (8 seconds at 30
 fps) from the Solo cup prediction video. This adds two seconds to the previous
-four-second trim. The resulting clip contains 456 frames
-(15.2 seconds), preserving source frame 180 through source frame 635.
+six-second trim. The resulting clip contains 396 frames
+(13.2 seconds), preserving source frame 240 through source frame 635.
 
 The simulation grid uses the original 1248 × 714 video as its base, with a
 Remotion `Loop` containing the trimmed clip over tile 4 at x=420, y=242,
@@ -41,7 +41,7 @@ Run `node render.mjs --blog-root=/path/to/blog` from this directory. If absent,
 the original inputs are copied from the supplied blog root, or the
 `PSIBORG_BLOG_ROOT` environment variable, or the containing blog root when this
 edit is archived under `hero-animation/media-edits/solo-cup-trim`. The standalone
-clip renders all 456 frames as lossless PNGs through Remotion; the grid renders
+clip renders all 396 frames as lossless PNGs through Remotion; the grid renders
 the 227 verified hold samples. The included ffmpeg binary then encodes the
 PNG sequence to H.264 with one encoder thread. Frame PNGs are restartable: a
 rerun reuses existing numbered PNGs. When changing the composition, remove its
@@ -57,14 +57,18 @@ Outputs:
   output hashes, and validation summary after running `validate.py`.
 - `output/validation.json`: frame-level validation results.
 - `output/cache-reuse.json`: provenance and hashes for reused lossless frames.
+- `output/cadence-validation.json`: fresh checks of original prediction holds,
+  including each of the six grid loop boundaries.
 
 The site's integration may give the outputs versioned names, such as
-`simulation-5-trim6.mp4` and `simulation-trim6-grid.mp4`. The grid basename
+`simulation-5-trim8.mp4` and `simulation-trim8-grid.mp4`. The grid basename
 must retain `-grid.` because the existing hero asset resolver uses it to select
 the `assets/hero-story/` directory.
 
-Run `python3 validate.py` after rendering. It checks decoded frame counts and
-dimensions, compares trimmed frames with source frame +180, checks each grid
+Run `python3 validate_cadence.py` followed by `python3 validate.py` after
+rendering. The cadence script checks original prediction holds around every
+loop boundary and the retained clip endpoints. The main validator checks decoded frame counts and
+dimensions, compares trimmed frames with source frame +240, checks each grid
 loop boundary against the trimmed source, and compares unchanged grid pixels
 at multiple original frame positions. Pixels outside the replaced tile must
 match the original exactly at rendered sample boundaries. Video comparison
@@ -74,8 +78,8 @@ validation uses Pillow and single-thread ffmpeg, avoiding NumPy/OpenCV runtime
 threading behavior in this environment. It may also need permission to launch
 the local ffmpeg subprocess outside the restricted execution sandbox.
 
-The current run reuses all 456 lossless standalone Remotion PNGs from the
-previous verified four-second-trim render, mapping new frame `n` to old
-frame `n + 60` (original frame `n + 180`). `output/cache-reuse.json` records
+The current run reuses all 396 lossless standalone Remotion PNGs from the
+previous verified six-second-trim render, mapping new frame `n` to old
+frame `n + 60` (original frame `n + 240`). `output/cache-reuse.json` records
 the source-recipe hash and every reused PNG hash. The grid cache is newly
-rendered with the 456-frame loop; no old grid frames are reused.
+rendered with the 396-frame loop; no old grid frames are reused.

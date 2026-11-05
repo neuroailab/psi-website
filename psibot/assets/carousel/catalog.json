@@ -2090,11 +2090,11 @@
       "variant": "legacy970",
       "temperature": 0,
       "frame_gap_ms": 400,
-      "poster": "./assets/carousel/simulation-5-trim6.jpg",
-      "frames": 456,
-      "duration": 15.2,
+      "poster": "./assets/carousel/simulation-5-trim8.jpg",
+      "frames": 396,
+      "duration": 13.2,
       "kind": "simulation",
-      "video": "./assets/carousel/simulation-5-trim6.mp4",
+      "video": "./assets/carousel/simulation-5-trim8.mp4",
       "crop": [
         0,
         0,
@@ -2105,7 +2105,7 @@
       "video_fps": 30,
       "points": [],
       "source_title": "Red Solo cup \u00b7 full pick and place",
-      "source_trim_start_seconds": 6
+      "source_trim_start_seconds": 8
     },
     {
       "id": "maxctx:yam-worldengine-1094960a6c:t0p7",

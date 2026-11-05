@@ -1,12 +1,13 @@
 import React, {useRef, useState, useEffect, useMemo} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Player} from '@remotion/player';
-import {Story, story, layoutAt} from './Story';
+import {story, layoutAt} from './Story';
+import {HeroFilm, heroDimensions} from './HeroFilm';
 
 const mount = document.getElementById('hero-feature-player');
 // Reserve one mobile panel or the desktop zoom bounds for the entire loop.
 // Capability changes never reflow the surrounding article.
-const stageHeight = mobile => mobile ? 450 : 874;
+const stageHeight = mobile => heroDimensions(mobile).height;
 function HeroPlayer() {
   const ref = useRef(null);
   const [mobile, setMobile] = useState(() => mount.clientWidth < 600);
@@ -82,7 +83,7 @@ function HeroPlayer() {
       resize.disconnect();
     };
   }, []);
-  return <Player ref={ref} component={Story} durationInFrames={story.duration_frames}
+  return <Player ref={ref} component={HeroFilm} durationInFrames={story.duration_frames}
     fps={story.fps} compositionWidth={width} compositionHeight={height} inputProps={inputProps}
     autoPlay loop initiallyMuted controls={false} clickToPlay={false}
     doubleClickToFullscreen={false} showVolumeControls={false}

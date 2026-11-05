@@ -9,8 +9,8 @@ const W = 1248, H = 714, LABEL_H = 132, TOP = 14;
 const OVERVIEW_SCALE = 620 / W;
 const kinds = ['policy', 'simulation', 'progress'];
 const headings = {
-  policy: 'Execute from a single goal frame',
-  simulation: 'Simulate future trajectories',
+  policy: 'Execute new tasks',
+  simulation: 'Imagine possible futures',
   progress: 'Track progress'
 };
 const colors = {
