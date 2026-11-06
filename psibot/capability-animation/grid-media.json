@@ -1,0 +1,451 @@
+{
+  "version": 1,
+  "source_story": "/ccn2/u/atlask/corl_demo_renders/psi-blog-draft/psi2/blog/one-model-three-capabilities/hero-animation/story.json",
+  "source_story_sha256": "8830b02812e836a1823beff6a41e7510c068362d116d2299a5f6e8e4ea2d0767",
+  "source_timeline": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/source-timeline.json",
+  "source_timeline_sha256": "8cd2d82c69ba7b4a815366d41456fd64eb9b620095c20432b790d04804a74118",
+  "order": "row-major; zero-basedtileindices",
+  "clips": [
+    {
+      "tile": 0,
+      "number": 1,
+      "name": "policy-1",
+      "id": "video-79ed1fb441d5-1",
+      "title": "Plate stacking \u00b7 1",
+      "video": "policy-1-clean.mp4",
+      "poster": "policy-1-clean.jpg",
+      "goal": "policy-1-goal.png",
+      "frames": 75,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 2.5,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-79ed1fb441d5-1-accb7af31c65.mp4",
+      "source_video": "/ccn2/u/atlask/corl_demo/0066/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 1602,
+      "source_end_frame_exclusive": 2343,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/0066-frame-0000278.png",
+      "goal_source_frame": 278,
+      "source_goal_seconds": 9.266666666666667,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-1-clean.mp4": "0137e1311ffe04d55d577e63322a90d1f8d9d4082e3abf01bdcbc2bee512c69e",
+        "policy-1-goal.png": "7ae1ebad9791a625bd29ce214bd0225694578f7a39a0d96e23e8ddb66ec85adc",
+        "policy-1-clean.jpg": "cfafbd983098ed5f08708d6d7bb5b27ade3ff79f6e597503bd3deb006f9df54a"
+      },
+      "copied_or_created": []
+    },
+    {
+      "tile": 1,
+      "number": 2,
+      "name": "policy-2",
+      "id": "video-1-3",
+      "title": "Demo 0010",
+      "video": "policy-2-clean.mp4",
+      "poster": "policy-2-clean.jpg",
+      "goal": "policy-2-goal.png",
+      "frames": 224,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 7.466667,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-1-3-6e801b007037.mp4",
+      "source_video": "/ccn2/u/atlask/policy_demos/raw/demo/0010/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 13888,
+      "source_end_frame_exclusive": 16126,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/rene-2769406da03495bb-frame-0011721.png",
+      "goal_source_frame": 11721,
+      "source_goal_seconds": 390.7,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-2-clean.mp4": "b376a747afe17c14cf6ffda3037ac3f85726c27bf53904ff075c16afecbc704d",
+        "policy-2-goal.png": "dc81b7c414fa34e51ed320663095a9ba2fae12417555992b8dabb0e20bb986be",
+        "policy-2-clean.jpg": "2fde10be5d5a600ddabca5e17e3ed94770d3ab94f90e268c592d6c8e0371caf1"
+      },
+      "copied_or_created": []
+    },
+    {
+      "tile": 2,
+      "number": 3,
+      "name": "policy-3",
+      "id": "video-8085c1a14106-1",
+      "title": "Toy-box sorting \u00b7 1",
+      "video": "policy-3-clean.mp4",
+      "poster": "policy-3-clean.jpg",
+      "goal": "policy-3-goal.png",
+      "frames": 75,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 2.5,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-8085c1a14106-1-9254b6c3781c.mp4",
+      "source_video": "/ccn2/u/atlask/corl_demo/0063/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 1824,
+      "source_end_frame_exclusive": 2568,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/0063-frame-0000425.png",
+      "goal_source_frame": 425,
+      "source_goal_seconds": 14.166666666666666,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-3-clean.mp4": "5233602b5a64d0488e5bbcdb1457a6eb6de9bd5fb58393755db0a5178f439ad6",
+        "policy-3-goal.png": "3acdd660ee9995b57b27e6caf452c7cdf6851766c4946cea4cac6ce6615d52ca",
+        "policy-3-clean.jpg": "7a218ad39dd85c018533b0a8b33aa210fe1994696ca45407dfc44ecb386f97f1"
+      },
+      "copied_or_created": [
+        "policy-3-clean.mp4",
+        "policy-3-goal.png",
+        "policy-3-clean.jpg"
+      ]
+    },
+    {
+      "tile": 3,
+      "number": 4,
+      "name": "policy-4",
+      "id": "video-1-1",
+      "title": "Demo 0004",
+      "video": "policy-4-clean.mp4",
+      "poster": "policy-4-clean.jpg",
+      "goal": "policy-4-goal.png",
+      "frames": 62,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 2.066667,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-1-1-0056aaa1b7ed.mp4",
+      "source_video": "/ccn2/u/atlask/policy_demos/raw/demo/0004/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 1009,
+      "source_end_frame_exclusive": 1626,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/rene-0cf8c74fe3401464-frame-0000000.png",
+      "goal_source_frame": 0,
+      "source_goal_seconds": 0.0,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-4-clean.mp4": "8ba8acc731aa467c00880bab73964f4695ccc4298c599e67c24d4441b657d306",
+        "policy-4-goal.png": "84fd30f9ea67c94530ca2d2b8a4cf08e3907c63473543a19534ac7c391bf53de",
+        "policy-4-clean.jpg": "afe1144dd12b5f8b1901d92a135d2e2653594d3ac89d7db7cb8c6cdb9bfcd1c9"
+      },
+      "copied_or_created": [
+        "policy-4-clean.mp4",
+        "policy-4-goal.png",
+        "policy-4-clean.jpg"
+      ]
+    },
+    {
+      "tile": 4,
+      "number": 5,
+      "name": "policy-5",
+      "id": "video-8085c1a14106-2",
+      "title": "Toy-box sorting \u00b7 2",
+      "video": "policy-5-clean.mp4",
+      "poster": "policy-5-clean.jpg",
+      "goal": "policy-5-goal.png",
+      "frames": 66,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 2.2,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-8085c1a14106-2-230fa264e982.mp4",
+      "source_video": "/ccn2/u/atlask/corl_demo/0065/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 11290,
+      "source_end_frame_exclusive": 11947,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/0065-frame-0009945.png",
+      "goal_source_frame": 9945,
+      "source_goal_seconds": 331.5,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-5-clean.mp4": "169422e996ae7c1ffc3963a2cb2dca9629695363b6cb4b69be03ce8691933dee",
+        "policy-5-goal.png": "fe355901f009cbd94841c1afec5796986796232597cfdf4082a8ac625bb2ba31",
+        "policy-5-clean.jpg": "9ddd39b91fdb87b6e204c715830ff259bdb5563f19389514e4e7f110bcd707a7"
+      },
+      "copied_or_created": []
+    },
+    {
+      "tile": 5,
+      "number": 6,
+      "name": "policy-6",
+      "id": "video-1-5",
+      "title": "Demo 0033",
+      "video": "policy-6-clean.mp4",
+      "poster": "policy-6-clean.jpg",
+      "goal": "policy-6-goal.png",
+      "frames": 122,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 4.066667,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-1-5-6d0cfcbdaca6.mp4",
+      "source_video": "/ccn2/u/atlask/policy_demos/raw/demo/0033/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 1957,
+      "source_end_frame_exclusive": 3170,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/rene-b55d0e7f6a9e1801-frame-0001329.png",
+      "goal_source_frame": 1329,
+      "source_goal_seconds": 44.3,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-6-clean.mp4": "553b2d806ca4253def522fa233effbe9dd25ccf1be36982e2bd49dc13cfcb131",
+        "policy-6-goal.png": "9b04000738d72141fb9bb758a7a9aa875347753be8ae6a8962111a9068886a19",
+        "policy-6-clean.jpg": "62b5525ec89dd0f94dda17f57f927074bf4e3edb17d5c1728e095aa22bed90af"
+      },
+      "copied_or_created": []
+    },
+    {
+      "tile": 6,
+      "number": 7,
+      "name": "policy-7",
+      "id": "video-1-2",
+      "title": "Demo 0005",
+      "video": "policy-7-clean.mp4",
+      "poster": "policy-7-clean.jpg",
+      "goal": "policy-7-goal.png",
+      "frames": 224,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 7.466667,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-1-2-8c2dc5d93ee7.mp4",
+      "source_video": "/ccn2/u/atlask/policy_demos/raw/demo/0005/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 270,
+      "source_end_frame_exclusive": 2502,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/rene-dd086915bc1d71f8-frame-0000057.png",
+      "goal_source_frame": 57,
+      "source_goal_seconds": 1.9,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-7-clean.mp4": "565a29c1e0f393f4f33bf778fce5d8adec3245c8fd1fa7d33d51c62d6d9448bf",
+        "policy-7-goal.png": "da3e558cc4a6265d540da3ce0315845c83d2c52b6c02235d27d85d1a1c73c981",
+        "policy-7-clean.jpg": "d8dd24fc9d53976a03a59fe7ac1656e2b990392b05564c8d421ef97b0048377a"
+      },
+      "copied_or_created": [
+        "policy-7-clean.mp4",
+        "policy-7-goal.png",
+        "policy-7-clean.jpg"
+      ]
+    },
+    {
+      "tile": 7,
+      "number": 8,
+      "name": "policy-8",
+      "id": "video-8085c1a14106-4",
+      "title": "Toy-box sorting \u00b7 4",
+      "video": "policy-8-clean.mp4",
+      "poster": "policy-8-clean.jpg",
+      "goal": "policy-8-goal.png",
+      "frames": 75,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 2.5,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-8085c1a14106-4-35eb3042af2d.mp4",
+      "source_video": "/ccn2/u/atlask/corl_demo/0065/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 28647,
+      "source_end_frame_exclusive": 29393,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/0065-frame-0026480.png",
+      "goal_source_frame": 26480,
+      "source_goal_seconds": 882.6666666666666,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-8-clean.mp4": "56b561ac26a413df8cf369eceb2e2b5743eb1033d3ec5655e40762ec41d86a28",
+        "policy-8-goal.png": "d828af1d55b1ce2342ca55db00f2695e408bfd050ea0cb445bac1473329fb5ce",
+        "policy-8-clean.jpg": "646cfbd2857fd160ea145f9f02613a87496e24f3dea47730e6d2038f9b2ddabc"
+      },
+      "copied_or_created": []
+    },
+    {
+      "tile": 8,
+      "number": 9,
+      "name": "policy-9",
+      "id": "video-1-6",
+      "title": "Demo 0033 \u00b7 2",
+      "video": "policy-9-clean.mp4",
+      "poster": "policy-9-clean.jpg",
+      "goal": "policy-9-goal.png",
+      "frames": 324,
+      "fps": 30,
+      "width": 912,
+      "height": 512,
+      "duration": 10.8,
+      "encoded_speed": 10,
+      "preview_playback_rate": 0.5,
+      "original_clean_source": "/ccn2/u/atlask/corl_demo_renders/blog-review/results-figure-v1/dist/assets/parts/video-1-6-38f5e6e7f81c.mp4",
+      "source_video": "/ccn2/u/atlask/policy_demos/raw/demo/0033/cameras/scene_camera_rgb.mp4",
+      "source_start_frame": 18868,
+      "source_end_frame_exclusive": 22103,
+      "goal_original": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/goals/rene-b55d0e7f6a9e1801-frame-0013274.png",
+      "goal_source_frame": 13274,
+      "source_goal_seconds": 442.46666666666664,
+      "center_crop": {
+        "zoom": 1.2,
+        "source_crop": [
+          760,
+          427,
+          76,
+          42
+        ],
+        "output": [
+          912,
+          512
+        ],
+        "goal_original_uncropped": true
+      },
+      "hashes": {
+        "policy-9-clean.mp4": "6b68d7b0be6aea878edebd0ef304a1a42ae5a7060e0e8bb8074827b609c98bb5",
+        "policy-9-goal.png": "fd068d68b8db4df4b955e12af929f3a626ba7d7ea401949fde03e1117416182b",
+        "policy-9-clean.jpg": "20f6f10122055afe052937982e96c6c7c56f8c8ef76f0fafef8a69342ccae686"
+      },
+      "copied_or_created": [
+        "policy-9-clean.mp4",
+        "policy-9-goal.png",
+        "policy-9-clean.jpg"
+      ]
+    }
+  ],
+  "original_grid": {
+    "assets": [
+      {
+        "name": "policy-grid.mp4",
+        "source": "/ccn2/u/atlask/corl_demo_renders/psi-blog-draft/psi2/blog/one-model-three-capabilities/assets/hero-story/policy-grid.mp4",
+        "sha256": "c2c02a7ec9a287cb96b8f9c900b83b1e000fc2d8ac02a30265f33a3399f968be"
+      },
+      {
+        "name": "policy-grid.jpg",
+        "source": "/ccn2/u/atlask/corl_demo_renders/psi-blog-draft/psi2/blog/one-model-three-capabilities/assets/hero-story/policy-grid.jpg",
+        "sha256": "fd7141b8ca966341bf159ac1ffe2ac10165016d521747786e33cc8345fe3b668"
+      }
+    ],
+    "width": 1248,
+    "height": 714,
+    "tile_width": 408,
+    "tile_height": 230,
+    "gap": 12,
+    "frames": 1991,
+    "fps": 30,
+    "goal_inset": true
+  },
+  "notes": [
+    "Use clean clips and actual conditioning goals for flexible Remotion grid-to-result zooms. The optional original-grid asset exactly matches the existing nine-panel appearance with baked goal insets.",
+    "No source videos were edited or re-encoded. Missing posters are frame0 extractions.",
+    "Existing selected demo clips1,2,5,6,8 remain byte-identical."
+  ],
+  "source_mutations": false,
+  "new_animation_rendered": false
+}

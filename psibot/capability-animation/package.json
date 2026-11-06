@@ -1,0 +1,19 @@
+{
+  "name": "psiborg-prompting-opening-v7",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.523",
+    "@remotion/player": "4.0.523"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "@remotion/renderer": "4.0.523",
+    "@remotion/bundler": "4.0.523"
+  }
+}

@@ -1,5 +1,5 @@
 /* Results: one capability, one selected film. */
-#results { margin-top: 20px; }
+#results { margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--line); }
 .capability-tabs { display: grid; grid-template-columns: 1.35fr 1fr 1.2fr; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 14px; margin: 0 0 30px; background: var(--surface, var(--paper)); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 .capability-tabs button { min-width: 0; border: 0; border-radius: 9px; padding: 15px 8px; background: transparent; color: var(--muted); font: 600 15px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; transition: background .2s, color .2s; }
 .capability-tabs button:hover { color: var(--ink); }
@@ -10,7 +10,7 @@
 .capability-panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; }
 .prose .capability-copy p { text-align: left; }
 .capability-carousel { margin: 28px 0 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-.carousel-strip { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 20px; align-items: center; padding: 8px 4px; }
+.carousel-strip { width: 33.333333%; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 6.666667px; align-items: center; padding: 8px 1.333333px; }
 .carousel-card { min-width: 0; padding: 0; background: transparent; border: 0; color: var(--muted); cursor: pointer; opacity: .35; transform: scale(.93); transition: opacity .2s, transform .2s; text-align: left; font: 500 12px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 .carousel-card:hover { opacity: .75; }
 .carousel-card.is-current { opacity: 1; transform: scale(1); color: var(--ink); }
@@ -23,7 +23,14 @@
 .carousel-counter { font: 12px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--muted); min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
 .carousel-stage { position: relative; max-width: 912px; margin: 0 auto; background: #10151c; overflow: hidden; border-radius: 10px; }
 .prose .carousel-canvas { display: block; width: 100%; height: auto; margin: 0; background: #10151c; }
+.carousel-canvas[role="button"] { cursor: pointer; }
+.carousel-canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
 .carousel-video[hidden] { display: none; }
+.carousel-timeline { display: flex; align-items: center; gap: 14px; max-width: 912px; margin: 10px auto 0; min-height: 32px; }
+.carousel-seek { display: block; flex: 1; min-width: 0; width: 100%; height: 32px; margin: 0; padding: 0; accent-color: var(--accent); cursor: pointer; background: transparent; }
+.carousel-seek:disabled { cursor: wait; opacity: .45; }
+.carousel-seek:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.carousel-time { flex: 0 0 auto; color: var(--muted); font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 80px; text-align: right; }
 .carousel-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: 912px; margin: 16px auto 0; }
 .carousel-play { flex-shrink: 0; width: auto; min-width: 42px; padding: 0 14px; border-radius: 22px; font-size: 12px; }
 .carousel-title { color: var(--ink); font: 500 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -31,14 +38,17 @@
 .prose .carousel-status { font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--muted); margin: 10px auto 0; max-width: 912px; }
 .carousel-status:empty { display: none; }
 @media (max-width: 680px) {
+  #results { margin-top: 44px; padding-top: 30px; }
   .capability-tabs { gap: 2px; padding: 4px; border-radius: 11px; margin-bottom: 24px; }
   .capability-tabs button { font-size: 11px; padding: 13px 3px; border-radius: 7px; }
-  .carousel-strip { gap: 10px; }
+  .carousel-strip { gap: 3.333333px; }
   .carousel-card { font-size: 10px; }
   .carousel-card span { margin-top: 8px; }
   .carousel-nav { margin: 12px 0 18px; }
   .carousel-stage { border-radius: 6px; }
   .carousel-title { font-size: 12px; }
+  .carousel-timeline { gap: 10px; }
+  .carousel-time { font-size: 11px; min-width: 74px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .carousel-card, .capability-tabs button { transition: none; }

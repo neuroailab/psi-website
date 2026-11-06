@@ -53,6 +53,7 @@
     let index = 0, entry = entries[0], active = false, visible = false;
     let generation = 0, frameRequest = null, initialized = false;
     let wantsPlay = !reduced.matches, lastPaintTime = 0, goalImage = null, posterImage = null;
+    let scrubbing = false, pendingSeek = null;
     let plotMaxX = 1, plotMaxY = 1, lastReadout = '';
     const imageCache = new Map();
     const strip = make('div', 'carousel-strip');
@@ -65,13 +66,23 @@
     navigation.append(previous, counter, next);
     const stage = make('div', 'carousel-stage');
     const video = make('video', 'carousel-video');
+    video.id = `carousel-${name}-video`;
     video.hidden = true; video.muted = true; video.loop = true; video.playsInline = true;
     video.preload = 'metadata'; video.setAttribute('aria-hidden', 'true');
     const canvas = make('canvas', 'carousel-canvas');
     canvas.width = 1280; canvas.height = 720;
-    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('role', 'button');
+    canvas.tabIndex = 0;
     const context = canvas.getContext('2d');
     stage.append(video, canvas);
+    const timeline = make('div', 'carousel-timeline');
+    const seek = make('input', 'carousel-seek');
+    seek.type = 'range'; seek.min = '0'; seek.max = '1'; seek.step = '0.01'; seek.value = '0'; seek.disabled = true;
+    seek.id = `carousel-${name}-seek`;
+    seek.setAttribute('aria-controls', video.id);
+    const elapsed = make('span', 'carousel-time', '0:00 / 0:00');
+    elapsed.setAttribute('aria-hidden', 'true');
+    timeline.append(seek, elapsed);
     const controls = make('div', 'carousel-controls');
     const play = button('carousel-play', 'Play selected video', '▶ Play');
     const title = make('span', 'carousel-title');
@@ -79,7 +90,7 @@
     controls.append(play, title, readout);
     const status = make('p', 'carousel-status');
     status.setAttribute('role', 'status');
-    root.replaceChildren(strip, navigation, stage, controls, status);
+    root.replaceChildren(strip, navigation, stage, timeline, controls, status);
     root.tabIndex = 0;
     root.setAttribute('aria-label', `${({policy: 'Policy and progress', simulation: 'Simulation', progress: 'Progress tracking', failure: 'Failure detection'}[name] || name)} video carousel`);
     root.setAttribute('aria-roledescription', 'carousel');
@@ -131,8 +142,30 @@
     function updateButton() {
       play.textContent = video.paused ? '▶ Play' : 'Ⅱ Pause';
       play.setAttribute('aria-label', `${video.paused ? 'Play' : 'Pause'} ${entry.title}`);
+      canvas.setAttribute('aria-label', `${video.paused ? 'Play' : 'Pause'} ${entry.title}${entry.points?.length ? ', video with recorded time-to-goal predictions' : ''}`);
+      canvas.title = 'Click to pause or resume';
     }
-    const canPlay = () => active && visible && !document.hidden && wantsPlay;
+    function duration() {
+      return video.readyState >= 1 && Number.isFinite(video.duration) && video.duration > 0
+        && video.currentSrc === new URL(entry.video, document.baseURI).href
+        ? video.duration : Number(entry.duration) || 0;
+    }
+    function clock(seconds, precise = false) {
+      const safe = Math.max(0, Number(seconds) || 0);
+      const minutes = Math.floor(safe / 60);
+      const remainder = precise ? (safe % 60).toFixed(1).padStart(4, '0') : String(Math.floor(safe % 60)).padStart(2, '0');
+      return `${minutes}:${remainder}`;
+    }
+    function updateTimeline(time = video.currentTime || 0) {
+      const total = duration();
+      const position = Math.max(0, Math.min(total, pendingSeek ?? time));
+      seek.max = String(total || 1);
+      seek.disabled = video.readyState < 1 || !Number.isFinite(video.duration) || video.duration <= 0;
+      if (!scrubbing || pendingSeek !== null) seek.value = String(position);
+      elapsed.textContent = `${clock(position)} / ${clock(total)}`;
+      seek.setAttribute('aria-valuetext', `${clock(position, true)} of ${clock(total, true)}`);
+    }
+    const canPlay = () => active && visible && !document.hidden && wantsPlay && !scrubbing;
     function syncPlayback() {
       if (!initialized) return;
       if (!canPlay()) { video.pause(); return; }
@@ -149,10 +182,49 @@
       wantsPlay = video.paused;
       syncPlayback();
     }
+    function applySeek(position) {
+      pendingSeek = Math.max(0, Math.min(duration(), position));
+      updateTimeline(pendingSeek);
+      if (video.readyState < 1 || video.currentSrc !== new URL(entry.video, document.baseURI).href) return;
+      // EOF is not a displayable video frame in every browser. Seek into the
+      // final frame when the thumb reaches the end, so its canvas can decode.
+      const target = Math.min(pendingSeek, Math.max(0, video.duration - .5 / (entry.video_fps || 30)));
+      pendingSeek = null;
+      cancelFrame();
+      video.currentTime = target;
+      // The canvas is repainted by seeked, once this target's frame is decoded.
+      // Avoid drawing a newly rewound chart over a still-decoding future frame.
+      updateTimeline(target);
+    }
+    function finishScrub() {
+      if (!scrubbing) return;
+      scrubbing = false;
+      updateTimeline();
+      syncPlayback();
+      scheduleFrame();
+    }
+    seek.addEventListener('pointerdown', () => {
+      if (seek.disabled) return;
+      scrubbing = true;
+      video.pause();
+    });
+    seek.addEventListener('input', () => applySeek(Number(seek.value)));
+    seek.addEventListener('change', finishScrub);
+    seek.addEventListener('blur', finishScrub);
+    window.addEventListener('pointerup', finishScrub);
+    window.addEventListener('pointercancel', finishScrub);
     play.addEventListener('click', toggle);
+    canvas.addEventListener('click', toggle);
+    canvas.addEventListener('keydown', event => {
+      if (event.key !== ' ' && event.key !== 'Enter') return;
+      event.preventDefault();
+      if (!event.repeat) toggle();
+    });
     previous.addEventListener('click', () => select(index - 1));
     next.addEventListener('click', () => select(index + 1));
     root.addEventListener('keydown', event => {
+      // Let native range keys seek without also changing the selected episode.
+      if (event.target === seek) return;
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
       event.preventDefault(); select(index + (event.key === 'ArrowRight' ? 1 : -1));
     });
@@ -272,13 +344,14 @@
       root.dataset.time = time.toFixed(4);
       root.dataset.currentTime = time.toFixed(4);
       root.dataset.frame = String(Math.floor(time * entry.video_fps + 1e-4));
+      updateTimeline(time);
     }
     function scheduleFrame() {
-      if (!('requestVideoFrameCallback' in video) || frameRequest !== null || !active) return;
+      if (!('requestVideoFrameCallback' in video) || frameRequest !== null || !active || video.seeking) return;
       const ticket = generation;
       frameRequest = video.requestVideoFrameCallback((_now, metadata) => {
         frameRequest = null;
-        if (ticket !== generation || !active) return;
+        if (ticket !== generation || !active || video.seeking) return;
         paint(metadata.mediaTime); scheduleFrame();
       });
     }
@@ -288,6 +361,7 @@
     }
     function select(position) {
       generation++; cancelFrame(); video.pause();
+      scrubbing = false; pendingSeek = null;
       wantsPlay = !reduced.matches;
       index = (position + entries.length) % entries.length; entry = entries[index];
       initialized = true; posterImage = null; goalImage = null; lastReadout = '';
@@ -295,6 +369,8 @@
       root.dataset.kind = entry.kind; root.dataset.count = String(entries.length);
       if (entry.success) root.dataset.successEpisode = entry.success.id; else delete root.dataset.successEpisode;
       title.textContent = entry.title;
+      seek.setAttribute('aria-label', `Seek ${entry.title}, ${({policy: 'policy and progress', simulation: 'simulation', progress: 'progress tracking', failure: 'failure detection'}[name] || name)}`);
+      seek.step = String(1 / (entry.video_fps || 30));
       canvas.setAttribute('aria-label', `${entry.title}${entry.points?.length ? ': video with recorded time-to-goal predictions' : ''}`);
       canvas.height = Math.round(canvas.width * entry.crop[3] / entry.crop[2]);
       const series = entry.success ? [entry.points, entry.success.points] : [entry.points || []];
@@ -318,10 +394,17 @@
       });
     }
     for (const event of ['play', 'pause', 'ended', 'emptied']) video.addEventListener(event, updateButton);
-    video.addEventListener('loadedmetadata', () => { video.playbackRate = entry.playbackRate || 1; });
+    video.addEventListener('loadedmetadata', () => {
+      video.playbackRate = entry.playbackRate || 1;
+      updateTimeline();
+      if (pendingSeek !== null) applySeek(pendingSeek);
+    });
     video.addEventListener('loadeddata', () => { status.textContent = ''; paint(); syncPlayback(); scheduleFrame(); });
     video.addEventListener('canplay', () => { status.textContent = ''; syncPlayback(); });
-    for (const event of ['seeked', 'pause', 'ended']) video.addEventListener(event, () => paint());
+    video.addEventListener('seeking', cancelFrame);
+    video.addEventListener('seeked', () => { paint(); scheduleFrame(); syncPlayback(); });
+    for (const event of ['pause', 'ended']) video.addEventListener(event, () => { if (!video.seeking) paint(); });
+    video.addEventListener('durationchange', () => updateTimeline());
     if (!('requestVideoFrameCallback' in video)) video.addEventListener('timeupdate', () => paint());
     video.addEventListener('error', () => { status.textContent = 'This video could not load. Choose another example or refresh the page.'; updateButton(); });
     new IntersectionObserver(([change]) => { visible = change.isIntersecting; syncPlayback(); }, {threshold: .12}).observe(stage);
@@ -331,6 +414,7 @@
     return {
       setActive(value) {
         active = value;
+        if (!active) finishScrub();
         if (active && !initialized) select(index);
         if (active) scheduleFrame(); else cancelFrame();
         syncPlayback();

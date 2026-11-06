@@ -1,17 +1,7 @@
-# PsiBorg blog editing
+# PsiBorg published blog
 
-Use the existing Remotion project for all animation edits, including motion,
-transitions, animated typography, and composition layout, as requested by the
-user. `hero-animation/Story.jsx` is the composition;
-`hero-animation/player.jsx` integrates it; `hero-animation/build.mjs` builds
-`hero.js`. Preserve fixed desktop/mobile stage heights and matching `hero.css`
-aspect ratios so playback never moves surrounding article text.
+This post lives at /psi-website/psibot/. All animation edits use Remotion: capability-animation/FullFilm.jsx and capability-animation/player.jsx; build with `node capability-animation/build.mjs` after installing its package.json dependencies. The built player is hero.js.
 
-Preserve original media, timing, and prediction values during presentation
-changes. Maintain continuous muted autoplay, looping, and theme matching.
-Keep media URLs relative to support the `/psi-website/psibot/` prefix.
+Keep relative asset URLs, matching dark/light themes, the fixed 16:9 stage, continuous muted looping playback, click/tap and keyboard pause/resume, timeline seeking, and chapter controls. Preserve recorded media, goal images, prediction data, and approved timing. The result thumbnail strip is one-third width; the selected result panel remains large.
 
-The prompting/trajectory animation uses `prompt-animation/PromptFilm.jsx`,
-`timing.mjs`, and `player.jsx`; rebuild it with
-`node prompt-animation/build.mjs`. Preserve its uniform 15-frame reveal cadence
-and shared source data when synchronizing the social film.
+The authoring draft has local comments UI. Do not include that UI, review.js, local API references, or noindex when publishing. Older hero-animation and prompt-animation sources are historical; do not build them over the current player.

@@ -1,0 +1,149 @@
+{
+  "id": "droid-2431bb1f5c",
+  "dataset": "DROID",
+  "fps": 30,
+  "frames": 122,
+  "sourceFps": 60,
+  "sourceFrames": 243,
+  "sourceDuration": 4.05,
+  "goalSourceFrame": 242,
+  "source": "progress-source.mp4",
+  "goal": "progress-goal.png",
+  "poster": "progress-poster.jpg",
+  "points": [
+    {
+      "time": 0.0,
+      "value": 3.8000000000000003,
+      "segment": 0,
+      "x": 0.0
+    },
+    {
+      "time": 0.2,
+      "value": 3.8000000000000003,
+      "segment": 0,
+      "x": 0.2
+    },
+    {
+      "time": 0.4,
+      "value": 3.0,
+      "segment": 0,
+      "x": 0.4
+    },
+    {
+      "time": 0.6,
+      "value": 3.0,
+      "segment": 0,
+      "x": 0.6
+    },
+    {
+      "time": 0.8,
+      "value": 3.0,
+      "segment": 0,
+      "x": 0.8
+    },
+    {
+      "time": 1.0,
+      "value": 3.0,
+      "segment": 0,
+      "x": 1.0
+    },
+    {
+      "time": 1.2,
+      "value": 3.0,
+      "segment": 0,
+      "x": 1.2
+    },
+    {
+      "time": 1.4,
+      "value": 3.0,
+      "segment": 0,
+      "x": 1.4
+    },
+    {
+      "time": 1.6,
+      "value": 1.6,
+      "segment": 0,
+      "x": 1.6
+    },
+    {
+      "time": 1.8,
+      "value": 1.6,
+      "segment": 0,
+      "x": 1.8
+    },
+    {
+      "time": 2.0,
+      "value": 1.6,
+      "segment": 0,
+      "x": 2.0
+    },
+    {
+      "time": 2.2,
+      "value": 1.8,
+      "segment": 0,
+      "x": 2.2
+    },
+    {
+      "time": 2.4,
+      "value": 1.6,
+      "segment": 0,
+      "x": 2.4
+    },
+    {
+      "time": 2.6,
+      "value": 1.8,
+      "segment": 0,
+      "x": 2.6
+    },
+    {
+      "time": 2.8,
+      "value": 1.8,
+      "segment": 0,
+      "x": 2.8
+    },
+    {
+      "time": 3.0,
+      "value": 1.8,
+      "segment": 0,
+      "x": 3.0
+    },
+    {
+      "time": 3.2,
+      "value": 1.6,
+      "segment": 0,
+      "x": 3.2
+    },
+    {
+      "time": 3.4,
+      "value": 1.6,
+      "segment": 0,
+      "x": 3.4
+    },
+    {
+      "time": 3.6,
+      "value": 0.8,
+      "segment": 0,
+      "x": 3.6
+    },
+    {
+      "time": 3.8,
+      "value": 0.4,
+      "segment": 0,
+      "x": 3.8
+    },
+    {
+      "time": 4.0,
+      "value": 0.2,
+      "segment": 0,
+      "x": 4.0
+    }
+  ],
+  "provenance": {
+    "source": "/ccn2b/dataset/brd/processed/droid/IRIS_success_2023-04-13_Thu_Apr_13_15:12:56_2023_recordings_MP4_cam0.mp4",
+    "goal": "/ccn2/u/atlask/corl_demo_renders/blog-review/policy-demos/editing/dt/goals/dt-droid-2431bb1f5c-frame-0000242.png",
+    "catalog": "/ccn2/u/atlask/corl_demo_renders/psi-blog-draft/psi2/blog/one-model-three-capabilities/assets/carousel/catalog.json",
+    "source_sha256": "9f5fb8028082b74c61823cccfd19e3ac688e19d59cc77aceb15e16d90da29cf1",
+    "goal_sha256": "8ea4549730c9b2d95befd01b91ef591bb97a097d9e702a6b51eaf4630f3d8c05",
+    "note": "Fixed actual conditioning goal frame242. Preserves recorded prediction values at200ms; playback uses original source time."
+  }
+}

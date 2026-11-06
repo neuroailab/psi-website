@@ -1,35 +1,9 @@
-# PsiBorg blog
+# PsiBorg: A Promptable Foundation Model for Robotics
 
-Published at `/psi-website/psibot/`. This is a static page; serve the repository
-root with `python3 -m http.server`. Hosting does not require a build or backend.
+Published research post: https://neuroailab.github.io/psi-website/psibot/
 
-`index.html` contains the article and capability tabs. `styles.css`, `hero.css`,
-and `carousel.css` define the responsive dark and light presentation. The local
-draft's comments interface is excluded because it requires a local API.
+The page integrates the many-path prompting animation, the three studied capabilities, and the accompanying policy, simulation, and progress results. Main animation: 5737 frames at 30 fps, 191.23 seconds. Sources are in capability-animation; `node capability-animation/build.mjs` builds hero.js after its dependencies are installed.
 
-The opening animation uses Remotion. Edit `hero-animation/Story.jsx` and
-`hero-animation/player.jsx`, then run `npm install` and `npm run build` in
-`hero-animation/` to regenerate the committed `hero.js`. Keep the fixed desktop
-and mobile stage heights aligned with `hero.css` so the article does not move
-as the animation zooms. Preserve continuous muted autoplay, looping, theme
-matching, original recordings, timing, and prediction values.
+Click/tap a video to pause or resume. The main film and result panels provide seek bars; the main film also supports Space/Enter and chapter navigation. Result thumbnails remain small while the selected video stays large. All media URLs are relative to this directory.
 
-`carousel.js` reads `assets/carousel/catalog.json`. Visible tabs contain nine
-policy episodes, four simulation episodes, and all nine progress examples from
-the hero grid, numbered independently as Episode 1 onward. Policy and progress
-show one scene with its recorded time-to-goal overlay. Side previews navigate
-to the enlarged active video; hidden carousels pause.
-
-The failure tab and section remain commented out in `index.html`, with all 16
-50% failure examples and references retained in the catalog and media assets.
-Uncomment both retained HTML blocks to restore that section.
-
-The prompt animation uses the recorded trajectory assets. Training-data figures
-switch between their existing dark/light variants. Code, Paper, and Model
-buttons remain disabled until their release URLs are supplied.
-
-The prompting figure also runs in Remotion via `prompt-animation/PromptFilm.jsx`
-and the bundled `prompt.js`. The blog and social film share its exact 15-frame
-(0.5-second) RGB/action reveal spacing. Source observations, command samples,
-query phases, and action-loop speeds are preserved. Rebuild with
-`node prompt-animation/build.mjs`; keep the fixed stage bounds in `prompt.css`.
+The publication omits the local editing-comments form and obsolete animation downloads. Failure detection remains inactive.
