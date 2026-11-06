@@ -1,6 +1,11 @@
 import React, {useRef, useState, useEffect, useMemo} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Player} from '@remotion/player';
+import {prefetch} from 'remotion';
+import progress from './progress-data.json';
+import {PROGRESS_EXAMPLES} from './ProgressExamples';
+import policyGrid from './grid-media.json';
+import story from './full-film-original/story.json';
 import {FullFilm, CHAPTERS, SECTIONS, DURATION, FPS, WIDTH, HEIGHT} from './FullFilm';
 
 const mount = document.getElementById('hero-feature-player');
@@ -10,6 +15,28 @@ function CapabilityPlayer() {
   const ref = useRef(null);
   const [theme, setTheme] = useState(pageTheme);
   const inputProps = useMemo(() => ({theme}), [theme]);
+  useEffect(() => {
+    // Warm the standalone result clips before their chapters. Keep the much
+    // larger grid composites streamed rather than retaining them as blobs.
+    const mediaBase = './assets/capability-film/';
+    const sources = [...new Set([
+      ...policyGrid.clips.map(clip => `${mediaBase}${clip.video}`),
+      ...story.feature_tiles.map(tile => new URL(`${mediaBase}${story.simulation[tile].asset.replace(/^assets\//, '')}`, document.baseURI).href),
+      `${mediaBase}${progress.source}`, ...PROGRESS_EXAMPLES.flatMap(example =>
+        example.clips.map(clip => `${mediaBase}${clip.name}.mp4`)),
+    ])];
+    const pending = sources.map(source => prefetch(source, {method: 'blob-url'}));
+    let active = true;
+    mount.dataset.filmMedia = 'loading';
+    mount.dataset.filmMediaCount = String(pending.length);
+    Promise.all(pending.map(item => item.waitUntilDone())).then(() => {
+      if (active) mount.dataset.filmMedia = 'ready';
+    }).catch(() => {
+      // The normal source URL and buffering protection remain available on failure.
+      if (active) mount.dataset.filmMedia = 'fallback';
+    });
+    return () => {active = false; pending.forEach(item => item.free());};
+  }, []);
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const next = pageTheme();
