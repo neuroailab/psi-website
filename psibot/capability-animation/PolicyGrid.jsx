@@ -4,6 +4,7 @@ import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,interpolate,useCurrentFram
 import manifest from './grid-media.json';
 
 export const GRID_LEAD=90,GRID_RETURN=36,POLICY_PLAYBACK_RATE=.4;
+export const POLICY_GRID_PREVIEW_RATE=1/3;
 export const GRID_TIMING=Object.freeze({overview:36,highlight:18,zoom:36,lead:GRID_LEAD,return:GRID_RETURN});
 const ASPECT=512/912;
 const mix=(a,b,t)=>a+(b-a)*t;
@@ -37,13 +38,14 @@ function GridTile({clip,example,frame,returning,assetBase}){
   // panel, so the following goal-first explanation begins without an image cut.
   const reveal=selected&&!returning?ease(frame,68,21):0;
   const goal=lerpBox(smallGoal,{left:0,top:0,width:box.width,height:box.height},reveal);
-  const mediaFrame=returning&&selected?example.clips[selectedIndex].motion-1:Math.floor(Math.min(frame/1.5,35)*1.25);
+  const mediaFrame=returning?(selected?example.clips[selectedIndex].motion-1:Math.floor(Math.min(frame/1.5,35)*1.25)):Math.min(frame,53);
+  const gridPlaybackRate=returning?POLICY_PLAYBACK_RATE:POLICY_GRID_PREVIEW_RATE;
   const fontSize=mix(8,returning?(pair?13:14):(pair?13:19),tileZoom);
-  return <div data-grid-tile={clip.tile} data-selected={selected} data-media-frame={mediaFrame}
+  return <div data-grid-tile={clip.tile} data-selected={selected} data-media-frame={mediaFrame} data-grid-clock-start="0" data-grid-preview-playing={!returning&&frame<54}
     style={{position:'absolute',...box,opacity,zIndex:selected?2:1,borderRadius:mix(5,12,tileZoom),
       overflow:'hidden',background:palette.mediaSurface,boxShadow:selected?`0 0 0 ${3*highlight*(1-(returning?0:reveal))}px ${palette.policyAccent}`:'none'}}>
-    <Freeze frame={mediaFrame}>
-      <OffthreadVideo muted src={`${assetBase}${clip.video}`} playbackRate={POLICY_PLAYBACK_RATE}
+    <Freeze active={returning||frame>=54} frame={mediaFrame}>
+      <OffthreadVideo muted playsInline pauseWhenBuffering src={`${assetBase}${clip.video}`} playbackRate={gridPlaybackRate}
         style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>
     </Freeze>
     <div data-grid-goal={clip.tile} style={{position:'absolute',...goal,overflow:'hidden',borderRadius:mix(2,returning?8:12,tileZoom),

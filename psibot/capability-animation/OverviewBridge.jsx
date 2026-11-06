@@ -4,9 +4,10 @@ import {AbsoluteFill,Freeze,Sequence,interpolate,useCurrentFrame} from 'remotion
 import {CapabilityOverview} from './CapabilityOverview';
 import {CAPABILITY_PATTERNS,OVERVIEW_LAYOUT,overviewTitleBox,overviewMediaBox} from './PromptDiagram';
 
-export const TRANSITION_DURATION=36;
-export const BRIDGE_SHRINK_FRAMES=48;
-export const BRIDGE_DURATION=78;
+export const TRANSITION_DURATION=27;
+export const BRIDGE_SHRINK_FRAMES=36;
+export const BRIDGE_HANDOFF_FRAMES=22;
+export const BRIDGE_DURATION=BRIDGE_SHRINK_FRAMES+BRIDGE_HANDOFF_FRAMES;
 export const OVERVIEW_FRAME=OVERVIEW_LAYOUT.canonicalFrame;
 export const CAPABILITY_DATA=Object.freeze({
   policy:{index:0,title:'Execute from one goal image',from:[121,227,213],to:[183,250,240],color:'#b7faf0'},

@@ -9,6 +9,7 @@ import story from './full-film-original/story.json';
 import {FullFilm, CHAPTERS, SECTIONS, DURATION, FPS, WIDTH, HEIGHT} from './FullFilm';
 
 const mount = document.getElementById('hero-feature-player');
+export const PLAYBACK_RATE = 1.2;
 const pageTheme = () => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 
 function CapabilityPlayer() {
@@ -57,7 +58,7 @@ function CapabilityPlayer() {
     let manualPause = false;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
-    window.psiHeroFilm = {version: 9, reviewRevision: 'prompting-opening-v7', chapters: CHAPTERS, sections: SECTIONS,
+    window.psiHeroFilm = {version: 11, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'prompting-opening-v7', chapters: CHAPTERS, sections: SECTIONS,
       duration: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
     mount.dataset.compositionWidth = WIDTH;
     mount.dataset.height = HEIGHT;
@@ -70,7 +71,7 @@ function CapabilityPlayer() {
     seek.title = 'Drag to seek through the animation';
     const setStatus = text => {if (status) status.textContent = text;};
     const formatTime = frame => {
-      const seconds = Math.floor(frame / FPS);
+      const seconds = Math.floor(frame / FPS / PLAYBACK_RATE);
       return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
     };
     const updateTimeline = frame => {
@@ -203,7 +204,7 @@ function CapabilityPlayer() {
   }, []);
   return <Player ref={ref} component={FullFilm} inputProps={inputProps}
     durationInFrames={DURATION} fps={FPS} compositionWidth={WIDTH} compositionHeight={HEIGHT}
-    autoPlay loop initiallyMuted controls={false} clickToPlay={false}
+    playbackRate={PLAYBACK_RATE} autoPlay loop initiallyMuted controls={false} clickToPlay={false}
     spaceKeyToPlayOrPause={false} doubleClickToFullscreen={false} showVolumeControls={false}
     style={{width: '100%', height: '100%', aspectRatio: `${WIDTH}/${HEIGHT}`, background: 'transparent'}}/>;
 }

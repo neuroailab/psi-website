@@ -9,7 +9,7 @@ import {Grid as OriginalGrid} from './full-film-original/Story';
 import {CapabilityTransition,OverviewReturn,FrozenOverview,FrozenSourceFrame,TRANSITION_DURATION,BRIDGE_DURATION} from './OverviewBridge';
 import {SimulationPrompt,SIMULATION_PROMPT_DURATION} from './SimulationPrompt';
 import {ProgressPrompt,PROGRESS_PROMPT_DURATION} from './ProgressPrompt';
-import {ProgressExamples,PROGRESS_EXAMPLES,PROGRESS_EXAMPLES_DURATION,ProgressResultsGrid,PROGRESS_RESULTS_TIMING,PROGRESS_GRID_BOX} from './ProgressExamples';
+import {ProgressExamples,PROGRESS_EXAMPLES,PROGRESS_CHAPTERS,PROGRESS_EXAMPLES_DURATION,ProgressResultsGrid,PROGRESS_RESULTS_TIMING,PROGRESS_GRID_BOX} from './ProgressExamples';
 import story from './full-film-original/story.json';
 import {PromptOpening,DURATION as OPENING_DURATION,CHAPTERS as OPENING_CHAPTERS} from './PromptOpening';
 
@@ -59,7 +59,7 @@ export const CHAPTERS=[...OPENING_CHAPTERS,{label:'Policy',frame:POLICY_TITLE_ST
   {label:'Simulation return',frame:SIMULATION_RETURN_START},
   {label:'Progress tracking',frame:PROGRESS_TITLE_START},
   {label:'Progress animation',frame:PROGRESS_PROMPT_START},
-  ...PROGRESS_EXAMPLES.map((example,index)=>({label:index===0?'Human progress':'Robot embodiments',frame:PROGRESS_START+example.start})),
+  ...PROGRESS_CHAPTERS.map(chapter=>({...chapter,frame:PROGRESS_START+chapter.frame})),
   {label:'Progress return',frame:PROGRESS_RETURN_START},
   {label:'Closing overview',frame:CLOSING_START}];
 

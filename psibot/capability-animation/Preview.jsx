@@ -7,6 +7,7 @@ import {CapabilityExamples,EXAMPLES,EXAMPLES_DURATION} from './CapabilityExample
 export const FPS=30,WIDTH=1280,HEIGHT=720;
 export const DURATION=CONCEPT_DURATION+EXAMPLES_DURATION;
 export const CHAPTERS=[{label:'One-goal concept',frame:0},
+  {label:'Generalization across objects and goals',frame:CONCEPT_DURATION},
   ...EXAMPLES.map(e=>({label:({'known-objects':'Known objects','unseen-objects':'Unseen objects','different-goals':'Different goals'})[e.id],
     frame:CONCEPT_DURATION+e.start}))];
 export function Preview({assetBase='./assets/'}) {

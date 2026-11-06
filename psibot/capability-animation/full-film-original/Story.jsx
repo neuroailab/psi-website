@@ -99,7 +99,7 @@ function GridVideo({kind, playbackRate = 1, trimBefore = 0}) {
     playbackRate={playbackRate} trimBefore={trimBefore} style={videoStyle}/>;
   return <div data-grid={kind} data-video-ready={ready} data-grid-playback-rate={playbackRate}
     data-grid-source-offset={trimBefore} style={{position: 'relative', width: '100%', height: '100%'}}>
-    <OffthreadVideo muted playsInline preload="auto" poster={poster} src={src}
+    <OffthreadVideo muted playsInline pauseWhenBuffering preload="auto" poster={poster} src={src}
       playbackRate={playbackRate} trimBefore={trimBefore}
       onCanPlay={e => decoded(e.currentTarget)} onVideoFrame={decoded}
       style={{...videoStyle, opacity: ready ? 1 : 0}}/>

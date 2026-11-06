@@ -2,40 +2,58 @@ import React from 'react';
 import {AbsoluteFill,Img} from 'remotion';
 import {useFilmTheme} from './FilmTheme';
 
-export const FPS=30,WIDTH=1280,HEIGHT=720,DURATION=735;
+export const FPS=30,WIDTH=1280,HEIGHT=720;
+export const OPENING_DURATIONS=Object.freeze({
+  allRows:165,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
+});
+const span=(start,duration)=>Object.freeze([start,start+duration]);
+const allRows=span(0,OPENING_DURATIONS.allRows);
+const focus=span(allRows[1],OPENING_DURATIONS.focus);
+const handoff=span(focus[1],OPENING_DURATIONS.handoff);
+const diagramPause=span(handoff[1],OPENING_DURATIONS.diagramPause);
+const gridReveal=span(diagramPause[1],OPENING_DURATIONS.gridReveal);
+const overviewHold=span(gridReveal[1],OPENING_DURATIONS.overviewHold);
+export const DURATION=overviewHold[1];
 export const OPENING_TIMING=Object.freeze({tokenDisplay:'simultaneous',tokenReveal:0,
-  allRows:[0,405],focus:[405,465],handoff:[465,555],overview:[555,735],
-  headingReveal:[495,535],overviewSourceOffset:405,logoMove:[465,555],
-  morphRoute:'direct',morphDirect:[465,555],
-  diagramPause:[555,615],gridReveal:[615,645],overviewHold:[645,735],
+  allRows,focus,handoff,overview:Object.freeze([handoff[1],DURATION]),
+  headingReveal:Object.freeze([handoff[0]+15,handoff[0]+35]),
+  columnLabelFade:span(handoff[0],18),headlineFade:span(handoff[0],15),
+  overviewSourceOffset:focus[0],logoMove:handoff,
+  morphRoute:'direct',morphDirect:handoff,
+  diagramPause,gridReveal,overviewHold,gridPlaybackStart:gridReveal[0],
   headline:'One model, many ways to prompt',arrowMode:'independent-staggered-streams',
   pathStreamSeed:0x505349,pathStreamSpeed:.7});
+export function openingPhaseAt(frame){
+  return frame<focus[0]?'all-rows':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
+    frame<gridReveal[0]?'diagram-pause':frame<gridReveal[1]?'grid-reveal':'capability-overview';
+}
+export const overviewGridFrame=(frame,start=OPENING_TIMING.gridPlaybackStart)=>Math.max(0,frame-start);
 const token=(kind,label)=>({kind,label});
 export const PROMPT_PATTERNS=Object.freeze([
-  {id:'video',label:'Video prediction',start:0,end:405,
+  {id:'video',label:'Video prediction',
     inputs:[token('rgb','RGB₀')],outputs:[token('rgb','RGB₁'),token('rgb','RGB₂')]},
-  {id:'video-flow',label:'Video-conditioned flow prediction',start:0,end:405,
+  {id:'video-flow',label:'Video-conditioned flow prediction',
     inputs:[token('rgb','RGB₀'),token('rgb','RGB₁')],outputs:[token('flow','Flow₀₁')]},
-  {id:'flow-video',label:'Flow-conditioned video prediction',start:0,end:405,
+  {id:'flow-video',label:'Flow-conditioned video prediction',
     inputs:[token('rgb','RGB₀'),token('flow','Flow₀₁')],outputs:[token('rgb','RGB₁')]},
-  {id:'mixed',label:'Mixed-modality prediction',start:0,end:405,
+  {id:'mixed',label:'Mixed-modality prediction',
     inputs:[token('rgb','RGB₀')],outputs:[token('depth','Depth₀'),token('flow','Flow₀₁'),token('depth','Depth₁'),token('rgb','RGB₁')]},
-  {id:'rgb-action',label:'Interleaved observations and actions',start:0,end:405,
+  {id:'rgb-action',label:'Interleaved observations and actions',
     inputs:[token('rgb','RGB₀'),token('action','A₀')],outputs:[token('rgb','RGB₁'),token('action','A₁')]},
-  {id:'rgb-flow-action',label:'Visual flow and actions',start:0,end:405,
+  {id:'rgb-flow-action',label:'Visual flow and actions',
     inputs:[token('rgb','RGB')],outputs:[token('flow','Flow'),token('action','Action')]},
-  {id:'policy',label:'Execute from one goal image',start:0,end:405,capability:0,
+  {id:'policy',label:'Execute from one goal image',capability:0,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt'),token('action','Actions')]},
-  {id:'simulation',label:'Imagine possible futures',start:0,end:405,capability:1,
+  {id:'simulation',label:'Imagine possible futures',capability:1,
     inputs:[token('rgb','RGB'),token('action','Actions')],outputs:[token('rgb','Next RGB')]},
-  {id:'progress',label:'Track progress',start:0,end:405,capability:2,
+  {id:'progress',label:'Track progress',capability:2,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt')]},
-].map((pattern,row)=>Object.freeze({...pattern,row,revealFrames:pattern.inputs.concat(pattern.outputs)
+].map((pattern,row)=>Object.freeze({...pattern,row,start:allRows[0],end:allRows[1],revealFrames:pattern.inputs.concat(pattern.outputs)
   .map(()=>0)})));
 export const CHAPTERS=[{label:'Prompting interface',frame:0},
-  {label:'Focus on robotics',frame:405},{label:'Capability transition',frame:465},
-  {label:'Three prompting paths',frame:555},{label:'Recorded examples',frame:615},
-  {label:'Three capabilities',frame:645}];
+  {label:'Focus on robotics',frame:focus[0]},{label:'Capability transition',frame:handoff[0]},
+  {label:'Three prompting paths',frame:diagramPause[0]},{label:'Recorded examples',frame:gridReveal[0]},
+  {label:'Three capabilities',frame:overviewHold[0]}];
 // Seeded phase offsets and speeds keep overlapping streams identical on seek/export.
 function streamSettings(seed){
   let state=seed>>>0;
@@ -56,7 +74,7 @@ export const LOGO_START=Object.freeze({left:(WIDTH-90)/2,top:(HEIGHT-90)/2,width
 export const OVERVIEW_LAYOUT=Object.freeze({left:40,step:406,width:388,titleY:180,titleFontSize:22,
   titleLineHeight:26.4,promptY:252,tokenWidth:60,tokenHeight:38,tokenGap:8,logoSize:48,
   inputLeft:36,logoLeft:204,outputLeft:292,gridTop:330,
-  gridWidth:388,gridHeight:388*714/1248,canonicalFrame:734});
+  gridWidth:388,gridHeight:388*714/1248,canonicalFrame:DURATION-1});
 export const columnLeft=pattern=>OVERVIEW_LAYOUT.left+pattern.capability*OVERVIEW_LAYOUT.step;
 export function overviewTitleBox(pattern){return {x:columnLeft(pattern)+OVERVIEW_LAYOUT.width/2,y:OVERVIEW_LAYOUT.titleY,
   width:OVERVIEW_LAYOUT.width,fontSize:OVERVIEW_LAYOUT.titleFontSize,lineHeight:OVERVIEW_LAYOUT.titleLineHeight};}

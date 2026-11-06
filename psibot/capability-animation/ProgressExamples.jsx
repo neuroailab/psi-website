@@ -2,6 +2,7 @@ import React from 'react';
 import {useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,Sequence,interpolate,useCurrentFrame} from 'remotion';
 import {AttentionTitle,TITLE_CUE_DURATION,TITLE_HOLD} from './AttentionTitle';
+import {NarrativeTitle} from './NarrativeTitle';
 import {FrozenSourceFrame} from './OverviewBridge';
 import {Grid as OriginalGrid} from './full-film-original/Story';
 
@@ -9,6 +10,8 @@ export const PROGRESS_RESULTS_TIMING=Object.freeze({
   overview:36,highlight:18,zoom:36,lead:90,cue:TITLE_CUE_DURATION,hold:36,return:36,
 });
 export const PROGRESS_RESULT_PLAYBACK_RATE=.8;
+export const PROGRESS_RESULTS_INTRO_DURATION=108;
+export const PROGRESS_RESULTS_INTRO_TEXT='The model learns temporal distance to goal across diverse scenes';
 export const PROGRESS_GRID_BOX=Object.freeze({left:224,top:122,width:832,height:476});
 export const PROGRESS_GRID_CONTENT=Object.freeze({width:1280,height:720});
 export const PROGRESS_GRID_SOURCE_FRAME=1751;
@@ -16,12 +19,12 @@ export const PROGRESS_EXAMPLE_PLAY_START=PROGRESS_RESULTS_TIMING.lead+PROGRESS_R
 const ASPECT=1024/1824;
 const GRID_SCALE=2/3;
 const definitions=[
-  {id:'human-videos',title:'Progress to goal in human videos',
+  {id:'human-videos',title:'In human videos',
     clips:[{tile:2,name:'progress-3',frames:77}]},
   {id:'robot-embodiments',title:'And different robot embodiments',
     clips:[{tile:0,name:'progress-1',frames:122},{tile:4,name:'progress-5',frames:150}]},
 ];
-let cursor=0;
+let cursor=PROGRESS_RESULTS_INTRO_DURATION;
 export const PROGRESS_EXAMPLES=definitions.map((example,index)=>{
   const playDuration=Math.ceil(Math.max(...example.clips.map(clip=>clip.frames))/PROGRESS_RESULT_PLAYBACK_RATE);
   const resultDuration=PROGRESS_RESULTS_TIMING.cue+playDuration+PROGRESS_RESULTS_TIMING.hold;
@@ -33,6 +36,13 @@ export const PROGRESS_EXAMPLES=definitions.map((example,index)=>{
   return result;
 });
 export const PROGRESS_EXAMPLES_DURATION=cursor;
+export const PROGRESS_CHAPTERS=[{label:'Temporal distance across scenes',frame:0},
+  ...PROGRESS_EXAMPLES.map((example,index)=>({label:index===0?'Human progress':'Robot embodiments',frame:example.start}))];
+export function ProgressResultsIntro(){
+  return <NarrativeTitle cue="progress-temporal-distance" kind="progress"
+    lines={['The model learns temporal distance to goal','across diverse scenes']}
+    duration={PROGRESS_RESULTS_INTRO_DURATION}/>;
+}
 const featuredClips=PROGRESS_EXAMPLES.flatMap(example=>example.clips.map(clip=>({...clip,exampleIndex:example.index})));
 const featuredTiles=new Set(featuredClips.map(clip=>clip.tile));
 const mix=(a,b,p)=>a+(b-a)*p;
@@ -143,6 +153,7 @@ export function ProgressResultsGrid({example=PROGRESS_EXAMPLES.at(-1),assetBase=
 
 export function ProgressExamples({assetBase='./assets/'}){
   return <AbsoluteFill>
+    <Sequence durationInFrames={PROGRESS_RESULTS_INTRO_DURATION}><ProgressResultsIntro/></Sequence>
     {PROGRESS_EXAMPLES.map(example=><Sequence key={example.id} from={example.start} durationInFrames={example.duration}>
       <ProgressExample example={example} assetBase={assetBase}/>
     </Sequence>)}
