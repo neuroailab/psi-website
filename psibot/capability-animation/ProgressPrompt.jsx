@@ -63,12 +63,13 @@ export function ProgressPrompt({assetBase='./assets/'}){
     style={{background:COLORS.bg,color:COLORS.ink,fontFamily:'Arial, sans-serif'}}>
     <CapabilityHeading kind="progress"/>
     <div data-progress-current-observation style={{...panel,left:65,opacity:reveal.current}}>
-      {frame<PROGRESS_PROMPT_PLAY_START?<Img src={asset(assetBase,progress.poster)} style={media}/>:
-        <Sequence from={PROGRESS_PROMPT_PLAY_START} layout="none">
-          <Freeze active={!playing} frame={playbackFrames-1}>
-            <OffthreadVideo muted playsInline src={asset(assetBase,progress.source)} playbackRate={PROGRESS_PROMPT_PLAYBACK_RATE} style={media}/>
-          </Freeze>
-        </Sequence>}
+      {frame<PROGRESS_PROMPT_PLAY_START&&<Img src={asset(assetBase,progress.poster)} style={media}/>}
+      <Sequence from={PROGRESS_PROMPT_PLAY_START} premountFor={PROGRESS_PROMPT_PLAY_START}>
+        <Freeze active={frame>=PROGRESS_PROMPT_PLAY_START+playbackFrames} frame={playbackFrames-1}>
+          <OffthreadVideo muted playsInline pauseWhenBuffering preload="auto" poster={asset(assetBase,progress.poster)}
+            src={asset(assetBase,progress.source)} playbackRate={PROGRESS_PROMPT_PLAYBACK_RATE} style={media}/>
+        </Freeze>
+      </Sequence>
     </div>
     <div data-progress-conditioning-goal style={{...panel,left:385,opacity:reveal.goal}}>
       <Img src={asset(assetBase,progress.goal)} style={media}/>
