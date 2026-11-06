@@ -1,0 +1,6 @@
+# Keep archived PsiBorg experiments in Git without shipping them in GitHub Pages.
+# The current animation uses assets/capability-film; failure detection is disabled.
+exclude:
+  - psibot/assets/hero-story
+  - psibot/assets/benchmarks
+  - psibot/klemen_draft1
