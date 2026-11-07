@@ -7,7 +7,7 @@ import {PolicyGrid,GRID_LEAD,GRID_RETURN,POLICY_PLAYBACK_RATE,exampleBox,example
 
 const GOAL_HOLD=126,SHRINK=36;
 export const POLICY_RESULTS_INTRO_DURATION=90;
-export const POLICY_RESULTS_INTRO_TEXT='Striking generalization across new objects and goals';
+export const POLICY_RESULTS_INTRO_TEXT='Our approach leads to strong generalization across objects and goals';
 export const EXAMPLE_PLAY_START=GOAL_HOLD+SHRINK;
 export const FINAL_COMPARISON_HOLD=60;
 const definitions=[
@@ -33,7 +33,7 @@ export const EXAMPLES=definitions.map((example,index)=>{
 export const EXAMPLES_DURATION=cursor;
 export function PolicyResultsIntro(){
   return <NarrativeTitle cue="policy-generalization" kind="policy"
-    lines={['Striking generalization','across new objects and goals']}
+    lines={['Our approach leads to strong generalization','across objects and goals']}
     duration={POLICY_RESULTS_INTRO_DURATION}/>;
 }
 const mix=(a,b,p)=>a+(b-a)*p;

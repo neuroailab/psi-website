@@ -11,7 +11,7 @@ export const PROGRESS_RESULTS_TIMING=Object.freeze({
 });
 export const PROGRESS_RESULT_PLAYBACK_RATE=.8;
 export const PROGRESS_RESULTS_INTRO_DURATION=108;
-export const PROGRESS_RESULTS_INTRO_TEXT='The model learns temporal distance to goal across diverse scenes';
+export const PROGRESS_RESULTS_INTRO_TEXT='PsiBorg learns temporal distance to goal across diverse scenes';
 export const PROGRESS_GRID_BOX=Object.freeze({left:224,top:122,width:832,height:476});
 export const PROGRESS_GRID_CONTENT=Object.freeze({width:1280,height:720});
 export const PROGRESS_GRID_SOURCE_FRAME=1751;
@@ -40,7 +40,7 @@ export const PROGRESS_CHAPTERS=[{label:'Temporal distance across scenes',frame:0
   ...PROGRESS_EXAMPLES.map((example,index)=>({label:index===0?'Human progress':'Robot embodiments',frame:example.start}))];
 export function ProgressResultsIntro(){
   return <NarrativeTitle cue="progress-temporal-distance" kind="progress"
-    lines={['The model learns temporal distance to goal','across diverse scenes']}
+    lines={['PsiBorg learns temporal distance to goal','across diverse scenes']}
     duration={PROGRESS_RESULTS_INTRO_DURATION}/>;
 }
 const featuredClips=PROGRESS_EXAMPLES.flatMap(example=>example.clips.map(clip=>({...clip,exampleIndex:example.index})));
