@@ -1,7 +1,7 @@
 import React from 'react';
 import {useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,Sequence,interpolate,useCurrentFrame} from 'remotion';
-import {AttentionTitle,TITLE_CUE_DURATION,TITLE_HOLD} from './AttentionTitle';
+import {AttentionTitle,TITLE_CUE_DURATION,TITLE_FADE} from './AttentionTitle';
 import {NarrativeTitle} from './NarrativeTitle';
 import {FrozenSourceFrame} from './OverviewBridge';
 import {Grid as OriginalGrid} from './full-film-original/Story';
@@ -64,8 +64,8 @@ function phaseAt(frame,example){
   if(frame<36)return 'overview';
   if(frame<54)return 'highlight';
   if(frame<90)return 'zoom';
-  if(frame<PROGRESS_RESULTS_TIMING.lead+TITLE_HOLD)return 'cue-centered';
-  if(frame<example.playStart)return 'cue-to-top';
+  if(frame<PROGRESS_RESULTS_TIMING.lead+TITLE_FADE)return 'cue-fade-in';
+  if(frame<example.playStart)return 'cue-hold';
   if(frame<example.playStart+example.playDuration)return 'play';
   if(frame<example.returnStart)return 'final-hold';
   return 'return';
