@@ -70,9 +70,9 @@
 <div class="article-layout">
 <article class="prose">
 <section aria-label="introduction" id="introduction">
-<p>Robots need to choose actions, anticipate their consequences, and assess progress toward a goal. These capabilities depend on shared relationships between observations, actions, and goals. A model that learns these relationships can address different robotics problems by changing what information is provided and what is predicted. This motivates a promptable foundation model that learns from both visual and robot experience.</p>
-<p>We introduce <strong>PsiBorg</strong>, a probabilistic autoregressive model that represents visual observations, actions, and temporal information as tokens. Prompts specify the available information and the prediction to make. We study three inference pathways through this shared model: policy inference, simulation, and progress tracking.</p>
-<p>Building on <a href="https://arxiv.org/abs/2509.09737">Probabilistic Structure Integration (PSI)</a>, we start from an autoregressive vision model pretrained on large-scale internet video. We continue training on a joint mixture of internet videos depicting people, scenes, and objects, robot videos spanning different embodiments, and paired observations and actions. Across the three capabilities we study, we demonstrate strong generalization to new objects, scenes, and goals.</p>
+<p>Robotics capabilities depend on shared relationships between observations, actions, and goals. We introduce <strong>PsiBorg</strong>, a new paradigm for pretraining robotics foundation models that defines many capabilities as prompts to a unified model through any-to-any token prediction.</p>
+<p>Our work builds on <a href="https://arxiv.org/abs/2509.09737">Probabilistic Structure Integration (PSI)</a>, which trains an autoregressive model on large-scale internet video to support flexible prompting through visual intermediates. We extend this approach to robotics by jointly training on a mixture of internet videos depicting people, scenes, and objects; robot videos spanning different embodiments; and paired observations and actions.</p>
+<p>We focus on three inference pathways: policy inference, simulation, and progress tracking. Across these capabilities, we demonstrate strong generalization to new objects, scenes, and goals.</p>
 </section>
 <!-- The three prompting sequences are integrated into the main capability film. -->
 <section aria-label="Results" id="results">
