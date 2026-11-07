@@ -14,6 +14,14 @@ html[data-theme] body { background: var(--paper); }
 .hero-feature-screen:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .hero-feature-screen > div { margin: 0; }
 .hero-feature-screen video { border: 0; border-radius: 0; }
+.hero-feature-feedback { position: absolute; z-index: 10; left: 50%; top: 50%; width: clamp(52px, 7vw, 84px); aspect-ratio: 1; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 50%; color: #fff; background: rgba(17, 26, 34, .8); border: 1px solid rgba(255, 255, 255, .22); box-shadow: 0 4px 20px rgba(0, 0, 0, .18); animation: hero-playback-feedback 900ms ease-out forwards; }
+.hero-feature-feedback svg { width: 44%; height: 44%; fill: currentColor; }
+@keyframes hero-playback-feedback {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(.94); }
+  65% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); }
+}
+@media(prefers-reduced-motion: reduce) { .hero-feature-feedback { animation: none; } }
 .hero-feature-controls { display: block; min-height: 88px; padding-top: 8px; font-size: 12px; color: var(--muted); }
 .hero-feature-controls[hidden] { display: none; }
 .hero-feature-timeline { display: flex; align-items: center; gap: 16px; min-height: 36px; }

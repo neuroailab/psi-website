@@ -15,6 +15,7 @@ const pageTheme = () => document.documentElement.dataset.theme === 'light' ? 'li
 function CapabilityPlayer() {
   const ref = useRef(null);
   const [theme, setTheme] = useState(pageTheme);
+  const [playbackFeedback, setPlaybackFeedback] = useState(null);
   const inputProps = useMemo(() => ({theme}), [theme]);
   useEffect(() => {
     // Warm the standalone result clips before their chapters. Keep the much
@@ -56,6 +57,7 @@ function CapabilityPlayer() {
     const time = root.querySelector('.hero-feature-time');
     const chapters = [...root.querySelectorAll('[data-chapter]')];
     let manualPause = false;
+    let feedbackTimer, feedbackSequence = 0;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
     window.psiHeroFilm = {version: 11, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'prompting-opening-v7', chapters: CHAPTERS, sections: SECTIONS,
@@ -110,6 +112,9 @@ function CapabilityPlayer() {
     const onToggle = () => {
       manualPause = player.isPlaying();
       if (manualPause) player.pause(); else tryPlay();
+      clearTimeout(feedbackTimer);
+      setPlaybackFeedback({action: manualPause ? 'pause' : 'play', id: ++feedbackSequence});
+      feedbackTimer = setTimeout(() => setPlaybackFeedback(null), 900);
       mount.focus({preventScroll: true});
       updateControl();
     };
@@ -184,6 +189,7 @@ function CapabilityPlayer() {
     document.addEventListener('visibilitychange', onVisibility);
     updateControl(); updateTimeline(player.getCurrentFrame()); tryPlay();
     return () => {
+      clearTimeout(feedbackTimer);
       player.removeEventListener('frameupdate', updateFrame);
       player.removeEventListener('play', updateControl);
       player.removeEventListener('pause', updateControl);
@@ -202,10 +208,19 @@ function CapabilityPlayer() {
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
-  return <Player ref={ref} component={FullFilm} inputProps={inputProps}
+  return <><Player ref={ref} component={FullFilm} inputProps={inputProps}
     durationInFrames={DURATION} fps={FPS} compositionWidth={WIDTH} compositionHeight={HEIGHT}
     playbackRate={PLAYBACK_RATE} autoPlay loop initiallyMuted controls={false} clickToPlay={false}
     spaceKeyToPlayOrPause={false} doubleClickToFullscreen={false} showVolumeControls={false}
-    style={{width: '100%', height: '100%', aspectRatio: `${WIDTH}/${HEIGHT}`, background: 'transparent'}}/>;
+    style={{width: '100%', height: '100%', aspectRatio: `${WIDTH}/${HEIGHT}`, background: 'transparent'}}/>
+    {playbackFeedback && <span key={playbackFeedback.id} className="hero-feature-feedback"
+      data-feedback-action={playbackFeedback.action} aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+        {playbackFeedback.action === 'pause'
+          ? <><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></>
+          : <path d="M8 4.5v15l12-7.5z"/>}
+      </svg>
+    </span>}
+  </>;
 }
 if (mount) createRoot(mount).render(<CapabilityPlayer/>);
