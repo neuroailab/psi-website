@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html data-theme="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="#0b1117" name="theme-color"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="PsiBorg is a promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model." name="description"/>
+<title>PsiBorg: A Promptable Foundation Model for Robotics</title>
+<script>try { if (localStorage.getItem('psiborg-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (_) {}</script>
+<link href="./styles.css?v=7b004a8a69b5" rel="stylesheet"/>
+<link href="./hero.css?v=88e9ba495fc7" rel="stylesheet"/>
+<script defer="" src="./hero.js?v=eebe7c8cd3dc"></script>
+<link href="./carousel.css?v=5c0e8e53a78d" rel="stylesheet"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-1-final.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-3-final.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-5-final.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-grid-return.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/simulation-grid-return.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-poster.jpg"/>
+<link rel="preload" as="image" href="./assets/capability-film/observations.webp"/>
+<link rel="preload" as="image" href="./assets/capability-film/actions-clean.webp"/>
+<link rel="preload" as="image" href="./assets/capability-film/psi-mark.svg"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-1-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-2-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-3-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-4-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-5-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-6-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-7-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-8-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-9-goal.png"/>
+<link rel="preload" as="image" href="./assets/capability-film/policy-grid.jpg"/>
+<link rel="preload" as="image" href="./assets/capability-film/simulation-trim8-grid.jpg"/>
+<link rel="preload" as="image" href="./assets/capability-film/progress-grid.jpg"/>
+<link rel="canonical" href="https://neuroailab.github.io/psi-website/psiborg/"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://neuroailab.github.io/psi-website/psiborg/"/>
+<meta property="og:title" content="PsiBorg: A Promptable Foundation Model for Robotics"/>
+<meta property="og:description" content="PsiBorg is a promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model."/>
+<meta property="og:image" content="https://neuroailab.github.io/psi-website/psiborg/assets/capability-film/policy-grid.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="PsiBorg: A Promptable Foundation Model for Robotics"/>
+<meta name="twitter:description" content="PsiBorg is a promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model."/>
+</head>
+<body>
+<a class="skip-link" href="#article">Skip to article</a>
+<header class="site-header">
+<div class="header-actions"><button aria-label="Switch to light mode" aria-pressed="false" class="theme-toggle" type="button"><span aria-hidden="true" class="theme-toggle-icon">☼</span><span class="theme-toggle-label">Light</span></button></div>
+</header>
+<main id="article">
+<header class="article-header">
+<h1><span class="article-title-line"><span class="title-name">PsiBorg:</span> A Promptable Foundation Model for Robotics</span></h1>
+<!-- Add resource URLs and replace disabled buttons with anchors when available. -->
+<ul aria-label="PsiBorg resources" class="resource-links">
+<li><button aria-label="Code on GitHub, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"></path></svg><span class="resource-copy"><strong>Code</strong><small>GitHub</small></span><span class="resource-soon">Soon</span></button></li>
+<li><button aria-label="Paper on arXiv, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v6h5M8 13h8M8 17h6"></path></svg><span class="resource-copy"><strong>Paper</strong><small>arXiv</small></span><span class="resource-soon">Soon</span></button></li>
+<li><button aria-label="Model on Hugging Face, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><rect height="12" rx="2" width="12" x="6" y="6"></rect><path d="M10 10h4v4h-4zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"></path></svg><span class="resource-copy"><strong>Model</strong><small>Hugging Face</small></span><span class="resource-soon">Soon</span></button></li>
+</ul><figure aria-label="PsiBorg capabilities in action" class="hero-feature">
+<div aria-label="Pause PsiBorg animation" class="hero-feature-screen" id="hero-feature-player" role="button" tabindex="0"></div>
+<figcaption class="hero-feature-controls">
+<div class="hero-feature-timeline"><input aria-label="Seek main animation" aria-controls="hero-feature-player" class="hero-feature-seek" type="range" min="0" max="5547" step="1" value="0"/><output class="hero-feature-time" aria-live="off">0:00 / 2:34</output></div>
+<div class="hero-feature-toolbar"><nav aria-label="Animation chapters" class="hero-feature-chapters"><button type="button" data-chapter="Policy" aria-controls="hero-feature-player">Policy</button><button type="button" data-chapter="Simulation" aria-controls="hero-feature-player">Simulation</button><button type="button" data-chapter="Progress tracking" aria-controls="hero-feature-player">Progress</button></nav>
+</div>
+<span aria-live="polite" class="hero-feature-status"></span>
+</figcaption>
+</figure>
+</header>
+<div class="article-layout">
+<article class="prose">
+<section aria-label="introduction" id="introduction">
+<p>Robots need to choose actions, anticipate their consequences, and assess progress toward a goal. These capabilities depend on shared relationships between observations, actions, and goals. A model that learns these relationships can address different robotics problems by changing what information is provided and what is predicted. This motivates a promptable foundation model that learns from both visual and robot experience.</p>
+<p>We introduce <strong>PsiBorg</strong>, a probabilistic autoregressive model that represents visual observations, actions, and temporal information as tokens. Prompts specify the available information and the prediction to make. We study three inference pathways through this shared model: policy inference, simulation, and progress tracking.</p>
+<p>Building on <a href="https://arxiv.org/abs/2509.09737">Probabilistic Structure Integration (PSI)</a>, we start from an autoregressive vision model pretrained on large-scale internet video. We continue training on a joint mixture of internet videos depicting people, scenes, and objects, robot videos spanning different embodiments, and paired observations and actions. Across the three capabilities we study, we demonstrate strong generalization to new objects, scenes, and goals.</p>
+</section>
+<!-- The three prompting sequences are integrated into the main capability film. -->
+<section aria-label="Results" id="results">
+<div aria-label="Explore PsiBorg capabilities" class="capability-tabs" role="tablist">
+<button aria-controls="panel-policy" aria-selected="true" data-tab="policy" id="tab-policy" role="tab" tabindex="0" type="button">Policy and progress</button>
+<button aria-controls="panel-simulation" aria-selected="false" data-tab="simulation" id="tab-simulation" role="tab" tabindex="-1" type="button">Simulation</button>
+<!-- Failure detection tab retained for later.
+<button aria-controls="panel-failure" aria-selected="false" data-tab="failure" id="tab-failure" role="tab" tabindex="-1" type="button">Failure detection</button>
+-->
+<button aria-controls="panel-progress" aria-selected="false" data-tab="progress" id="tab-progress" role="tab" tabindex="-1" type="button">Progress tracking</button>
+</div>
+<div aria-labelledby="tab-policy" class="capability-panel" id="panel-policy" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="policy-and-progress-results">
+<h3 class="capability-heading">Policy and progress tracking</h3>
+<p>A single goal image specifies the desired outcome. Given the current observation and this goal, PsiBorg first predicts Δt, the estimated temporal distance to the goal. It then uses Δt to temporally embed the goal frame and predict the next action chunk.</p>
+<p>We find that predicting temporal distance first and incorporating this temporal information into the goal image greatly improves action prediction compared with conditioning on the goal image alone. The examples show new ways to interact with known objects, flexible interaction with objects not seen during training, and diverse goals involving the same objects.</p>
+</div>
+<div aria-label="Policy and progress videos" class="capability-carousel" data-carousel="policy"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+<div aria-labelledby="tab-simulation" class="capability-panel" hidden="" id="panel-simulation" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="simulation-results">
+<h3 class="capability-heading">Simulation</h3>
+<p>Given a current observation and a sequence of low-level robot commands, PsiBorg predicts the resulting visual observations. Here, the action inputs are joint positions and gripper commands. We show simulation results for held-out teleoperated episodes, including picking up and dropping off objects, as well as counterfactual scenarios. We also demonstrate generalization to environments and objects not seen during training.</p>
+</div>
+<div aria-label="Simulation videos" class="capability-carousel" data-carousel="simulation"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+<div aria-labelledby="tab-progress" class="capability-panel" hidden="" id="panel-progress" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="progress-tracking-results">
+<h3 class="capability-heading">Progress tracking</h3>
+<p>Given a current observation and a single goal image, PsiBorg predicts a distribution over their temporal distance, Δt. We learn this prediction from the observed time separation between frames in training videos. As new observations arrive, the estimated temporal distance provides a way to track progress toward the fixed goal. We demonstrate this capability in human videos and across different robot embodiments.</p>
+</div>
+<div aria-label="Progress tracking videos" class="capability-carousel" data-carousel="progress"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+<!-- Failure detection section retained for later; its video data remains in catalog.json.
+<div aria-labelledby="tab-failure" class="capability-panel" hidden="" id="panel-failure" role="tabpanel" tabindex="0">
+<div class="capability-copy" id="failure-detection-results">
+<h3 class="capability-heading">Failure detection</h3>
+<p>Can the model distinguish reaching a goal from simply reaching the end of a video? We build an ABC simulation benchmark from six held-out successful episodes of turning mugs right side up. At 50% of each episode, we simulate failures by branching into continuations that hold the robot in place or apply bounded random joint movements.</p>
+<p>Every continuation is evaluated against the same successful source goal, and the simulator labels its outcome as successful or incomplete. Compare each failure’s time-to-goal predictions with its successful reference as the video plays.</p>
+</div>
+<div aria-label="Failure detection videos" class="capability-carousel" data-carousel="failure"><p class="carousel-status" role="status">Loading videos…</p></div>
+</div>
+-->
+
+</section><section aria-label="model" id="model"><h2 id="technical-details-title">Technical Details</h2><h3>Model</h3>
+<p>Our base vision model, <a href="https://arxiv.org/abs/2509.09737">PSI0.5</a>, uses a GPT-style autoregressive transformer architecture trained on next-token prediction across the following modalities: RGB, depth, optical flow, and camera pose. We extend this framework to robot learning by adding actions as another modality in the training mix. We refer to this variant of the model as PsiBorg.</p>
+</section>
+<section aria-label="model and training" id="model-and-training"><h3>Data and training</h3>
+<p>Our training data falls into three groups:</p>
+<p><strong>General visual data:</strong> Diverse internet videos and vision datasets used to train the base model, including human activity and egocentric video.</p>
+<p><strong>Robot videos:</strong> Open-source datasets spanning different robot embodiments and tasks. These broaden the model’s exposure to robot motion, object interactions, and task structure.</p>
+<p><strong>Paired observations and actions:</strong> YAM data from <a href="https://huggingface.co/datasets/XDOF/ABC-130k">ABC</a>, <a href="https://huggingface.co/datasets/WorldEngineAI/WEB-Dataset">World Engine</a>, <a href="https://huggingface.co/collections/allenai/molmoact2-bimanualyam-dataset">Molmo</a>, and diverse manipulation tasks collected on our own bimanual YAM setup. These datasets connect visual observations to actions in the YAM embodiment.</p>
+<figure aria-label="Training data" class="dataset-figure" id="training-data-figure">
+<div class="dataset-panels">
+<div class="dataset-panel" data-dataset-animation="">
+<picture><source data-dark-src="./assets/datasets/general-data-dark.png" data-light-src="./assets/datasets/general-data.png" media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/general-data-dark.png"/><img alt="Six general visual training clips: internet scenes, human activity, objects and egocentric video" data-dark-src="./assets/datasets/general-data-dark.gif" data-light-src="./assets/datasets/general-data.gif" height="772" src="./assets/datasets/general-data-dark.gif" width="720"/></picture>
+</div>
+<div class="dataset-panel" data-dataset-animation="">
+<picture><source data-dark-src="./assets/datasets/robot-data-dark.png" data-light-src="./assets/datasets/robot-data.png" media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/robot-data-dark.png"/><img alt="Six training clips from DROID, Bridge, AgiBot, FMB, GR00T and RealOmni" data-dark-src="./assets/datasets/robot-data-dark.gif" data-light-src="./assets/datasets/robot-data.gif" height="772" src="./assets/datasets/robot-data-dark.gif" width="720"/></picture>
+</div>
+<div class="dataset-panel" data-dataset-animation="">
+<picture><source data-dark-src="./assets/datasets/paired-data-dark.png" data-light-src="./assets/datasets/paired-data.png" media="(prefers-reduced-motion: reduce)" srcset="./assets/datasets/paired-data-dark.png"/><img alt="Four YAM training clips in a 2 by 2 grid: ABC, World Engine, Molmo and GuestView, each above its matching recorded command poses" data-dark-src="./assets/datasets/paired-data-dark.gif" data-light-src="./assets/datasets/paired-data.gif" height="772" src="./assets/datasets/paired-data-dark.gif" width="720"/></picture>
+</div>
+</div>
+</figure>
+<!-- Separate capability description retained for editing:
+<section aria-labelledby="progress-title" class="interface progress" id="progress-interface">
+<p><strong id="progress-title">Progress tracking:</strong> Given a current observation and a goal image, the model predicts a time difference, Δt , describing their temporal separation. This estimate provides a way to track progress toward the goal as the robot receives new observations.</p>
+</section>
+-->
+<!-- Separate capability description retained for editing:
+<section aria-labelledby="policy-title" class="interface policy" id="policy-interface">
+<p><strong id="policy-title">Policy inference:</strong> During training, the model learns to predict demonstrated action sequences from the current observation and a visual goal. At inference time, the model first predicts how far it is from a visual goal. This temporal information is then embedded into the goal image before action prediction.</p>
+</section>
+-->
+<!-- Separate capability description retained for editing:
+<section aria-labelledby="simulation-title" class="interface simulation" id="simulation-interface">
+<p><strong id="simulation-title">Simulation:</strong> The model learns to predict the next visual observation autoregressively using one fixed initial ground-truth observation, its own rolling history, and the next action chunk.</p>
+</section>
+-->
+</section>
+</article>
+</div>
+</main>
+<footer class="site-footer"><a href="../index.html">PSI / Research documentation</a><a href="#article">Back to top ↑</a></footer>
+<script>
+  (() => {
+    const button = document.querySelector('.theme-toggle');
+    const applyTheme = theme => {
+      document.documentElement.dataset.theme = theme;
+      const isDark = theme === 'dark';
+      document.querySelectorAll('[data-dark-src]').forEach(media => {
+        const attribute = media.tagName === 'SOURCE' ? 'srcset' : 'src';
+        const source = isDark ? media.dataset.darkSrc : media.dataset.lightSrc;
+        if (media.getAttribute(attribute) !== source) media.setAttribute(attribute, source);
+      });
+      button.querySelector('.theme-toggle-icon').textContent = isDark ? '☼' : '☾';
+      button.querySelector('.theme-toggle-label').textContent = isDark ? 'Light' : 'Dark';
+      button.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+      button.setAttribute('aria-pressed', String(!isDark));
+      document.querySelector('meta[name="theme-color"]').content = isDark ? '#0b1117' : '#fbfaf7';
+    };
+    applyTheme(document.documentElement.dataset.theme);
+    button.addEventListener('click', () => {
+      const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(theme);
+      try { localStorage.setItem('psiborg-theme', theme); } catch (_) {}
+    });
+  })();
+  </script>
+
+<script defer="" src="./carousel.js?v=a185194629b2"></script></body>
+</html>

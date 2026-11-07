@@ -1,7 +1,7 @@
 # Klemen draft 1
 
 Separate editorial draft of the PsiBorg post, based on `f4922e2`.
-Published at `/psi-website/psibot/klemen_draft1/`.
+Published at `/psi-website/psiborg/klemen_draft1/`.
 
 Edit `index.html` for prose and `draft.css` for draft-specific presentation.
 The “Converting Capabilities Into Prompts” section is intentionally a writing outline. The parent
