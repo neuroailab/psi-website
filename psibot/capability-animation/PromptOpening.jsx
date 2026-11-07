@@ -3,10 +3,11 @@ import {AbsoluteFill,getRemotionEnvironment,staticFile,useCurrentFrame} from 're
 import {FilmThemeProvider,useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {CapabilityOverview} from './CapabilityOverview';
 import {OPENING_TIMING,PROMPT_PATTERNS,CAPABILITY_PATTERNS,PromptDiagram,ModelMark,
-  CapabilityTitleLabel,morphLogoBox,rowOpacityAt,openingPhaseAt,ease} from './PromptDiagram';
+  CapabilityTitleLabel,morphLogoBox,rowOpacityAt,visibleRowCountAt,fullyVisibleRowCountAt,openingPhaseAt,ease} from './PromptDiagram';
 
 export {FPS,WIDTH,HEIGHT,DURATION,OPENING_DURATIONS,OPENING_TIMING,openingPhaseAt,overviewGridFrame,
-  PROMPT_PATTERNS,CHAPTERS,PATH_STREAMS,pathStreamAt,
+  PROMPT_PATTERNS,CHAPTERS,PATH_STREAMS,pathStreamAt,PATH_REVEAL_SEED,PATH_REVEAL_STEP,PATH_REVEAL_FADE,
+  PATH_REVEAL_ORDER,PATH_REVEAL_TIMING,rowRevealOpacityAt,visibleRowCountAt,fullyVisibleRowCountAt,
   LOGO_START,LOGO_END,ROW_LAYOUT,OVERVIEW_LAYOUT,rowOpacityAt,rowLabelAt,tokenBoxes,
   overviewTokenBoxes,overviewLogoBox,overviewMediaBox,overviewTitleBox,morphTokenBoxes,morphLogoBox,diagramRouteAt,
   overviewTokenLabel,tokenOpacityAt} from './PromptDiagram';
@@ -18,7 +19,11 @@ function OpeningContent(){
   const phase=openingPhaseAt(frame),morphStarted=frame>=OPENING_TIMING.handoff[0];
   const policy=CAPABILITY_PATTERNS[0];
   return <AbsoluteFill data-prompt-opening data-opening-frame={frame} data-opening-phase={phase}
-    data-opening-theme={palette.theme} data-visible-row-count={PROMPT_PATTERNS.length}
+    data-opening-theme={palette.theme} data-visible-row-count={visibleRowCountAt(frame)}
+    data-fully-visible-row-count={fullyVisibleRowCountAt(frame)}
+    data-path-reveal-start={OPENING_TIMING.pathReveal[0]} data-path-reveal-end={OPENING_TIMING.pathReveal[1]}
+    data-path-reveal-seed={OPENING_TIMING.pathRevealSeed} data-path-reveal-step={OPENING_TIMING.pathRevealStep}
+    data-path-reveal-fade={OPENING_TIMING.pathRevealFade}
     data-path-stream-count={PROMPT_PATTERNS.length}
     style={{...filmThemeVariables(palette),background:palette.bg,fontFamily:'Arial, Helvetica, sans-serif',color:palette.ink}}>
     <CapabilityOverview showDiagrams={false} showTitles={false} transparent

@@ -60,7 +60,7 @@ function CapabilityPlayer() {
     let feedbackTimer, feedbackSequence = 0;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
-    window.psiHeroFilm = {version: 11, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'prompting-opening-v7', chapters: CHAPTERS, sections: SECTIONS,
+    window.psiHeroFilm = {version: 15, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'prompting-opening-v15', chapters: CHAPTERS, sections: SECTIONS,
       duration: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
     mount.dataset.compositionWidth = WIDTH;
     mount.dataset.height = HEIGHT;

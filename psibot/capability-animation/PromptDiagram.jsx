@@ -3,33 +3,37 @@ import {AbsoluteFill,Img} from 'remotion';
 import {useFilmTheme} from './FilmTheme';
 
 export const FPS=30,WIDTH=1280,HEIGHT=720;
+export const PATH_REVEAL_SEED=0x505349;
+export const PATH_REVEAL_STEP=5,PATH_REVEAL_FADE=5;
 export const OPENING_DURATIONS=Object.freeze({
-  allRows:165,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
+  pathReveal:45,allRows:165,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
 });
 const span=(start,duration)=>Object.freeze([start,start+duration]);
-const allRows=span(0,OPENING_DURATIONS.allRows);
+const pathReveal=span(0,OPENING_DURATIONS.pathReveal);
+const allRows=span(pathReveal[1],OPENING_DURATIONS.allRows);
 const focus=span(allRows[1],OPENING_DURATIONS.focus);
 const handoff=span(focus[1],OPENING_DURATIONS.handoff);
 const diagramPause=span(handoff[1],OPENING_DURATIONS.diagramPause);
 const gridReveal=span(diagramPause[1],OPENING_DURATIONS.gridReveal);
 const overviewHold=span(gridReveal[1],OPENING_DURATIONS.overviewHold);
 export const DURATION=overviewHold[1];
-export const OPENING_TIMING=Object.freeze({tokenDisplay:'simultaneous',tokenReveal:0,
+export const OPENING_TIMING=Object.freeze({tokenDisplay:'seeded-row-reveal',tokenReveal:PATH_REVEAL_FADE,
+  pathReveal,pathRevealSeed:PATH_REVEAL_SEED,pathRevealStep:PATH_REVEAL_STEP,pathRevealFade:PATH_REVEAL_FADE,
   allRows,focus,handoff,overview:Object.freeze([handoff[1],DURATION]),
   headingReveal:Object.freeze([handoff[0]+15,handoff[0]+35]),
   columnLabelFade:span(handoff[0],18),headlineFade:span(handoff[0],15),
   overviewSourceOffset:focus[0],logoMove:handoff,
   morphRoute:'direct',morphDirect:handoff,
   diagramPause,gridReveal,overviewHold,gridPlaybackStart:gridReveal[0],
-  headline:'One model, many ways to prompt',arrowMode:'independent-staggered-streams',
+  headline:'Our model defines any capability as a prompt',arrowMode:'independent-staggered-streams',
   pathStreamSeed:0x505349,pathStreamSpeed:.7});
 export function openingPhaseAt(frame){
-  return frame<focus[0]?'all-rows':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
+  return frame<allRows[0]?'path-reveal':frame<focus[0]?'all-rows':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
     frame<gridReveal[0]?'diagram-pause':frame<gridReveal[1]?'grid-reveal':'capability-overview';
 }
 export const overviewGridFrame=(frame,start=OPENING_TIMING.gridPlaybackStart)=>Math.max(0,frame-start);
 const token=(kind,label)=>({kind,label});
-export const PROMPT_PATTERNS=Object.freeze([
+const promptPatterns=[
   {id:'video',label:'Video prediction',
     inputs:[token('rgb','RGB₀')],outputs:[token('rgb','RGB₁'),token('rgb','RGB₂')]},
   {id:'video-flow',label:'Video-conditioned flow prediction',
@@ -48,9 +52,32 @@ export const PROMPT_PATTERNS=Object.freeze([
     inputs:[token('rgb','RGB'),token('action','Actions')],outputs:[token('rgb','Next RGB')]},
   {id:'progress',label:'Track progress',capability:2,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt')]},
-].map((pattern,row)=>Object.freeze({...pattern,row,start:allRows[0],end:allRows[1],revealFrames:pattern.inputs.concat(pattern.outputs)
-  .map(()=>0)})));
+];
+// Shuffle once from a fixed seed: row positions stay fixed, and every seek and
+// render gets the same complete-path reveal order.
+function shuffledRows(count,seed){
+  const rows=Array.from({length:count},(_,index)=>index);
+  let state=seed>>>0;
+  const random=()=>{state^=state<<13;state^=state>>>17;state^=state<<5;return (state>>>0)/4294967296;};
+  for(let index=rows.length-1;index>0;index--){
+    const other=Math.floor(random()*(index+1));
+    [rows[index],rows[other]]=[rows[other],rows[index]];
+  }
+  return rows;
+}
+const revealRows=shuffledRows(promptPatterns.length,PATH_REVEAL_SEED);
+export const PATH_REVEAL_ORDER=Object.freeze(revealRows.map(row=>promptPatterns[row].id));
+export const PATH_REVEAL_TIMING=Object.freeze(revealRows.map((row,order)=>Object.freeze({
+  id:promptPatterns[row].id,row,order,start:pathReveal[0]+order*PATH_REVEAL_STEP,
+  end:pathReveal[0]+order*PATH_REVEAL_STEP+PATH_REVEAL_FADE,
+})));
+export const PROMPT_PATTERNS=Object.freeze(promptPatterns.map((pattern,row)=>{
+  const reveal=PATH_REVEAL_TIMING.find(item=>item.row===row);
+  return Object.freeze({...pattern,row,start:reveal.start,end:allRows[1],revealOrder:reveal.order,
+    revealEnd:reveal.end,revealFrames:Object.freeze(pattern.inputs.concat(pattern.outputs).map(()=>reveal.start))});
+}));
 export const CHAPTERS=[{label:'Prompting interface',frame:0},
+  {label:'All prompting paths',frame:allRows[0]},
   {label:'Focus on robotics',frame:focus[0]},{label:'Capability transition',frame:handoff[0]},
   {label:'Three prompting paths',frame:diagramPause[0]},{label:'Recorded examples',frame:gridReveal[0]},
   {label:'Three capabilities',frame:overviewHold[0]}];
@@ -89,9 +116,12 @@ export const ROW_LAYOUT=Object.freeze({firstCenterY:152,rowGap:52,labelLeft:14,l
 const kinds=palette=>({rgb:palette.rgb,depth:palette.policyAccent,flow:palette.action,
   action:palette.action,time:palette.time});
 const rowY=pattern=>ROW_LAYOUT.firstCenterY+pattern.row*ROW_LAYOUT.rowGap;
+export const rowRevealOpacityAt=(pattern,frame)=>ease(frame,pattern.start,pattern.revealEnd);
 export function rowOpacityAt(pattern,frame){
-  return pattern.capability===undefined?1-ease(frame,...OPENING_TIMING.focus):1;
+  return rowRevealOpacityAt(pattern,frame)*(pattern.capability===undefined?1-ease(frame,...OPENING_TIMING.focus):1);
 }
+export const visibleRowCountAt=frame=>PROMPT_PATTERNS.filter(pattern=>rowOpacityAt(pattern,frame)>0).length;
+export const fullyVisibleRowCountAt=frame=>PROMPT_PATTERNS.filter(pattern=>rowOpacityAt(pattern,frame)===1).length;
 export function rowLabelAt(pattern,frame){
   return {...overviewTitleBox(pattern),motion:ease(frame,...OPENING_TIMING.handoff)};
 }
@@ -231,17 +261,20 @@ export function PromptDiagram({pattern,frame,morph=0,opacity=1}){
   const overview=pattern.capability!==undefined&&morph>0;
   const compactProgress=overview?diagramRouteAt(morph).columns:0;
   return <AbsoluteFill data-prompt-pattern={pattern.id} data-prompt-row={pattern.row}
-    data-pattern-opacity={opacity} data-pattern-start={0} data-diagram-morph={morph}
+    data-pattern-opacity={opacity} data-pattern-start={pattern.start} data-pattern-reveal-end={pattern.revealEnd}
+    data-pattern-reveal-order={pattern.revealOrder} data-pattern-reveal-opacity={rowRevealOpacityAt(pattern,frame)}
+    data-pattern-reveal-frames={pattern.revealFrames.join(',')} data-diagram-morph={morph}
+    aria-hidden={opacity===0?true:undefined}
     data-diagram-route="direct" style={{opacity}}>
     <svg width={WIDTH} height={HEIGHT} style={{position:'absolute',inset:0}} aria-hidden="true">
       <PromptArrow pattern={pattern} side="input" frame={frame} morph={morph}/>
       <PromptArrow pattern={pattern} side="output" frame={frame} morph={morph}/>
     </svg>
     {pattern.inputs.map((item,index)=><TokenCard key={`input-${index}`} item={item} box={inputs[index]}
-      frame={frame} revealFrame={0} pattern={pattern} side="input" index={index}
+      frame={frame} revealFrame={pattern.start} pattern={pattern} side="input" index={index}
       displayLabel={overview?overviewTokenLabel(pattern,'input',index):undefined} compactProgress={compactProgress}/>)}
     {pattern.outputs.map((item,index)=><TokenCard key={`output-${index}`} item={item} box={outputs[index]}
-      frame={frame} revealFrame={0} pattern={pattern} side="output" index={index}
+      frame={frame} revealFrame={pattern.start} pattern={pattern} side="output" index={index}
       displayLabel={overview?overviewTokenLabel(pattern,'output',index):undefined} compactProgress={compactProgress}
       opacity={tokenOpacityAt(pattern,'output',index,frame,morph)}/>)}
   </AbsoluteFill>;
