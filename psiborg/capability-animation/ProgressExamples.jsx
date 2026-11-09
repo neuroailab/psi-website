@@ -2,7 +2,6 @@ import React from 'react';
 import {useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,Sequence,interpolate,useCurrentFrame} from 'remotion';
 import {TITLE_CUE_DURATION,TITLE_FADE,TITLE_HOLD} from './AttentionTitle';
-import {FrozenSourceFrame} from './OverviewBridge';
 import {Grid as OriginalGrid} from './full-film-original/Story';
 import {GRID_SELECTIONS,gridSlotBox,selectedGridBox,placeGridBox} from './FourExampleGrid.mjs';
 
@@ -13,7 +12,7 @@ export const PROGRESS_RESULT_PLAYBACK_RATE=.8;
 export const PROGRESS_RESULTS_TITLE='For any embodiment';
 export const PROGRESS_GRID_BOX=Object.freeze({left:224,top:122,width:832,height:476});
 export const PROGRESS_GRID_CONTENT=Object.freeze({width:1280,height:720});
-export const PROGRESS_GRID_SOURCE_FRAME=1751;
+export const PROGRESS_GRID_SOURCE_FRAME=0;
 export const PROGRESS_EXAMPLE_PLAY_START=PROGRESS_RESULTS_TIMING.lead+PROGRESS_RESULTS_TIMING.cue;
 const ASPECT=1024/1824;
 const GRID_SCALE=2/3;
@@ -87,8 +86,7 @@ function ProgressExampleStage({example,frame,assetBase,freezeMedia=false}){
     <div data-progress-base-grid style={{position:'absolute',left:PROGRESS_GRID_BOX.left,top:PROGRESS_GRID_BOX.top,
       width:1248,height:714,transform:`scale(${GRID_SCALE})`,transformOrigin:'top left',opacity:gridOpacity,
       clipPath:`url(#${clipId})`,...filmThemeVariables(palette)}}>
-      {freezeMedia?<Img src={`${assetBase}progress-grid-return-2x2.png`} style={{width:'100%',height:'100%',display:'block'}}/>
-        :<FrozenSourceFrame frame={PROGRESS_GRID_SOURCE_FRAME}><OriginalGrid kind="progress"/></FrozenSourceFrame>}
+      <OriginalGrid kind="progress"/>
     </div>
     {featuredClips.map(clip=>{
       const selectedIndex=example.clips.findIndex(item=>item.tile===clip.tile);
@@ -96,11 +94,11 @@ function ProgressExampleStage({example,frame,assetBase,freezeMedia=false}){
       const source=progressGridTileBox(clip.tile);
       const target=selected?progressResultBox(example.clips.length===2,selectedIndex):source;
       const box=selected?lerpBox(source,target,zoom):source;
-      // The same source clock remains mounted through zoom, cue, playback, hold,
-      // and return. Earlier examples retain their end frames in the grid.
-      const mediaFrame=clip.exampleIndex<example.index?clip.frames-1:
-        clip.exampleIndex>example.index?0:Math.max(0,Math.min(Math.floor((frame-example.playStart)*PROGRESS_RESULT_PLAYBACK_RATE),clip.frames-1));
-      const playing=selected&&frame>=example.playStart&&frame<example.playStart+Math.ceil(clip.frames/PROGRESS_RESULT_PLAYBACK_RATE);
+      // Grid cells always show the first observation. Only the enlarged result
+      // mounts video; its final frame may persist while shrinking back to the grid.
+      const showResult=selected&&frame>=example.playStart&&zoom>0;
+      const mediaFrame=showResult?Math.max(0,Math.min(Math.floor((frame-example.playStart)*PROGRESS_RESULT_PLAYBACK_RATE),clip.frames-1)):0;
+      const playing=showResult&&!freezeMedia&&frame<example.playStart+Math.ceil(clip.frames/PROGRESS_RESULT_PLAYBACK_RATE);
       return <div key={clip.tile} data-progress-tile={clip.tile}
         data-progress-selected-tile={selected?clip.tile:undefined} data-selected={selected}
         data-progress-media-frame={mediaFrame} data-progress-media-time={mediaFrame/30}
@@ -108,18 +106,17 @@ function ProgressExampleStage({example,frame,assetBase,freezeMedia=false}){
         style={{position:'absolute',...box,opacity:selected?1:gridOpacity,zIndex:selected?2:1,
           borderRadius:selected?mix(8*GRID_SCALE,12,zoom):8*GRID_SCALE,overflow:'hidden',background:palette.bg,
           boxShadow:selected?`0 0 0 ${3*highlight*(1-zoom)}px ${COLOR}`:'none'}}>
-        {freezeMedia?<Img src={`${assetBase}${clip.name}-final.png`} data-progress-final-snapshot={clip.tile}
+        {!showResult?<Img src={`${assetBase}${clip.name}.jpg`} data-progress-first-snapshot={clip.tile}
           style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>
-        :selected&&frame>=example.playStart?<Sequence from={example.playStart} layout="none">
+        :freezeMedia?<Img src={`${assetBase}${clip.name}-final.png`} data-progress-final-snapshot={clip.tile}
+          style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>
+        :<Sequence from={example.playStart} layout="none">
           <Freeze active={!playing} frame={(clip.frames-1)/PROGRESS_RESULT_PLAYBACK_RATE}>
             <OffthreadVideo src={`${assetBase}${clip.name}.mp4`} muted playsInline
               playbackRate={PROGRESS_RESULT_PLAYBACK_RATE}
               style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>
           </Freeze>
-        </Sequence>:<FrozenSourceFrame frame={mediaFrame}>
-          <OffthreadVideo src={`${assetBase}${clip.name}.mp4`} muted playsInline playbackRate={1}
-            style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/>
-        </FrozenSourceFrame>}
+        </Sequence>}
       </div>;
     })}
     {frame<PROGRESS_RESULTS_TIMING.lead&&<AbsoluteFill data-progress-zoom-dimmer

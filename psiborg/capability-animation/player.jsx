@@ -19,8 +19,8 @@ function CapabilityPlayer() {
   const [playbackFeedback, setPlaybackFeedback] = useState(null);
   const inputProps = useMemo(() => ({theme}), [theme]);
   useEffect(() => {
-    // Warm the standalone result clips before their chapters. Keep the much
-    // larger grid composites streamed rather than retaining them as blobs.
+    // Warm standalone result clips before their zoomed chapters. Overview grids
+    // use first-frame images and never mount the large composite videos.
     const mediaBase = './assets/capability-film/';
     const sources = [...new Set([
       ...policyGrid.clips.map(clip => `${mediaBase}${clip.video}`),
@@ -63,7 +63,7 @@ function CapabilityPlayer() {
     let feedbackTimer, feedbackSequence = 0;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
-    window.psiHeroFilm = {version: 23, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'capability-copy-and-pacing-v23', chapters: CHAPTERS, sections: SECTIONS,
+    window.psiHeroFilm = {version: 24, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'static-first-frame-grids-v24', chapters: CHAPTERS, sections: SECTIONS,
       duration: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
     mount.dataset.compositionWidth = WIDTH;
     mount.dataset.height = HEIGHT;

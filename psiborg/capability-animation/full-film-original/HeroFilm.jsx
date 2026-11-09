@@ -1,6 +1,6 @@
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import {
-  AbsoluteFill, Easing, Freeze, Img, Loop, OffthreadVideo,
+  AbsoluteFill, Easing, Freeze, Img,
   getRemotionEnvironment, interpolate, staticFile, useCurrentFrame,
 } from 'remotion';
 
@@ -100,23 +100,10 @@ function Connections({mobile, opacity}) {
 }
 
 function OpeningGrid({kind}) {
-  const [ready, setReady] = useState(false);
-  const decoded = useCallback(video => {
-    if (video.readyState >= 2 && video.videoWidth > 0) setReady(true);
-  }, []);
-  const src = asset(GRID_ASSETS[kind]);
-  const poster = src.replace(/\.mp4$/, '.jpg');
-  const rendering = getRemotionEnvironment().isRendering;
-  return <div data-opening-grid={kind} data-video-ready={ready}
+  return <div data-opening-grid={kind} data-grid-playing={false} data-grid-source-frame={0}
     data-grid-kind={kind} data-grid-tile-count={GRID_SELECTIONS[kind].length} data-grid-tiles={GRID_SELECTIONS[kind].join(',')}
-    style={{position: 'relative', width: '100%', height: '100%'}}>
-    <Loop durationInFrames={story.grid_frames?.[kind] || story.duration_frames} layout="none">
-      <OffthreadVideo muted playsInline preload="auto" src={src} poster={poster}
-        onCanPlay={e => decoded(e.currentTarget)} onVideoFrame={decoded}
-        style={{...videoStyle, opacity: rendering || ready ? 1 : 0}}/>
-    </Loop>
-    {!rendering && !ready && <Img src={poster}
-      style={{...videoStyle, position: 'absolute', inset: 0}}/>}
+    style={{position:'relative',width:'100%',height:'100%'}}>
+    <Img src={asset(GRID_ASSETS[kind].replace(/\.mp4$/,'.jpg'))} style={videoStyle}/>
   </div>;
 }
 

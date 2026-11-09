@@ -34,7 +34,8 @@ export function openingPhaseAt(frame){
   return frame<allRows[0]?'path-reveal':frame<OPENING_TIMING.highlight[0]?'all-rows':frame<focus[0]?'capability-emphasis':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
     frame<gridReveal[0]?'diagram-pause':frame<gridReveal[1]?'grid-reveal':'capability-overview';
 }
-export const overviewGridFrame=(frame,start=OPENING_TIMING.gridPlaybackStart)=>Math.max(0,frame-start);
+// Capability grids remain on their first frame after the reveal.
+export const overviewGridFrame=()=>0;
 const token=(kind,label)=>({kind,label});
 const promptPatterns=[
   {id:'video',label:'Video prediction',

@@ -1,5 +1,5 @@
-import React, {useState, useCallback} from 'react';
-import {AbsoluteFill, Easing, Freeze, Img, Loop, OffthreadVideo, Sequence,
+import React from 'react';
+import {AbsoluteFill, Easing, Freeze, Img, OffthreadVideo, Sequence,
   getRemotionEnvironment, interpolate, spring, staticFile, useCurrentFrame} from 'remotion';
 import story from './story.json';
 import {GRID_ASSETS,GRID_SELECTIONS,GRID_GEOMETRY,gridSlotBox,selectedGridBox} from '../FourExampleGrid.mjs';
@@ -90,24 +90,6 @@ export const asset = src => {
 };
 const videoStyle = {width: '100%', height: '100%', objectFit: 'contain', display: 'block'};
 
-function GridVideo({kind, playbackRate = 1, trimBefore = 0}) {
-  const [ready, setReady] = useState(false);
-  const src = asset(GRID_ASSETS[kind]), poster = src.replace(/\.mp4$/, '.jpg');
-  const decoded = useCallback(video => {
-    if (video.readyState >= 2 && video.videoWidth > 0) setReady(true);
-  }, []);
-  if (getRemotionEnvironment().isRendering) return <OffthreadVideo muted src={src}
-    playbackRate={playbackRate} trimBefore={trimBefore} style={videoStyle}/>;
-  return <div data-grid={kind} data-video-ready={ready} data-grid-playback-rate={playbackRate}
-    data-grid-source-offset={trimBefore} style={{position: 'relative', width: '100%', height: '100%'}}>
-    <OffthreadVideo muted playsInline pauseWhenBuffering preload="auto" poster={poster} src={src}
-      playbackRate={playbackRate} trimBefore={trimBefore}
-      onCanPlay={e => decoded(e.currentTarget)} onVideoFrame={decoded}
-      style={{...videoStyle, opacity: ready ? 1 : 0}}/>
-    {!ready && <Img data-grid-poster={kind} src={poster} style={{...videoStyle, position: 'absolute', inset: 0}}/>}
-  </div>;
-}
-
 function Clip({clip, start, f, sourceStart = 0, playbackRate = 1}) {
   if (f < start) return <Img src={asset(clip.poster)} style={videoStyle}/>;
   const clock = clipClock(clip, start, sourceStart, playbackRate);
@@ -164,15 +146,9 @@ function Feature({kind, f, cycle, color, sourceStart = 0, playbackRate = 1}) {
   </>;
 }
 
-export function Grid({kind, sourceStart = 0, playbackRate = 1, snapshotSrc}) {
+export function Grid({kind, snapshotSrc}) {
   const id = `psi-hero-grid-${kind}`;
-  const sourceFrames = story.grid_frames?.[kind] || story.duration_frames;
-  const offset = ((sourceStart % sourceFrames) + sourceFrames) % sourceFrames;
-  const firstDuration = (sourceFrames - offset) / playbackRate;
-  const loopDuration = sourceFrames / playbackRate;
-  const repeating = <Loop durationInFrames={loopDuration} layout="none">
-    <GridVideo kind={kind} playbackRate={playbackRate}/>
-  </Loop>;
+  const poster = snapshotSrc || asset(GRID_ASSETS[kind].replace(/\.mp4$/, '.jpg'));
   return <>
     <svg width="0" height="0" aria-hidden="true" style={{position: 'absolute'}}>
       <defs><clipPath id={id} clipPathUnits="userSpaceOnUse">
@@ -184,15 +160,9 @@ export function Grid({kind, sourceStart = 0, playbackRate = 1, snapshotSrc}) {
       </clipPath></defs>
     </svg>
     <div data-grid-kind={kind} data-grid-tile-count={GRID_SELECTIONS[kind].length}
-      data-grid-tiles={GRID_SELECTIONS[kind].join(',')}
+      data-grid-tiles={GRID_SELECTIONS[kind].join(',')} data-grid-playing={false} data-grid-source-frame={0}
       style={{width: W, height: H, clipPath: `url(#${id})`}}>
-      {snapshotSrc ? <Img src={snapshotSrc} data-grid-snapshot={kind} style={videoStyle}/>
-        : offset === 0 ? repeating : <>
-        <Sequence durationInFrames={firstDuration} layout="none">
-          <GridVideo kind={kind} playbackRate={playbackRate} trimBefore={offset}/>
-        </Sequence>
-        <Sequence from={firstDuration} layout="none">{repeating}</Sequence>
-      </>}
+      <Img src={poster} data-grid-snapshot={kind} data-grid-poster={kind} style={videoStyle}/>
       {kind === 'simulation' && GRID_SELECTIONS[kind].map((tile,slot) => !story.simulation[tile]?.asset &&
         <div key={tile} style={{position: 'absolute', ...gridSlotBox(slot)}}><Placeholder/></div>)}
     </div>

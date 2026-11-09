@@ -8,7 +8,7 @@ The post opens in dark mode on each visit. Keep the three resource buttons compa
 
 The authoring draft has local comments UI. Do not include that UI, review.js, local API references, or noindex when publishing. Older hero-animation and prompt-animation sources are historical; do not build them over the current player.
 
-The v23 opening has 13 fixed paths: the original nine plus four representative
+The v24 opening has 13 fixed paths: the original nine plus four representative
 literal training sequences. All input and output chips are 92×38, with 16px text
 and 17px glyphs. ScatteredSequenceLayout.mjs assigns staggered horizontal anchors
 so rows fit around the shared model; no row resizes or moves during reveal/hold.
@@ -25,6 +25,6 @@ offsets, giving different connector lengths. Keep those offsets fixed during
 the opening hold. Reserve a broad clear corridor on each side of the model for
 smooth cubic connectors with horizontal tangents at their joins. Do not collapse
 the curves into vertical elbows or route through token chips. Overview titles appear during 417–435 after the tokens clear them.
-The opening remains 600 frames. Grid clocks start from source frame 0 at 465, and
+The opening remains 600 frames. Grid stills reveal at 465 and always remain on source frame 0;
 the canonical overview is 599. Keep the complete 15-entry training source catalog,
-all carousel examples and the policy alternate-goal comparison. The player runs at 1.2×; its timeline shows wall time. Policy and progress examples follow their prompt sequences directly, with no separate narration cards. Policy grid leads are 12 overview + 18 highlight + 36 zoom frames. Keep the progress caption “For any embodiment” continuously visible across both human and robot examples. The simulation subtitle “in diverse environments” appears only as the first example zooms in (frames 38–63 of that section). The full film is 5443 frames; derive chapter starts from section durations. Preserve the original sixteen prefetched result clips plus the added simulation and Bridge clips, early image preloads, and final comparison holds.
+all carousel examples and the policy alternate-goal comparison. Grid overviews, backgrounds and completed returns use first-frame images; only individual zoomed examples play. Preserve their playback and final holds while they shrink, resetting to first-frame posters by the completed grid return. The player runs at 1.2×; its timeline shows wall time. Policy and progress examples follow their prompt sequences directly, with no separate narration cards. Policy grid leads are 12 overview + 18 highlight + 36 zoom frames. Keep the progress caption “For any embodiment” continuously visible across both human and robot examples. The simulation subtitle “in diverse environments” appears only as the first example zooms in (frames 38–63 of that section). The full film is 5443 frames; derive chapter starts from section durations. Preserve the original sixteen prefetched result clips plus the added simulation and Bridge clips, early image preloads, and final comparison holds.

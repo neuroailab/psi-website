@@ -8,7 +8,7 @@ const GOAL_HOLD=126,SHRINK=36;
 export const EXAMPLE_PLAY_START=GOAL_HOLD+SHRINK;
 export const FINAL_COMPARISON_HOLD=60;
 const definitions=[
-  {id:'known-objects',title:'PsiBorg learns new ways to interact with familiar objects',headlineFontSize:32,resultDuration:352,
+  {id:'known-objects',title:'Our model learns new ways to interact with familiar objects',headlineFontSize:32,resultDuration:352,
     clips:[{tile:1,name:'policy-2',frames:224,motion:244}]},
   {id:'unseen-objects',title:'It reaches goals involving novel objects',headlineFontSize:32,resultDuration:376,
     clips:[{tile:5,name:'policy-6',frames:122,motion:244}]},

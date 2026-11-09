@@ -102,7 +102,7 @@ function GridReturn({kind,assetBase}){
   </OverviewReturn>;
   return <OverviewReturn kind={kind} fromBox={LEGACY_GRID_BOX} contentWidth={1248} contentHeight={714}>
     <div style={{width:1248,height:714,...filmThemeVariables(palette)}}>
-      <OriginalGrid kind={kind} snapshotSrc={`${assetBase}simulation-grid-return-2x2.png`}/>
+      <OriginalGrid kind={kind} snapshotSrc={`${assetBase}simulation-grid-2x2.jpg`}/>
     </div>
   </OverviewReturn>;
 }

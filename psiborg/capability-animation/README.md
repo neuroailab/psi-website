@@ -21,13 +21,13 @@ paths and model marks move straight to their overview destinations, with one
 shared eased fraction for both axes and no intermediate stops. Their initial
 y centers are Simulation 145, Policy 550 and Progress 685. Overview titles appear
 during frames 417–435 after the moving tokens clear them; overview destinations and footage clocks remain
-unchanged. The opening still lasts 600 frames, grid playback starts at 465, and
+unchanged. The opening still lasts 600 frames, static grid images reveal at 465, and
 the final overview is 599. Later chapters retain their timing and media.
 
 The policy prompt reads “Execute actions from one goal image”. Its examples
 follow the prompt directly, without a narrative slide: each grid lead has a
 12-frame overview, 18-frame highlight and 36-frame zoom. The example captions
-are “PsiBorg learns new ways to interact with familiar objects”, “It reaches
+are “Our model learns new ways to interact with familiar objects”, “It reaches
 goals involving novel objects”, and “and follows diverse goals in the same
 scene.” Existing footage, goal preparation and final comparison holds remain.
 
@@ -70,3 +70,9 @@ python3 refresh-simulation-action-overlays.py --source /path/to/simulation.mp4 \
 `simulation-action-overlays.json` records the verified montage hash, exact frame
 windows, installed outputs and clocks. These charts are baked into the supplied
 recordings; the website does not generate or infer new action commands.
+
+All capability grid views use their existing first-frame JPG posters, including
+the opening overview, grid backgrounds and completed returns. Only expanded
+individual examples play; their final frames remain frozen while shrinking and
+reset to first-frame posters by the end of the return. The four-cell selections,
+5443-frame timeline, media files and Results carousel remain unchanged.

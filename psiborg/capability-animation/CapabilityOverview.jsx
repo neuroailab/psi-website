@@ -1,9 +1,9 @@
 import React from 'react';
-import {AbsoluteFill,Freeze,Sequence,getRemotionEnvironment,staticFile,useCurrentFrame} from 'remotion';
+import {AbsoluteFill,getRemotionEnvironment,staticFile,useCurrentFrame} from 'remotion';
 import {useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {Grid} from './full-film-original/Story';
 import {CAPABILITY_PATTERNS,OPENING_TIMING,OVERVIEW_LAYOUT,PromptDiagram,ModelMark,CapabilityTitleLabel,
-  overviewLogoBox,overviewMediaBox,overviewGridFrame} from './PromptDiagram';
+  overviewLogoBox,overviewMediaBox} from './PromptDiagram';
 
 export {OVERVIEW_LAYOUT,overviewTitleBox,overviewLogoBox,overviewMediaBox,overviewTokenBoxes} from './PromptDiagram';
 
@@ -15,8 +15,8 @@ export function CapabilityOverview({showDiagrams=true,showTitles=true,hideOpenin
   const src=markSrc||(getRemotionEnvironment().isRendering
     ?staticFile('assets/capability-film/psi-mark.svg'):'./assets/capability-film/psi-mark.svg');
   return <AbsoluteFill data-capability-overview data-capability-overview-frame={frame}
-    data-overview-grid-clock-start={gridPlaybackStart} data-overview-grid-source-frame={overviewGridFrame(frame,gridPlaybackStart)}
-    data-overview-grid-playing={frame>=gridPlaybackStart}
+    data-overview-grid-clock-start={gridPlaybackStart} data-overview-grid-source-frame={0}
+    data-overview-grid-playing={false}
     data-overview-layout="horizontal-prompts" data-overview-prompt-center-y={OVERVIEW_LAYOUT.promptY}
     data-overview-block-center-y={(OVERVIEW_LAYOUT.titleY-OVERVIEW_LAYOUT.titleLineHeight/2+OVERVIEW_LAYOUT.gridTop+OVERVIEW_LAYOUT.gridHeight)/2}
     style={{...filmThemeVariables(palette),background:transparent?'transparent':palette.bg,opacity,
@@ -28,13 +28,11 @@ export function CapabilityOverview({showDiagrams=true,showTitles=true,hideOpenin
         data-opening-grid-container={pattern.id} data-opening-grid-hidden={hidden}
         data-grid-left={box.left} data-grid-top={box.top} data-grid-width={box.width} data-grid-height={box.height}
         data-grid-opacity={hidden?0:gridOpacity} data-grid-clock-start={gridPlaybackStart}
-        data-grid-clock-frame={overviewGridFrame(frame,gridPlaybackStart)}
+        data-grid-clock-frame={0}
         style={{position:'absolute',...box,borderRadius:8,overflow:'hidden',opacity:hidden?0:gridOpacity}}>
         <div style={{width:1248,height:714,transform:`scale(${scale})`,transformOrigin:'top left'}}>
-          {/* Keep each decoder mounted on source frame0 until the shared reveal. */}
-          <Freeze frame={gridPlaybackStart} active={frame<gridPlaybackStart}>
-            <Sequence from={gridPlaybackStart} layout="none"><Grid kind={pattern.id}/></Sequence>
-          </Freeze>
+          {/* Overviews stay on frame zero; only expanded examples play. */}
+          <Grid kind={pattern.id}/>
         </div>
       </div>;
     })}
