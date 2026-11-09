@@ -1,4 +1,4 @@
-# PsiBorg: A Promptable Foundation Model for Robotics
+# PsiBorg: A Universally Promptable Foundation Model for Robotics
 
 Published research post: https://neuroailab.github.io/psi-website/psiborg/
 

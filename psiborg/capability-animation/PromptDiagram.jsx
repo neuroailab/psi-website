@@ -28,7 +28,7 @@ export const OPENING_TIMING=Object.freeze({tokenDisplay:'seeded-row-reveal',toke
   overviewSourceOffset:focus[0],logoMove:handoff,
   morphRoute:'direct',morphDirect:handoff,
   diagramPause,gridReveal,overviewHold,gridPlaybackStart:gridReveal[0],
-  headline:'Our model defines any capability as a prompt',arrowMode:'independent-staggered-streams',
+  headline:'Define any capability as a prompt',arrowMode:'independent-staggered-streams',
   pathStreamSeed:0x505349,pathStreamSpeed:.7});
 export function openingPhaseAt(frame){
   return frame<allRows[0]?'path-reveal':frame<OPENING_TIMING.highlight[0]?'all-rows':frame<focus[0]?'capability-emphasis':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':

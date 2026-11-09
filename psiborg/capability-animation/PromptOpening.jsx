@@ -40,7 +40,7 @@ function OpeningContent(){
     {morphStarted&&CAPABILITY_PATTERNS.map(pattern=><CapabilityTitleLabel key={pattern.id} pattern={pattern}
       opacity={ease(frame,...OPENING_TIMING.headingReveal)}/>)}
     <div data-prompt-opening-headline style={{position:'absolute',top:18,left:56,width:1168,textAlign:'center',
-      fontSize:42,lineHeight:'50px',fontWeight:600,letterSpacing:-.7,color:palette.ink,opacity:1-ease(frame,...OPENING_TIMING.headlineFade)}}>
+      fontSize:34,lineHeight:'42px',fontWeight:400,letterSpacing:-.7,color:palette.ink,opacity:1-ease(frame,...OPENING_TIMING.headlineFade)}}>
       {OPENING_TIMING.headline}
     </div>
   </AbsoluteFill>;
