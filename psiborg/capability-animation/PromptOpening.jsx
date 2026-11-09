@@ -2,7 +2,8 @@ import React from 'react';
 import {AbsoluteFill,getRemotionEnvironment,staticFile,useCurrentFrame} from 'remotion';
 import {FilmThemeProvider,useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {CapabilityOverview} from './CapabilityOverview';
-import {cyclingPatternAt} from './TrainingSequenceCycle.mjs';
+import {AccumulatingSequences} from './AccumulatingSequences';
+import {TRAINING_PATTERNS,SEQUENCE_ACCUMULATION} from './TrainingSequenceAccumulation.mjs';
 import {OPENING_TIMING,PROMPT_PATTERNS,CAPABILITY_PATTERNS,PromptDiagram,ModelMark,
   CapabilityTitleLabel,morphLogoBox,rowOpacityAt,visibleRowCountAt,fullyVisibleRowCountAt,openingPhaseAt,ease} from './PromptDiagram';
 
@@ -19,25 +20,27 @@ function OpeningContent(){
   const markSrc=getRemotionEnvironment().isRendering?staticFile('assets/capability-film/psi-mark.svg'):'./assets/capability-film/psi-mark.svg';
   const phase=openingPhaseAt(frame),morphStarted=frame>=OPENING_TIMING.handoff[0];
   const policy=CAPABILITY_PATTERNS[0];
+  const compact=frame>=(SEQUENCE_ACCUMULATION.compactStart+SEQUENCE_ACCUMULATION.compactEnd)/2;
+  const compactMotion=ease(frame,SEQUENCE_ACCUMULATION.compactStart,SEQUENCE_ACCUMULATION.compactEnd);
+  const added=TRAINING_PATTERNS.filter(pattern=>frame>pattern.additionStart).length;
+  const settled=TRAINING_PATTERNS.filter(pattern=>frame>=pattern.additionStart+SEQUENCE_ACCUMULATION.reveal).length;
   return <AbsoluteFill data-prompt-opening data-opening-frame={frame} data-opening-phase={phase}
-    data-opening-theme={palette.theme} data-visible-row-count={visibleRowCountAt(frame)}
-    data-fully-visible-row-count={fullyVisibleRowCountAt(frame)}
+    data-opening-theme={palette.theme} data-visible-row-count={visibleRowCountAt(frame)+(frame<OPENING_TIMING.focus[1]?added:0)}
+    data-fully-visible-row-count={fullyVisibleRowCountAt(frame)+(frame<=OPENING_TIMING.focus[0]?settled:0)}
     data-path-reveal-start={OPENING_TIMING.pathReveal[0]} data-path-reveal-end={OPENING_TIMING.pathReveal[1]}
     data-path-reveal-seed={OPENING_TIMING.pathRevealSeed} data-path-reveal-step={OPENING_TIMING.pathRevealStep}
     data-path-reveal-fade={OPENING_TIMING.pathRevealFade}
-    data-path-stream-count={PROMPT_PATTERNS.length}
+    data-path-stream-count={PROMPT_PATTERNS.length} data-added-sequence-count={added}
     style={{...filmThemeVariables(palette),background:palette.bg,fontFamily:'Arial, Helvetica, sans-serif',color:palette.ink}}>
     <CapabilityOverview showDiagrams={false} showTitles={false} transparent
       gridOpacity={ease(frame,...OPENING_TIMING.gridReveal)} markSrc={markSrc}/>
-    <div data-prompt-column-label="input" style={{position:'absolute',left:70,top:94,width:470,
-      textAlign:'center',fontSize:23,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>Prompt</div>
-    <div data-prompt-column-label="output" style={{position:'absolute',left:776,top:94,width:456,
-      textAlign:'center',fontSize:23,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>Predict</div>
-    {PROMPT_PATTERNS.map(base=>{
-      const {pattern,opacity}=cyclingPatternAt(base,frame);
-      return <PromptDiagram key={base.id} pattern={pattern} frame={frame}
-        morph={base.capability===undefined?0:handoff} opacity={rowOpacityAt(base,frame)*opacity}/>;
-    })}
+    <div data-prompt-column-label="input" style={{position:'absolute',left:70,top:94-compactMotion*6,width:470,
+      textAlign:'center',fontSize:23-compactMotion*3,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>{compact?'Prompt → Predict':'Prompt'}</div>
+    <div data-prompt-column-label="output" style={{position:'absolute',left:776,top:94-compactMotion*6,width:456,
+      textAlign:'center',fontSize:23-compactMotion*3,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>{compact?'Prompt → Predict':'Predict'}</div>
+    <AccumulatingSequences frame={frame}/>
+    {CAPABILITY_PATTERNS.map(pattern=><PromptDiagram key={pattern.id} pattern={pattern} frame={frame}
+      morph={handoff} opacity={rowOpacityAt(pattern,frame)}/>)}
     <ModelMark kind="policy" src={markSrc} box={morphLogoBox(policy,handoff)}/>
     {morphStarted&&CAPABILITY_PATTERNS.slice(1).map(pattern=><ModelMark key={pattern.id} kind={pattern.id}
       src={markSrc} box={morphLogoBox(pattern,handoff)}/>)}

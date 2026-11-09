@@ -165,11 +165,11 @@ export function TokenGlyph({kind,color,compact,size}){
 }
 
 
-export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity=1,displayLabel,compactProgress=0}){
+export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity=1,displayLabel,compactProgress=0,textSize,glyphSize,singleLine=false}){
   const palette=useFilmTheme(),color=kinds(palette)[item.kind];
   const visible=opacity,label=displayLabel??item.label;
   const narrowCameraPose=item.kind==='campose'&&box.width<100;
-  const words=(narrowCameraPose?label.replace('CamPose ','Cam Pose'):label).split(' ');
+  const words=singleLine?[label.replaceAll(' ','')]:(narrowCameraPose?label.replace('CamPose ','Cam Pose'):label).split(' ');
   return <div data-prompt-token={`${pattern.id}-${side}-${index}`} data-token-kind={item.kind}
     data-token-label={label} data-token-source-label={item.label} data-token-side={side} data-token-reveal-frame={revealFrame}
     data-token-opacity={visible} data-token-center-x={box.left+box.width/2} data-token-center-y={box.top+box.height/2}
@@ -179,8 +179,8 @@ export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity
       boxSizing:'border-box',background:palette.bg,overflow:'hidden'}}>
     <div style={{position:'absolute',inset:0,background:color,opacity:palette.theme==='dark'?.09:.055}}/>
     <div style={{position:'relative',width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:mix(5,4,compactProgress),color}}>
-      <TokenGlyph kind={item.kind} color={color} compact size={mix(17,14,compactProgress)}/>
-      <span style={{fontSize:mix(16,14.5,compactProgress),fontWeight:550,lineHeight:'17px',textAlign:'center',letterSpacing:-.2}}>
+      <TokenGlyph kind={item.kind} color={color} compact size={glyphSize??mix(17,14,compactProgress)}/>
+      <span style={{fontSize:textSize??mix(16,14.5,compactProgress),fontWeight:550,lineHeight:'17px',textAlign:'center',letterSpacing:-.2,whiteSpace:singleLine?'nowrap':undefined}}>
         {words.map((word,i)=><React.Fragment key={i}>{i>0&&<br/>}{word}</React.Fragment>)}
       </span>
     </div>
@@ -229,7 +229,7 @@ export function morphTokenBoxes(pattern,side,morph){
   const target=overviewTokenBoxes(pattern,side);
   return source.map((box,index)=>morphBox(box,target[index],morph));
 }
-function PromptArrow({pattern,side,frame,morph}){
+export function PromptArrow({pattern,side,frame,morph}){
   const palette=useFilmTheme(),color=kinds(palette)[pattern.id==='policy'&&morph>0?'action':pattern.outputs[0].kind];
   const input=side==='input',source=tokenBoxes(pattern,side),y=rowY(pattern);
   const portY=HEIGHT/2+(pattern.row-(PROMPT_PATTERNS.length-1)/2)*6;
