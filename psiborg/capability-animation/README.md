@@ -4,25 +4,27 @@ The public page uses the Remotion composition in FullFilm.jsx: 5713 frames at 30
 
 The animation uses relative assets/capability-film paths for the /psi-website/psiborg/ URL. Preserve recorded media, goal images, prediction values, timing, dark/light palettes, and final-frame comparison holds when editing. The page supports muted autoplay and looping, click/tap or Space/Enter to pause/resume, draggable seeking, and chapter navigation.
 
-The opening reveals all nine input/output paths in a fixed randomized order over
-45 frames (1.25 seconds at the player speed). At frames 60–90, the six general
-paths compact into two banks while the three robotics paths remain fixed. The
-motion shrinks the rows upward first, moves them sideways above the model, then
-settles them into paired rows. This avoids token and model overlaps.
+The opening presents 18 paths at one size: the original nine paths plus nine
+representative literal training sequences. Every input and output chip is 92×38,
+with 16px labels and 17px glyphs. Horizontal offsets let adjacent paths share
+vertical space without overlapping. All routes pass through the shared Ψ model,
+and every path appears directly at its final position without compaction.
 
-Starting at frame 90, fifteen additional training sequences appear in a seeded
-random order, one every 15 frames. Each new row uses a 10-frame edge reveal and
-small slide. Existing rows remain fully visible, and all 24 sequences share the
-page by frame 310. The complete figure holds until the original focus at frame
-375, when the general paths clear for the three robotics capabilities. Their
-positions and handoff stay unchanged. Grid playback starts at frame 465 and the
-final overview is frame 599; later chapter lengths and source clocks are intact.
+The seeded random reveal adds a complete path every five frames, using a
+five-frame reveal, and finishes at frame 90. All 18 remain visible through frame
+315. The 15 secondary paths dim to 0.12 opacity over frames 315–345, giving the
+three robotics paths a clear reading hold before their existing handoff at 390.
+Secondary paths clear during 390–405. During the 45-frame handoff, the main
+paths first separate horizontally into their columns, then move upward; the
+model marks and arrows follow the same route. The three main paths keep their original
+y centers (464,516,568); their overview destinations and footage clocks remain
+unchanged. The opening still lasts 600 frames, grid playback starts at 465, and
+the final overview is 599. Later chapters retain their timing and media.
 
-`AccumulatingSequences.jsx` renders the compact rows. The deterministic schedule,
-modality widths and bank geometry are in `TrainingSequenceAccumulation.mjs`.
-Tokens use 14px labels and 13px glyphs; camera-pose tokens get extra width so their
-labels fit on one line. The two banks contain 11 and 10 general sequences above
-the three fixed capability rows.
+`ScatteredSequenceLayout.mjs` records the selected training IDs, fixed track
+positions, uniform geometry and model ports. `TrainingSequences.mjs` reads exact
+prefix/suffix splits from the unchanged 15-entry source catalog. `PromptDiagram.jsx`
+owns the shared routing, seeded reveal and capability emphasis.
 
 `training-sequences.json` records exact, positive-weight sequences from the final saved PSI0.5 v5 32k resume recipe (`abc_v5_32k_resume1060612.yaml`), including its SHA-256, original line numbers and mode weights. Each displayed prompt is a prefix of that literal sequence; its prediction is the remaining suffix. RGB, action, depth, flow and camera pose are represented across the bank. `c` is camera pose, `d` is depth, and `dt` remains temporal distance in the fixed progress capability. We do not imply that action and camera pose occur together in a configured sequence.
 

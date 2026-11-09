@@ -1,12 +1,14 @@
 import React from 'react';
 import {AbsoluteFill,Img} from 'remotion';
 import {useFilmTheme} from './FilmTheme';
+import {TRAINING_PATTERNS} from './TrainingSequences.mjs';
+import {SCATTERED_LAYOUT,scatteredTrack,scatteredRowY,scatteredModelPortY,scatteredTokenBoxes} from './ScatteredSequenceLayout.mjs';
 
 export const FPS=30,WIDTH=1280,HEIGHT=720;
 export const PATH_REVEAL_SEED=0x505349;
 export const PATH_REVEAL_STEP=5,PATH_REVEAL_FADE=5;
 export const OPENING_DURATIONS=Object.freeze({
-  pathReveal:45,allRows:330,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
+  pathReveal:90,allRows:285,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
 });
 const span=(start,duration)=>Object.freeze([start,start+duration]);
 const pathReveal=span(0,OPENING_DURATIONS.pathReveal);
@@ -19,16 +21,17 @@ const overviewHold=span(gridReveal[1],OPENING_DURATIONS.overviewHold);
 export const DURATION=overviewHold[1];
 export const OPENING_TIMING=Object.freeze({tokenDisplay:'seeded-row-reveal',tokenReveal:PATH_REVEAL_FADE,
   pathReveal,pathRevealSeed:PATH_REVEAL_SEED,pathRevealStep:PATH_REVEAL_STEP,pathRevealFade:PATH_REVEAL_FADE,
-  allRows,focus,handoff,overview:Object.freeze([handoff[1],DURATION]),
+  allRows,focus,handoff,highlight:Object.freeze([315,345]),secondaryExit:Object.freeze([390,405]),
+  secondaryOpacity:.12,overview:Object.freeze([handoff[1],DURATION]),
   headingReveal:Object.freeze([handoff[0]+15,handoff[0]+35]),
   columnLabelFade:span(handoff[0],18),headlineFade:span(handoff[0],15),
   overviewSourceOffset:focus[0],logoMove:handoff,
-  morphRoute:'direct',morphDirect:handoff,
+  morphRoute:'columns-then-lift',morphDirect:handoff,
   diagramPause,gridReveal,overviewHold,gridPlaybackStart:gridReveal[0],
   headline:'Our model defines any capability as a prompt',arrowMode:'independent-staggered-streams',
   pathStreamSeed:0x505349,pathStreamSpeed:.7});
 export function openingPhaseAt(frame){
-  return frame<allRows[0]?'path-reveal':frame<focus[0]?'all-rows':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
+  return frame<allRows[0]?'path-reveal':frame<OPENING_TIMING.highlight[0]?'all-rows':frame<focus[0]?'capability-emphasis':frame<handoff[0]?'capability-focus':frame<handoff[1]?'capability-handoff':
     frame<gridReveal[0]?'diagram-pause':frame<gridReveal[1]?'grid-reveal':'capability-overview';
 }
 export const overviewGridFrame=(frame,start=OPENING_TIMING.gridPlaybackStart)=>Math.max(0,frame-start);
@@ -52,7 +55,8 @@ const promptPatterns=[
     inputs:[token('rgb','RGB'),token('action','Actions')],outputs:[token('rgb','Next RGB')]},
   {id:'progress',label:'Track progress',capability:2,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt')]},
-];
+  ...TRAINING_PATTERNS,
+].sort((a,b)=>scatteredTrack(a).index-scatteredTrack(b).index);
 // Shuffle once from a fixed seed: row positions stay fixed, and every seek and
 // render gets the same complete-path reveal order.
 function shuffledRows(count,seed){
@@ -78,7 +82,7 @@ export const PROMPT_PATTERNS=Object.freeze(promptPatterns.map((pattern,row)=>{
 }));
 export const CHAPTERS=[{label:'Prompting interface',frame:0},
   {label:'All prompting paths',frame:allRows[0]},
-  {label:'Focus on robotics',frame:focus[0]},{label:'Capability transition',frame:handoff[0]},
+  {label:'Focus on robotics',frame:OPENING_TIMING.highlight[0]},{label:'Capability transition',frame:handoff[0]},
   {label:'Three prompting paths',frame:diagramPause[0]},{label:'Recorded examples',frame:gridReveal[0]},
   {label:'Three capabilities',frame:overviewHold[0]}];
 // Seeded phase offsets and speeds keep overlapping streams identical on seek/export.
@@ -110,15 +114,17 @@ export function overviewLogoBox(pattern){return {left:columnLeft(pattern)+OVERVI
 export function overviewMediaBox(pattern){return {left:columnLeft(pattern),top:OVERVIEW_LAYOUT.gridTop,
   width:OVERVIEW_LAYOUT.gridWidth,height:OVERVIEW_LAYOUT.gridHeight};}
 export const LOGO_END=Object.freeze(overviewLogoBox(PROMPT_PATTERNS.find(p=>p.id==='policy')));
-export const ROW_LAYOUT=Object.freeze({firstCenterY:152,rowGap:52,labelLeft:14,labelWidth:292,
+export const ROW_LAYOUT=Object.freeze({firstCenterY:145,rowGap:28,labelLeft:14,labelWidth:292,
   capabilityLabelWidth:310,labelFontSize:22,capabilityLabelFontSize:20,inputCenter:305,outputCenter:1004,
-  inputWidth:130,outputWidth:92,inputGap:20,tokenGap:10,tokenHeight:42});
+  inputWidth:92,outputWidth:92,inputGap:10,tokenGap:10,tokenHeight:38});
 const kinds=palette=>({rgb:palette.rgb,depth:palette.policyAccent,flow:palette.action,
   action:palette.action,time:palette.time,campose:palette.time});
-const rowY=pattern=>ROW_LAYOUT.firstCenterY+pattern.row*ROW_LAYOUT.rowGap;
+const rowY=scatteredRowY;
 export const rowRevealOpacityAt=(pattern,frame)=>ease(frame,pattern.start,pattern.revealEnd);
 export function rowOpacityAt(pattern,frame){
-  return rowRevealOpacityAt(pattern,frame)*(pattern.capability===undefined?1-ease(frame,...OPENING_TIMING.focus):1);
+  const dim=pattern.capability===undefined?
+    mix(1,OPENING_TIMING.secondaryOpacity,ease(frame,...OPENING_TIMING.highlight))*(1-ease(frame,...OPENING_TIMING.secondaryExit)):1;
+  return rowRevealOpacityAt(pattern,frame)*dim;
 }
 export const visibleRowCountAt=frame=>PROMPT_PATTERNS.filter(pattern=>rowOpacityAt(pattern,frame)>0).length;
 export const fullyVisibleRowCountAt=frame=>PROMPT_PATTERNS.filter(pattern=>rowOpacityAt(pattern,frame)===1).length;
@@ -178,7 +184,7 @@ export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity
       border:`1.2px solid ${color}`,borderRadius:8,
       boxSizing:'border-box',background:palette.bg,overflow:'hidden'}}>
     <div style={{position:'absolute',inset:0,background:color,opacity:palette.theme==='dark'?.09:.055}}/>
-    <div style={{position:'relative',width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:mix(5,4,compactProgress),color}}>
+    <div style={{position:'relative',width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:mix(3,4,compactProgress),color}}>
       <TokenGlyph kind={item.kind} color={color} compact size={glyphSize??mix(17,14,compactProgress)}/>
       <span style={{fontSize:textSize??mix(16,14.5,compactProgress),fontWeight:550,lineHeight:'17px',textAlign:'center',letterSpacing:-.2,whiteSpace:singleLine?'nowrap':undefined}}>
         {words.map((word,i)=><React.Fragment key={i}>{i>0&&<br/>}{word}</React.Fragment>)}
@@ -188,13 +194,7 @@ export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity
 }
 
 export function tokenBoxes(pattern,side){
-  const items=side==='input'?pattern.inputs:pattern.outputs;
-  const width=side==='input'?ROW_LAYOUT.inputWidth:ROW_LAYOUT.outputWidth;
-  const center=side==='input'?ROW_LAYOUT.inputCenter:ROW_LAYOUT.outputCenter;
-  const gap=side==='input'?ROW_LAYOUT.inputGap:ROW_LAYOUT.tokenGap;
-  const total=items.length*width+(items.length-1)*gap;
-  return items.map((_,index)=>({left:center-total/2+index*(width+gap),
-    top:rowY(pattern)-ROW_LAYOUT.tokenHeight/2,width,height:ROW_LAYOUT.tokenHeight}));
+  return scatteredTokenBoxes(pattern,side);
 }
 
 
@@ -216,23 +216,29 @@ export function tokenOpacityAt(pattern,side,index,frame,morph=0){
 }
 export const morphBox=(source,target,p)=>Object.fromEntries(['left','top','width','height'].map(key=>[key,mix(source[key],target[key],p)]));
 export function diagramRouteAt(morph){
-  // Shared progress keeps token geometry, model geometry, arrows, and styling
-  // synchronized along one direct route. Retain the old keys for callers.
-  return {mode:'direct',progress:morph,lanes:morph,columns:morph,lift:morph};
+  // Separate the three columns while their rows still have vertical clearance,
+  // then lift them onto the common overview line. The same route drives tokens,
+  // model boxes and arrow turns, so no output crosses another path's inputs.
+  const columns=ease(morph,0,.65),lift=ease(morph,.65,1);
+  return {mode:'columns-then-lift',progress:morph,lanes:columns,columns,lift};
 }
 export function morphLogoBox(pattern,morph){
-  return morphBox(LOGO_START,overviewLogoBox(pattern),morph);
+  const source=LOGO_START,target=overviewLogoBox(pattern),route=diagramRouteAt(morph);
+  return {...morphBox(source,target,route.columns),
+    top:mix(source.top,target.top,route.lift),height:mix(source.height,target.height,route.lift)};
 }
 export function morphTokenBoxes(pattern,side,morph){
   const source=tokenBoxes(pattern,side);
   if(pattern.capability===undefined)return source;
-  const target=overviewTokenBoxes(pattern,side);
-  return source.map((box,index)=>morphBox(box,target[index],morph));
+  const target=overviewTokenBoxes(pattern,side),route=diagramRouteAt(morph);
+  return source.map((box,index)=>({...morphBox(box,target[index],route.columns),
+    top:mix(box.top,target[index].top,route.lift),
+    height:mix(box.height,target[index].height,route.lift)}));
 }
 export function PromptArrow({pattern,side,frame,morph}){
   const palette=useFilmTheme(),color=kinds(palette)[pattern.id==='policy'&&morph>0?'action':pattern.outputs[0].kind];
   const input=side==='input',source=tokenBoxes(pattern,side),y=rowY(pattern);
-  const portY=HEIGHT/2+(pattern.row-(PROMPT_PATTERNS.length-1)/2)*6;
+  const portY=scatteredModelPortY(pattern);
   const capability=pattern.capability!==undefined;
   const route=capability?diagramRouteAt(morph):{lanes:0,columns:0,lift:0};
   const boxes=capability?morphTokenBoxes(pattern,side,morph):source;
@@ -245,7 +251,11 @@ export function PromptArrow({pattern,side,frame,morph}){
     ?morphBox(boxes[0],boxes[1],morph>0?1:ease(frame,...OPENING_TIMING.focus)):boxes[0];
   const to=input?{x:logo.left-mix(12,8,route.columns),y:modelPortY}:
     {x:outputAnchor.left-mix(12,8,route.columns),y:groupY};
-  const launch=mix(550,from.x,route.columns),outputTurn=mix(793,to.x,route.columns);
+  // Keep both turns between their moving endpoints: a fixed gutter must not
+  // pull a connector backward through a chip as the columns separate.
+  const forwardTurn=x=>Math.max(from.x,Math.min(to.x,x));
+  const launch=forwardTurn(mix(SCATTERED_LAYOUT.inputTurn,from.x,route.columns));
+  const outputTurn=forwardTurn(mix(SCATTERED_LAYOUT.outputTurn,to.x,route.columns));
   const mid=input?(launch+to.x)/2:(from.x+outputTurn)/2;
   const path=input
     ?`M${from.x} ${from.y} H${launch} C${mid} ${from.y} ${mid} ${to.y} ${to.x} ${to.y}`
@@ -255,6 +265,7 @@ export function PromptArrow({pattern,side,frame,morph}){
   return <g data-prompt-arrow={`${pattern.id}-${side}`} data-arrow-mode="independent-staggered-streams"
     data-stream-progress={progress} data-stream-period={PATH_STREAMS[pattern.row].period}
     data-stream-speed={OPENING_TIMING.pathStreamSpeed} data-arrow-from-x={from.x} data-arrow-from-y={from.y}
+    data-arrow-turn-x={input?launch:outputTurn}
     data-arrow-to-x={to.x} data-arrow-to-y={to.y}>
     <path d={path} fill="none" stroke={color} strokeWidth="1.3" opacity={palette.theme==='dark'?.28:.34}/>
     <path d={path} fill="none" stroke={color} strokeWidth="6" opacity={palette.theme==='dark'?.12:.07} {...stream}/>
@@ -272,7 +283,7 @@ export function PromptDiagram({pattern,frame,morph=0,opacity=1}){
     data-pattern-reveal-order={pattern.revealOrder} data-pattern-reveal-opacity={rowRevealOpacityAt(pattern,frame)}
     data-pattern-reveal-frames={pattern.revealFrames.join(',')} data-diagram-morph={morph}
     aria-hidden={opacity===0?true:undefined}
-    data-diagram-route="direct" style={{opacity}}>
+    data-diagram-route={pattern.capability===undefined?'fixed':diagramRouteAt(morph).mode} style={{opacity}}>
     <svg width={WIDTH} height={HEIGHT} style={{position:'absolute',inset:0}} aria-hidden="true">
       <PromptArrow pattern={pattern} side="input" frame={frame} morph={morph}/>
       <PromptArrow pattern={pattern} side="output" frame={frame} morph={morph}/>
