@@ -6,7 +6,7 @@ import {EXAMPLES} from './CapabilityExamples';
 import {PolicyGrid,GRID_RETURN} from './PolicyGrid';
 import {HeroFilm,heroDimensions} from './full-film-original/HeroFilm';
 import {Grid as OriginalGrid} from './full-film-original/Story';
-import {CapabilityTransition,OverviewReturn,FrozenOverview,FrozenSourceFrame,TRANSITION_DURATION,BRIDGE_DURATION} from './OverviewBridge';
+import {CapabilityHeading,CapabilityTransition,OverviewReturn,FrozenOverview,FrozenSourceFrame,TRANSITION_DURATION,BRIDGE_DURATION} from './OverviewBridge';
 import {SimulationPrompt,SIMULATION_PROMPT_DURATION} from './SimulationPrompt';
 import {ProgressPrompt,PROGRESS_PROMPT_DURATION} from './ProgressPrompt';
 import {ProgressExamples,PROGRESS_EXAMPLES,PROGRESS_CHAPTERS,PROGRESS_EXAMPLES_DURATION,ProgressResultsGrid,PROGRESS_RESULTS_TIMING,PROGRESS_GRID_BOX} from './ProgressExamples';
@@ -110,7 +110,10 @@ function FullFilmContent(){
     <Sequence from={POLICY_RETURN_START} durationInFrames={BRIDGE_DURATION} premountFor={45}><GridReturn kind="policy" assetBase={assetBase}/></Sequence>
     <Sequence from={SIMULATION_TITLE_START} durationInFrames={TRANSITION_DURATION}><CapabilityTransition kind="simulation"/></Sequence>
     <Sequence from={SIMULATION_PROMPT_START} durationInFrames={SIMULATION_PROMPT_DURATION}><SimulationPrompt assetBase={assetBase}/></Sequence>
-    <Sequence from={SIMULATION_START} durationInFrames={SIMULATION_DURATION}><OriginalSegment sourceStart={SIMULATION_SOURCE_START}/></Sequence>
+    <Sequence from={SIMULATION_START} durationInFrames={SIMULATION_DURATION}>
+      <OriginalSegment sourceStart={SIMULATION_SOURCE_START}/>
+      <CapabilityHeading kind="simulation"/>
+    </Sequence>
     <Sequence from={SIMULATION_RETURN_START} durationInFrames={BRIDGE_DURATION} premountFor={45}><GridReturn kind="simulation" assetBase={assetBase}/></Sequence>
     <Sequence from={PROGRESS_TITLE_START} durationInFrames={TRANSITION_DURATION}><CapabilityTransition kind="progress"/></Sequence>
     <Sequence from={PROGRESS_PROMPT_START} durationInFrames={PROGRESS_PROMPT_DURATION}><ProgressPrompt assetBase={assetBase}/></Sequence>

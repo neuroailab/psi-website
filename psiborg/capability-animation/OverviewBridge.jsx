@@ -11,7 +11,10 @@ export const BRIDGE_DURATION=BRIDGE_SHRINK_FRAMES+BRIDGE_HANDOFF_FRAMES;
 export const OVERVIEW_FRAME=OVERVIEW_LAYOUT.canonicalFrame;
 export const CAPABILITY_DATA=Object.freeze({
   policy:{index:0,title:'Execute from one goal image',from:[121,227,213],to:[183,250,240],color:'#b7faf0'},
-  simulation:{index:1,title:'Imagine possible futures',from:[131,191,255],to:[131,191,255],color:'#83bfff'},
+  simulation:{index:1,title:'Imagine possible futures',
+    expandedTitle:'Video prediction from low level actions in diverse environments',
+    expandedLines:['Video prediction from low level actions','in diverse environments'],
+    from:[131,191,255],to:[131,191,255],color:'#83bfff'},
   progress:{index:2,title:'Track progress',from:[242,197,121],to:[239,195,114],color:'#efc372'},
 });
 const mix=(a,b,p)=>a+(b-a)*p;
@@ -42,17 +45,29 @@ export function FrozenOverview({opacity=1,hideOpeningHeading,hideOpeningGrid}){
   </div>;
 }
 
-export function CapabilityHeading({kind='policy'}){
+const headingStyle=kind=>kind==='simulation'
+  ?{...CAPABILITY_HEADING_STYLE,top:68,fontSize:36,lineHeight:'41.4px',whiteSpace:'normal'}
+  :CAPABILITY_HEADING_STYLE;
+
+export function CapabilityHeading({kind='policy',opacity=1}){
   const palette=useFilmTheme();
   const data=CAPABILITY_DATA[kind];
   return <div data-capability-heading={kind} data-policy-heading={kind==='policy'?true:undefined}
-    style={{...CAPABILITY_HEADING_STYLE,color:palette[kind]}}>{data.title}</div>;
+    data-capability-caption={data.expandedTitle??data.title}
+    style={{...headingStyle(kind),color:palette[kind],opacity}}>
+    {data.expandedLines?data.expandedLines.map((line,index)=><React.Fragment key={line}>
+      {index>0&&<br/>}{line}
+    </React.Fragment>):data.title}
+  </div>;
 }
 
 /** The selected heading moves directly from its branch label into the top position. */
 export function CapabilityTransition({kind='policy'}){
   const palette=useFilmTheme();
   const frame=useCurrentFrame(),p=ease(frame,0,TRANSITION_DURATION-1),data=CAPABILITY_DATA[kind];
+  const expanded=Boolean(data.expandedTitle),targetStyle=headingStyle(kind);
+  const split=(TRANSITION_DURATION-1)/2;
+  const shortOpacity=expanded?1-ease(frame,0,split):1;
   const from=overviewTitleBox(CAPABILITY_PATTERNS.find(pattern=>pattern.id===kind));
   const color=`rgb(${palette.headingFrom[kind].map((value,i)=>Math.round(mix(value,palette.headingTo[kind][i],p))).join(',')})`;
   return <AbsoluteFill data-capability-transition={kind} data-policy-transition={kind==='policy'?true:undefined}
@@ -61,9 +76,10 @@ export function CapabilityTransition({kind='policy'}){
       <FrozenOverview hideOpeningHeading={kind}/>
     </div>
     <div data-moving-capability-heading={kind} data-moving-policy-heading={kind==='policy'?true:undefined}
-      style={{...CAPABILITY_HEADING_STYLE,left:mix(from.x,640,p),top:mix(from.y,76,p),width:mix(from.width,1168,p),
-        fontSize:mix(from.fontSize,42,p),lineHeight:`${mix(from.lineHeight,48.3,p)}px`,
-        letterSpacing:mix(-.45,-.7,p),color}}>{data.title}</div>
+      style={{...CAPABILITY_HEADING_STYLE,left:mix(from.x,640,p),top:mix(from.y,targetStyle.top,p),width:mix(from.width,1168,p),
+        fontSize:mix(from.fontSize,targetStyle.fontSize,p),lineHeight:`${mix(from.lineHeight,parseFloat(targetStyle.lineHeight),p)}px`,
+        letterSpacing:mix(-.45,-.7,p),color,opacity:shortOpacity}}>{data.title}</div>
+    {expanded&&<CapabilityHeading kind={kind} opacity={ease(frame,split,TRANSITION_DURATION-1)}/>}
   </AbsoluteFill>;
 }
 

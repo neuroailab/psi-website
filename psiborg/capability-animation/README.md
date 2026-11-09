@@ -4,22 +4,29 @@ The public page uses the Remotion composition in FullFilm.jsx: 5713 frames at 30
 
 The animation uses relative assets/capability-film paths for the /psi-website/psiborg/ URL. Preserve recorded media, goal images, prediction values, timing, dark/light palettes, and final-frame comparison holds when editing. The page supports muted autoplay and looping, click/tap or Space/Enter to pause/resume, draggable seeking, and chapter navigation.
 
-The opening presents 18 paths at one size: the original nine paths plus nine
+The opening presents 13 paths at one size: the original nine paths plus four
 representative literal training sequences. Every input and output chip is 92×38,
-with 16px labels and 17px glyphs. Horizontal offsets let adjacent paths share
-vertical space without overlapping. All routes pass through the shared Ψ model,
+with 16px labels and 17px glyphs. Independent horizontal input/output offsets
+give each path a different distance to the model, while wider vertical spacing
+gives the paths more room. All routes pass through the shared Ψ model,
 and every path appears directly at its final position without compaction.
 
 The seeded random reveal adds a complete path every five frames, using a
-five-frame reveal, and finishes at frame 90. All 18 remain visible through frame
-315. The 15 secondary paths dim to 0.12 opacity over frames 315–345, giving the
+five-frame reveal, and finishes at frame 65. All 13 remain visible through frame
+315. The 10 secondary paths dim to 0.12 opacity over frames 315–345, giving the
 three robotics paths a clear reading hold before their existing handoff at 390.
 Secondary paths clear during 390–405. During the 45-frame handoff, the main
-paths first separate horizontally into their columns, then move upward; the
-model marks and arrows follow the same route. The three main paths keep their original
-y centers (464,516,568); their overview destinations and footage clocks remain
+paths and model marks move straight to their overview destinations, with one
+shared eased fraction for both axes and no intermediate stops. Their initial
+y centers are Simulation 145, Policy 520 and Progress 685. Overview titles appear
+during frames 417–435 after the moving tokens clear them; overview destinations and footage clocks remain
 unchanged. The opening still lasts 600 frames, grid playback starts at 465, and
 the final overview is 599. Later chapters retain their timing and media.
+
+The expanded simulation view reads “Video prediction from low level actions
+in diverse environments” over two lines. The short overview label transitions
+into this caption, which remains visible during the simulation prompt and
+recorded examples.
 
 `ScatteredSequenceLayout.mjs` records the selected training IDs, fixed track
 positions, uniform geometry and model ports. `TrainingSequences.mjs` reads exact

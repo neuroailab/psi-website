@@ -23,10 +23,10 @@ export const OPENING_TIMING=Object.freeze({tokenDisplay:'seeded-row-reveal',toke
   pathReveal,pathRevealSeed:PATH_REVEAL_SEED,pathRevealStep:PATH_REVEAL_STEP,pathRevealFade:PATH_REVEAL_FADE,
   allRows,focus,handoff,highlight:Object.freeze([315,345]),secondaryExit:Object.freeze([390,405]),
   secondaryOpacity:.12,overview:Object.freeze([handoff[1],DURATION]),
-  headingReveal:Object.freeze([handoff[0]+15,handoff[0]+35]),
+  headingReveal:Object.freeze([handoff[0]+27,handoff[1]]),
   columnLabelFade:span(handoff[0],18),headlineFade:span(handoff[0],15),
   overviewSourceOffset:focus[0],logoMove:handoff,
-  morphRoute:'columns-then-lift',morphDirect:handoff,
+  morphRoute:'direct',morphDirect:handoff,
   diagramPause,gridReveal,overviewHold,gridPlaybackStart:gridReveal[0],
   headline:'Our model defines any capability as a prompt',arrowMode:'independent-staggered-streams',
   pathStreamSeed:0x505349,pathStreamSpeed:.7});
@@ -114,7 +114,7 @@ export function overviewLogoBox(pattern){return {left:columnLeft(pattern)+OVERVI
 export function overviewMediaBox(pattern){return {left:columnLeft(pattern),top:OVERVIEW_LAYOUT.gridTop,
   width:OVERVIEW_LAYOUT.gridWidth,height:OVERVIEW_LAYOUT.gridHeight};}
 export const LOGO_END=Object.freeze(overviewLogoBox(PROMPT_PATTERNS.find(p=>p.id==='policy')));
-export const ROW_LAYOUT=Object.freeze({firstCenterY:145,rowGap:28,labelLeft:14,labelWidth:292,
+export const ROW_LAYOUT=Object.freeze({firstCenterY:145,rowGap:42,labelLeft:14,labelWidth:292,
   capabilityLabelWidth:310,labelFontSize:22,capabilityLabelFontSize:20,inputCenter:305,outputCenter:1004,
   inputWidth:92,outputWidth:92,inputGap:10,tokenGap:10,tokenHeight:38});
 const kinds=palette=>({rgb:palette.rgb,depth:palette.policyAccent,flow:palette.action,
@@ -131,7 +131,7 @@ export const fullyVisibleRowCountAt=frame=>PROMPT_PATTERNS.filter(pattern=>rowOp
 export function rowLabelAt(pattern,frame){
   return {...overviewTitleBox(pattern),motion:ease(frame,...OPENING_TIMING.handoff)};
 }
-export const CAPABILITY_PATTERNS=Object.freeze(PROMPT_PATTERNS.filter(pattern=>pattern.capability!==undefined));
+export const CAPABILITY_PATTERNS=Object.freeze(PROMPT_PATTERNS.filter(pattern=>pattern.capability!==undefined).sort((a,b)=>a.capability-b.capability));
 export {mix,ease,kinds,rowY};
 
 export function TokenGlyph({kind,color,compact,size}){
@@ -216,24 +216,18 @@ export function tokenOpacityAt(pattern,side,index,frame,morph=0){
 }
 export const morphBox=(source,target,p)=>Object.fromEntries(['left','top','width','height'].map(key=>[key,mix(source[key],target[key],p)]));
 export function diagramRouteAt(morph){
-  // Separate the three columns while their rows still have vertical clearance,
-  // then lift them onto the common overview line. The same route drives tokens,
-  // model boxes and arrow turns, so no output crosses another path's inputs.
-  const columns=ease(morph,0,.65),lift=ease(morph,.65,1);
-  return {mode:'columns-then-lift',progress:morph,lanes:columns,columns,lift};
+  // Use one fraction for both axes: every element travels directly to its
+  // overview position, without intermediate stops or changes of direction.
+  return {mode:'direct',progress:morph,lanes:morph,columns:morph,lift:morph};
 }
 export function morphLogoBox(pattern,morph){
-  const source=LOGO_START,target=overviewLogoBox(pattern),route=diagramRouteAt(morph);
-  return {...morphBox(source,target,route.columns),
-    top:mix(source.top,target.top,route.lift),height:mix(source.height,target.height,route.lift)};
+  return morphBox(LOGO_START,overviewLogoBox(pattern),morph);
 }
 export function morphTokenBoxes(pattern,side,morph){
   const source=tokenBoxes(pattern,side);
   if(pattern.capability===undefined)return source;
-  const target=overviewTokenBoxes(pattern,side),route=diagramRouteAt(morph);
-  return source.map((box,index)=>({...morphBox(box,target[index],route.columns),
-    top:mix(box.top,target[index].top,route.lift),
-    height:mix(box.height,target[index].height,route.lift)}));
+  const target=overviewTokenBoxes(pattern,side);
+  return source.map((box,index)=>morphBox(box,target[index],morph));
 }
 export function PromptArrow({pattern,side,frame,morph}){
   const palette=useFilmTheme(),color=kinds(palette)[pattern.id==='policy'&&morph>0?'action':pattern.outputs[0].kind];

@@ -1,49 +1,39 @@
-// Eighteen equal-size paths share one model. Adjacent rows overlap vertically
-// only where their input/output groups occupy different horizontal lanes.
-// The three robotics paths retain their original y centers for the handoff.
+// Thirteen equal-size paths share one model, with room between every row.
+// Main-path anchors allow a direct handoff into the three overview columns.
 export const SCATTERED_LAYOUT=Object.freeze({
   tokenWidth:92,tokenHeight:38,tokenGap:10,
-  inputLeft:40,inputRight:555,outputLeft:735,outputRight:1240,
-  inputTurn:567,outputTurn:721,
+  inputLeft:40,inputRight:573,outputLeft:709,outputRight:1240,
+  inputTurn:583,outputTurn:697,
   modelPortCenterY:360,modelPortHalfRange:36,
 });
 
 // These are literal entries in training-sequences.json. The seven-token
 // continuation and redundant RGB/flow examples remain in the source catalog.
 export const SCATTERED_SELECTED_TRAINING_IDS=Object.freeze([
-  'camera-conditioned','depth-flow','camera-flow','depth-action',
-  'pose-estimation','action-flow','camera-depth-flow','depth-action-flow',
-  'camera-trajectory',
+  'camera-conditioned','depth-flow','depth-action-flow','camera-trajectory',
 ]);
 
+// Each row has independent input/output offsets: different token counts and
+// distances from the model give every sequence its own visible length.
 // Counts describe the existing prompt/prediction split, not a new split.
-// Four-token outputs are flanked by single-token outputs; three-token groups
-// are flanked by groups of at most two, keeping every adjacent pair disjoint.
 const tracks=[
-  ['video',145,1,2],
-  ['video-flow',173,2,1],
-  ['mixed',201,1,4],
-  ['training-camera-conditioned',229,2,1],
-  ['training-camera-depth-flow',257,3,3],
-  ['rgb-flow-action',285,1,2],
-  ['training-depth-action-flow',313,3,3],
-  ['training-camera-flow',341,2,2],
-  ['training-depth-action',369,3,2],
-  ['training-depth-flow',397,2,3],
-  ['rgb-action',425,2,2],
-  ['policy',464,2,2],
-  ['training-camera-trajectory',490,3,2],
-  ['simulation',516,2,1],
-  ['training-action-flow',542,2,2],
-  ['progress',568,2,1],
-  ['flow-video',597,2,1],
-  ['training-pose-estimation',626,2,1],
+  ['simulation',145,2,1,350,733],
+  ['video',190,1,2,80,960],
+  ['video-flow',232,2,1,245,1100],
+  ['mixed',274,1,4,450,760],
+  ['training-camera-conditioned',316,2,1,160,975],
+  ['training-depth-action-flow',358,3,3,240,730],
+  ['rgb-flow-action',400,1,2,285,1020],
+  ['training-depth-flow',442,2,3,90,865],
+  ['rgb-action',480,2,2,325,795],
+  ['policy',520,2,2,379,709],
+  ['training-camera-trajectory',568,3,2,40,930],
+  ['flow-video',620,2,1,215,850],
+  ['progress',685,2,1,365,720],
 ];
 export const SCATTERED_TRACK_DEFINITIONS=Object.freeze(tracks.map(
-  ([id,centerY,inputCount,outputCount],index)=>Object.freeze({
-    id,index,centerY,inputCount,outputCount,
-    inputAnchor:index%2?'right':'left',
-    outputAnchor:index%2?'right':'left',
+  ([id,centerY,inputCount,outputCount,inputLeft,outputLeft],index)=>Object.freeze({
+    id,index,centerY,inputCount,outputCount,inputLeft,outputLeft,
   })));
 const byId=new Map(SCATTERED_TRACK_DEFINITIONS.map(track=>[track.id,track]));
 
@@ -66,9 +56,7 @@ export function scatteredTokenBoxes(patternOrId,side){
     throw new Error(`Prompt split changed for ${track.id}: expected ${count} ${side} tokens`);
   }
   const {tokenWidth:width,tokenHeight:height,tokenGap:gap}=SCATTERED_LAYOUT;
-  const groupWidth=count*width+(count-1)*gap;
-  const start=track[`${side}Anchor`]==='left'?SCATTERED_LAYOUT[`${side}Left`]:
-    SCATTERED_LAYOUT[`${side}Right`]-groupWidth;
+  const start=track[`${side}Left`];
   return Array.from({length:count},(_,index)=>({
     left:start+index*(width+gap),top:track.centerY-height/2,width,height,
   }));
