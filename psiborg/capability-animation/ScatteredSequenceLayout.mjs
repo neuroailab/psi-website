@@ -2,8 +2,9 @@
 // Main-path anchors allow a direct handoff into the three overview columns.
 export const SCATTERED_LAYOUT=Object.freeze({
   tokenWidth:92,tokenHeight:38,tokenGap:10,
-  inputLeft:40,inputRight:573,outputLeft:709,outputRight:1240,
-  inputTurn:583,outputTurn:697,
+  firstCenterY:145,rowGap:45,
+  inputLeft:40,inputRight:505,outputLeft:775,outputRight:1240,
+  inputTurn:515,outputTurn:765,
   modelPortCenterY:360,modelPortHalfRange:36,
 });
 
@@ -17,23 +18,24 @@ export const SCATTERED_SELECTED_TRAINING_IDS=Object.freeze([
 // distances from the model give every sequence its own visible length.
 // Counts describe the existing prompt/prediction split, not a new split.
 const tracks=[
-  ['simulation',145,2,1,350,733],
-  ['video',190,1,2,80,960],
-  ['video-flow',232,2,1,245,1100],
-  ['mixed',274,1,4,450,760],
-  ['training-camera-conditioned',316,2,1,160,975],
-  ['training-depth-action-flow',358,3,3,240,730],
-  ['rgb-flow-action',400,1,2,285,1020],
-  ['training-depth-flow',442,2,3,90,865],
-  ['rgb-action',480,2,2,325,795],
-  ['policy',520,2,2,379,709],
-  ['training-camera-trajectory',568,3,2,40,930],
-  ['flow-video',620,2,1,215,850],
-  ['progress',685,2,1,365,720],
+  ['simulation',2,1,295,795],
+  ['video',1,2,80,984],
+  ['video-flow',2,1,237,1100],
+  ['mixed',1,4,396,817],
+  ['training-camera-conditioned',2,1,160,996],
+  ['training-depth-action-flow',3,3,188,792],
+  ['rgb-flow-action',1,2,285,1034],
+  ['training-depth-flow',2,3,90,905],
+  ['rgb-action',2,2,281,846],
+  ['policy',2,2,311,775],
+  ['training-camera-trajectory',3,2,40,959],
+  ['flow-video',2,1,215,892],
+  ['progress',2,1,303,784],
 ];
 export const SCATTERED_TRACK_DEFINITIONS=Object.freeze(tracks.map(
-  ([id,centerY,inputCount,outputCount,inputLeft,outputLeft],index)=>Object.freeze({
-    id,index,centerY,inputCount,outputCount,inputLeft,outputLeft,
+  ([id,inputCount,outputCount,inputLeft,outputLeft],index)=>Object.freeze({
+    id,index,centerY:SCATTERED_LAYOUT.firstCenterY+index*SCATTERED_LAYOUT.rowGap,
+    inputCount,outputCount,inputLeft,outputLeft,
   })));
 const byId=new Map(SCATTERED_TRACK_DEFINITIONS.map(track=>[track.id,track]));
 

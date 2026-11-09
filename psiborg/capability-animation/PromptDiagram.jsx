@@ -114,7 +114,7 @@ export function overviewLogoBox(pattern){return {left:columnLeft(pattern)+OVERVI
 export function overviewMediaBox(pattern){return {left:columnLeft(pattern),top:OVERVIEW_LAYOUT.gridTop,
   width:OVERVIEW_LAYOUT.gridWidth,height:OVERVIEW_LAYOUT.gridHeight};}
 export const LOGO_END=Object.freeze(overviewLogoBox(PROMPT_PATTERNS.find(p=>p.id==='policy')));
-export const ROW_LAYOUT=Object.freeze({firstCenterY:145,rowGap:42,labelLeft:14,labelWidth:292,
+export const ROW_LAYOUT=Object.freeze({firstCenterY:SCATTERED_LAYOUT.firstCenterY,rowGap:SCATTERED_LAYOUT.rowGap,labelLeft:14,labelWidth:292,
   capabilityLabelWidth:310,labelFontSize:22,capabilityLabelFontSize:20,inputCenter:305,outputCenter:1004,
   inputWidth:92,outputWidth:92,inputGap:10,tokenGap:10,tokenHeight:38});
 const kinds=palette=>({rgb:palette.rgb,depth:palette.policyAccent,flow:palette.action,
@@ -245,18 +245,20 @@ export function PromptArrow({pattern,side,frame,morph}){
     ?morphBox(boxes[0],boxes[1],morph>0?1:ease(frame,...OPENING_TIMING.focus)):boxes[0];
   const to=input?{x:logo.left-mix(12,8,route.columns),y:modelPortY}:
     {x:outputAnchor.left-mix(12,8,route.columns),y:groupY};
-  // Keep both turns between their moving endpoints: a fixed gutter must not
-  // pull a connector backward through a chip as the columns separate.
+  // Reserve a broad fan beside the model so the curves never collapse into
+  // vertical elbows. Both cubic joins have horizontal tangents, and the fan
+  // stays between its moving endpoints during the direct overview handoff.
   const forwardTurn=x=>Math.max(from.x,Math.min(to.x,x));
-  const launch=forwardTurn(mix(SCATTERED_LAYOUT.inputTurn,from.x,route.columns));
-  const outputTurn=forwardTurn(mix(SCATTERED_LAYOUT.outputTurn,to.x,route.columns));
+  const curveWidth=Math.min(68,Math.max(0,to.x-from.x));
+  const launch=Math.min(to.x-curveWidth,forwardTurn(mix(SCATTERED_LAYOUT.inputTurn,from.x,route.columns)));
+  const outputTurn=Math.max(from.x+curveWidth,forwardTurn(mix(SCATTERED_LAYOUT.outputTurn,to.x,route.columns)));
   const mid=input?(launch+to.x)/2:(from.x+outputTurn)/2;
   const path=input
-    ?`M${from.x} ${from.y} H${launch} C${mid} ${from.y} ${mid} ${to.y} ${to.x} ${to.y}`
-    :`M${from.x} ${from.y} C${mid} ${from.y} ${mid} ${to.y} ${outputTurn} ${to.y} H${to.x}`;
+    ?`M${from.x} ${from.y} C${from.x+(launch-from.x)/3} ${from.y} ${from.x+2*(launch-from.x)/3} ${from.y} ${launch} ${from.y} C${mid} ${from.y} ${mid} ${to.y} ${to.x} ${to.y}`
+    :`M${from.x} ${from.y} C${mid} ${from.y} ${mid} ${to.y} ${outputTurn} ${to.y} C${outputTurn+(to.x-outputTurn)/3} ${to.y} ${outputTurn+2*(to.x-outputTurn)/3} ${to.y} ${to.x} ${to.y}`;
   const progress=pathStreamAt(pattern,frame,side);
   const stream={pathLength:1,strokeDasharray:'.12 .88',strokeDashoffset:-progress,strokeLinecap:'round'};
-  return <g data-prompt-arrow={`${pattern.id}-${side}`} data-arrow-mode="independent-staggered-streams"
+  return <g data-prompt-arrow={`${pattern.id}-${side}`} data-arrow-mode="independent-staggered-streams" data-arrow-curve="smooth-cubic"
     data-stream-progress={progress} data-stream-period={PATH_STREAMS[pattern.row].period}
     data-stream-speed={OPENING_TIMING.pathStreamSpeed} data-arrow-from-x={from.x} data-arrow-from-y={from.y}
     data-arrow-turn-x={input?launch:outputTurn}

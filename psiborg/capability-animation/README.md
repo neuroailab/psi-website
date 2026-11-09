@@ -7,8 +7,9 @@ The animation uses relative assets/capability-film paths for the /psi-website/ps
 The opening presents 13 paths at one size: the original nine paths plus four
 representative literal training sequences. Every input and output chip is 92×38,
 with 16px labels and 17px glyphs. Independent horizontal input/output offsets
-give each path a different distance to the model, while wider vertical spacing
-gives the paths more room. All routes pass through the shared Ψ model,
+give each path a different distance to the model, with every row exactly 45px apart
+from y=145 through y=685. Smooth cubic connectors use clear corridors beside
+the model and matching horizontal tangents, without square elbows. All routes pass through the shared Ψ model,
 and every path appears directly at its final position without compaction.
 
 The seeded random reveal adds a complete path every five frames, using a
@@ -18,7 +19,7 @@ three robotics paths a clear reading hold before their existing handoff at 390.
 Secondary paths clear during 390–405. During the 45-frame handoff, the main
 paths and model marks move straight to their overview destinations, with one
 shared eased fraction for both axes and no intermediate stops. Their initial
-y centers are Simulation 145, Policy 520 and Progress 685. Overview titles appear
+y centers are Simulation 145, Policy 550 and Progress 685. Overview titles appear
 during frames 417–435 after the moving tokens clear them; overview destinations and footage clocks remain
 unchanged. The opening still lasts 600 frames, grid playback starts at 465, and
 the final overview is 599. Later chapters retain their timing and media.

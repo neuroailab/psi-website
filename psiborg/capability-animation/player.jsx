@@ -63,7 +63,7 @@ function CapabilityPlayer() {
     let feedbackTimer, feedbackSequence = 0;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
-    window.psiHeroFilm = {version: 20, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'thirteen-direct-paths-v20', chapters: CHAPTERS, sections: SECTIONS,
+    window.psiHeroFilm = {version: 22, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'curved-equidistant-paths-v22', chapters: CHAPTERS, sections: SECTIONS,
       duration: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
     mount.dataset.compositionWidth = WIDTH;
     mount.dataset.height = HEIGHT;
