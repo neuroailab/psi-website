@@ -4,9 +4,11 @@ This post lives at /psi-website/psiborg/. All animation edits use Remotion: capa
 
 Keep relative asset URLs, matching dark/light themes, the fixed 16:9 stage, continuous muted looping playback, click/tap and keyboard pause/resume, timeline seeking, and chapter controls. Preserve recorded media, goal images, prediction data, and approved timing. The result thumbnail strip is one-third width; the selected result panel remains large.
 
+The post opens in dark mode on each visit. Keep the three resource buttons compact, with their symbol, Code/Paper/Model name and SOON badge; omit provider subtitles. The main player and controls fit the initial viewport without cropping the 16:9 stage.
+
 The authoring draft has local comments UI. Do not include that UI, review.js, local API references, or noindex when publishing. Older hero-animation and prompt-animation sources are historical; do not build them over the current player.
 
-The v22 opening has 13 fixed paths: the original nine plus four representative
+The v23 opening has 13 fixed paths: the original nine plus four representative
 literal training sequences. All input and output chips are 92×38, with 16px text
 and 17px glyphs. ScatteredSequenceLayout.mjs assigns staggered horizontal anchors
 so rows fit around the shared model; no row resizes or moves during reveal/hold.
@@ -25,4 +27,4 @@ smooth cubic connectors with horizontal tangents at their joins. Do not collapse
 the curves into vertical elbows or route through token chips. Overview titles appear during 417–435 after the tokens clear them.
 The opening remains 600 frames. Grid clocks start from source frame 0 at 465, and
 the canonical overview is 599. Keep the complete 15-entry training source catalog,
-all carousel examples and the policy alternate-goal comparison. The player runs at 1.2×; its timeline shows wall time. Narration cards precede policy and progress grids. Preserve the original sixteen prefetched result clips plus the added simulation and Bridge clips, early image preloads, and final comparison holds.
+all carousel examples and the policy alternate-goal comparison. The player runs at 1.2×; its timeline shows wall time. Policy and progress examples follow their prompt sequences directly, with no separate narration cards. Policy grid leads are 12 overview + 18 highlight + 36 zoom frames. Keep the progress caption “For any embodiment” continuously visible across both human and robot examples. The simulation subtitle “in diverse environments” appears only as the first example zooms in (frames 38–63 of that section). The full film is 5443 frames; derive chapter starts from section durations. Preserve the original sixteen prefetched result clips plus the added simulation and Bridge clips, early image preloads, and final comparison holds.

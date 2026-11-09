@@ -1,6 +1,6 @@
 # PsiBorg capability film
 
-The public page uses the Remotion composition in FullFilm.jsx: 5713 frames at 30 fps, presented at 1.2× speed (158.69 seconds), 1280×720. The interactive player is player.jsx. Install the dependencies from package.json, then run `node build.mjs` here to rebuild ../hero.js.
+The public page uses the Remotion composition in FullFilm.jsx: 5443 frames at 30 fps, presented at 1.2× speed (151.19 seconds), 1280×720. The interactive player is player.jsx. Install the dependencies from package.json, then run `node build.mjs` here to rebuild ../hero.js.
 
 The animation uses relative assets/capability-film paths for the /psi-website/psiborg/ URL. Preserve recorded media, goal images, prediction values, timing, dark/light palettes, and final-frame comparison holds when editing. The page supports muted autoplay and looping, click/tap or Space/Enter to pause/resume, draggable seeking, and chapter navigation.
 
@@ -24,10 +24,25 @@ during frames 417–435 after the moving tokens clear them; overview destination
 unchanged. The opening still lasts 600 frames, grid playback starts at 465, and
 the final overview is 599. Later chapters retain their timing and media.
 
-The expanded simulation view reads “Video prediction from low level actions
-in diverse environments” over two lines. The short overview label transitions
-into this caption, which remains visible during the simulation prompt and
-recorded examples.
+The policy prompt reads “Execute actions from one goal image”. Its examples
+follow the prompt directly, without a narrative slide: each grid lead has a
+12-frame overview, 18-frame highlight and 36-frame zoom. The example captions
+are “PsiBorg learns new ways to interact with familiar objects”, “It reaches
+goals involving novel objects”, and “and follows diverse goals in the same
+scene.” Existing footage, goal preparation and final comparison holds remain.
+
+The simulation prompt reads “Imagine the future from low level actions”.
+The second line, “in diverse environments”, is hidden during the prompt and
+reveals during the first video zoom (example-section frames 38–63), then remains
+visible through the simulation examples. Reserving its line keeps the main
+heading stationary when the subtitle appears.
+
+The progress prompt reads “Estimate temporal distance to a goal image”.
+Its examples follow directly, without the old temporal-distance narrative card.
+“For any embodiment” stays visible across the human and robot examples and the
+grid transition between them. Progress example footage, playback and final
+holds are unchanged. Policy lasts 2055 frames and progress results 771 frames;
+all later section starts are derived from these durations.
 
 `ScatteredSequenceLayout.mjs` records the selected training IDs, fixed track
 positions, uniform geometry and model ports. `TrainingSequences.mjs` reads exact

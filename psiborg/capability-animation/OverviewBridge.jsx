@@ -10,12 +10,13 @@ export const BRIDGE_HANDOFF_FRAMES=22;
 export const BRIDGE_DURATION=BRIDGE_SHRINK_FRAMES+BRIDGE_HANDOFF_FRAMES;
 export const OVERVIEW_FRAME=OVERVIEW_LAYOUT.canonicalFrame;
 export const CAPABILITY_DATA=Object.freeze({
-  policy:{index:0,title:'Execute from one goal image',from:[121,227,213],to:[183,250,240],color:'#b7faf0'},
-  simulation:{index:1,title:'Imagine possible futures',
-    expandedTitle:'Video prediction from low level actions in diverse environments',
-    expandedLines:['Video prediction from low level actions','in diverse environments'],
+  policy:{index:0,title:'Execute actions from one goal image',from:[121,227,213],to:[183,250,240],color:'#b7faf0'},
+  simulation:{index:1,title:'Imagine the future',
+    expandedTitle:'Imagine the future from low level actions',
+    context:'in diverse environments',
     from:[131,191,255],to:[131,191,255],color:'#83bfff'},
-  progress:{index:2,title:'Track progress',from:[242,197,121],to:[239,195,114],color:'#efc372'},
+  progress:{index:2,title:'Track progress',expandedTitle:'Estimate temporal distance to a goal image',
+    from:[242,197,121],to:[239,195,114],color:'#efc372'},
 });
 const mix=(a,b,p)=>a+(b-a)*p;
 const ease=(frame,start,end)=>{
@@ -49,15 +50,15 @@ const headingStyle=kind=>kind==='simulation'
   ?{...CAPABILITY_HEADING_STYLE,top:68,fontSize:36,lineHeight:'41.4px',whiteSpace:'normal'}
   :CAPABILITY_HEADING_STYLE;
 
-export function CapabilityHeading({kind='policy',opacity=1}){
+export function CapabilityHeading({kind='policy',opacity=1,contextOpacity=0}){
   const palette=useFilmTheme();
   const data=CAPABILITY_DATA[kind];
   return <div data-capability-heading={kind} data-policy-heading={kind==='policy'?true:undefined}
-    data-capability-caption={data.expandedTitle??data.title}
+    data-capability-caption={data.expandedTitle??data.title} data-context-opacity={data.context?contextOpacity:undefined}
     style={{...headingStyle(kind),color:palette[kind],opacity}}>
-    {data.expandedLines?data.expandedLines.map((line,index)=><React.Fragment key={line}>
-      {index>0&&<br/>}{line}
-    </React.Fragment>):data.title}
+    <div>{data.expandedTitle??data.title}</div>
+    {data.context&&<div data-simulation-environments aria-hidden={contextOpacity===0}
+      style={{opacity:contextOpacity}}>{data.context}</div>}
   </div>;
 }
 

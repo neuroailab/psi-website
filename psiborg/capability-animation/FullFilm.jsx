@@ -26,6 +26,10 @@ export const SIMULATION_START=SIMULATION_PROMPT_START+SIMULATION_PROMPT_DURATION
 export const SIMULATION_SOURCE_START=story.chapters.simulation.full_grid;
 export const SIMULATION_PLAYBACK_RATE=.8;
 export const SIMULATION_DURATION=Math.ceil((story.timing.progress_focus-SIMULATION_SOURCE_START)/SIMULATION_PLAYBACK_RATE);
+export const SIMULATION_CONTEXT_REVEAL=Object.freeze([
+  Math.ceil((story.chapters.simulation.cycles[0].expand-SIMULATION_SOURCE_START)/SIMULATION_PLAYBACK_RATE),
+  Math.ceil((story.chapters.simulation.cycles[0].play-SIMULATION_SOURCE_START)/SIMULATION_PLAYBACK_RATE),
+]);
 export const SIMULATION_RETURN_START=SIMULATION_START+SIMULATION_DURATION;
 export const PROGRESS_TITLE_START=SIMULATION_RETURN_START+BRIDGE_DURATION;
 export const PROGRESS_PROMPT_START=PROGRESS_TITLE_START+TRANSITION_DURATION;
@@ -76,6 +80,12 @@ function OriginalSegment({sourceStart=0,showFocusHeading=false}){
   </div>;
 }
 
+function SimulationExamplesHeading(){
+  const frame=useCurrentFrame(),[start,end]=SIMULATION_CONTEXT_REVEAL;
+  const p=Math.max(0,Math.min(1,(frame-start)/(end-start)));
+  return <CapabilityHeading kind="simulation" contextOpacity={p*p*(3-2*p)}/>;
+}
+
 const POLICY_CROP=POLICY_GRID_BOX;
 const LEGACY_GRID_BOX={left:224,top:122,width:832,height:476};
 function GridReturn({kind,assetBase}){
@@ -112,7 +122,7 @@ function FullFilmContent(){
     <Sequence from={SIMULATION_PROMPT_START} durationInFrames={SIMULATION_PROMPT_DURATION}><SimulationPrompt assetBase={assetBase}/></Sequence>
     <Sequence from={SIMULATION_START} durationInFrames={SIMULATION_DURATION}>
       <OriginalSegment sourceStart={SIMULATION_SOURCE_START}/>
-      <CapabilityHeading kind="simulation"/>
+      <SimulationExamplesHeading/>
     </Sequence>
     <Sequence from={SIMULATION_RETURN_START} durationInFrames={BRIDGE_DURATION} premountFor={45}><GridReturn kind="simulation" assetBase={assetBase}/></Sequence>
     <Sequence from={PROGRESS_TITLE_START} durationInFrames={TRANSITION_DURATION}><CapabilityTransition kind="progress"/></Sequence>

@@ -49,9 +49,9 @@ const promptPatterns=[
     inputs:[token('rgb','RGB₀'),token('action','A₀')],outputs:[token('rgb','RGB₁'),token('action','A₁')]},
   {id:'rgb-flow-action',label:'Visual flow and actions',
     inputs:[token('rgb','RGB')],outputs:[token('flow','Flow'),token('action','Action')]},
-  {id:'policy',label:'Execute from one goal image',capability:0,
+  {id:'policy',label:'Execute actions from one goal image',capability:0,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt'),token('action','Actions')]},
-  {id:'simulation',label:'Imagine possible futures',capability:1,
+  {id:'simulation',label:'Imagine the future',capability:1,
     inputs:[token('rgb','RGB'),token('action','Actions')],outputs:[token('rgb','Next RGB')]},
   {id:'progress',label:'Track progress',capability:2,
     inputs:[token('rgb','Current RGB'),token('rgb','Goal RGB')],outputs:[token('time','Δt')]},
@@ -107,8 +107,11 @@ export const OVERVIEW_LAYOUT=Object.freeze({left:40,step:406,width:388,titleY:18
   inputLeft:36,logoLeft:204,outputLeft:292,gridTop:330,
   gridWidth:388,gridHeight:388*714/1248,canonicalFrame:DURATION-1});
 export const columnLeft=pattern=>OVERVIEW_LAYOUT.left+pattern.capability*OVERVIEW_LAYOUT.step;
-export function overviewTitleBox(pattern){return {x:columnLeft(pattern)+OVERVIEW_LAYOUT.width/2,y:OVERVIEW_LAYOUT.titleY,
-  width:OVERVIEW_LAYOUT.width,fontSize:OVERVIEW_LAYOUT.titleFontSize,lineHeight:OVERVIEW_LAYOUT.titleLineHeight};}
+export function overviewTitleBox(pattern){
+  const fontSize=pattern.id==='policy'?18.5:OVERVIEW_LAYOUT.titleFontSize;
+  return {x:columnLeft(pattern)+OVERVIEW_LAYOUT.width/2,y:OVERVIEW_LAYOUT.titleY,
+    width:OVERVIEW_LAYOUT.width,fontSize,lineHeight:fontSize*1.2};
+}
 export function overviewLogoBox(pattern){return {left:columnLeft(pattern)+OVERVIEW_LAYOUT.logoLeft,
   top:OVERVIEW_LAYOUT.promptY-OVERVIEW_LAYOUT.logoSize/2,width:OVERVIEW_LAYOUT.logoSize,height:OVERVIEW_LAYOUT.logoSize};}
 export function overviewMediaBox(pattern){return {left:columnLeft(pattern),top:OVERVIEW_LAYOUT.gridTop,

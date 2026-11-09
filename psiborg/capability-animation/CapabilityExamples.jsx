@@ -2,23 +2,20 @@ import React from 'react';
 import {useFilmTheme} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,Sequence,interpolate,useCurrentFrame} from 'remotion';
 import {AttentionTitle} from './AttentionTitle';
-import {NarrativeTitle} from './NarrativeTitle';
 import {PolicyGrid,GRID_LEAD,GRID_RETURN,POLICY_PLAYBACK_RATE,exampleBox,exampleInset} from './PolicyGrid';
 
 const GOAL_HOLD=126,SHRINK=36;
-export const POLICY_RESULTS_INTRO_DURATION=90;
-export const POLICY_RESULTS_INTRO_TEXT='Our training approach leads to strong generalization across objects and goals';
 export const EXAMPLE_PLAY_START=GOAL_HOLD+SHRINK;
 export const FINAL_COMPARISON_HOLD=60;
 const definitions=[
-  {id:'known-objects',title:'Interacting with familiar objects in new ways',resultDuration:352,
+  {id:'known-objects',title:'PsiBorg learns new ways to interact with familiar objects',headlineFontSize:32,resultDuration:352,
     clips:[{tile:1,name:'policy-2',frames:224,motion:244}]},
-  {id:'unseen-objects',title:'Completing tasks with novel objects',resultDuration:376,
+  {id:'unseen-objects',title:'It reaches goals involving novel objects',headlineFontSize:32,resultDuration:376,
     clips:[{tile:5,name:'policy-6',frames:122,motion:244}]},
-  {id:'different-goals',title:'Following diverse goals with the same objects',resultDuration:282,
+  {id:'different-goals',title:'and follows diverse goals in the same scene.',headlineFontSize:32,resultDuration:282,
     clips:[{tile:4,name:'policy-5',frames:66,motion:132},{tile:7,name:'policy-8',frames:75,motion:150}]},
 ];
-let cursor=POLICY_RESULTS_INTRO_DURATION;
+let cursor=0;
 export const EXAMPLES=definitions.map((example,index)=>{
   const oldMotion=Math.max(...example.clips.map(clip=>clip.motion));
   const clips=example.clips.map(clip=>({...clip,motion:Math.ceil(clip.motion*1.25)}));
@@ -31,11 +28,6 @@ export const EXAMPLES=definitions.map((example,index)=>{
     start:cursor,duration,returnDuration};cursor+=duration;return result;
 });
 export const EXAMPLES_DURATION=cursor;
-export function PolicyResultsIntro(){
-  return <NarrativeTitle cue="policy-generalization" kind="policy"
-    lines={['Our training approach leads to strong','generalization across objects and goals']}
-    duration={POLICY_RESULTS_INTRO_DURATION}/>;
-}
 const mix=(a,b,p)=>a+(b-a)*p;
 const ease=f=>interpolate(f,[GOAL_HOLD,GOAL_HOLD+SHRINK],[0,1],{
   extrapolateLeft:'clamp',extrapolateRight:'clamp',easing:Easing.inOut(Easing.cubic),
@@ -76,14 +68,13 @@ function CapabilityExample({example,assetBase}){
     data-final-hold-start={example.finalHoldStart} data-final-hold-duration={example.finalHoldDuration}
     data-phase={f<GOAL_HOLD?'goal':f<EXAMPLE_PLAY_START?'goal-to-corner':f<example.finalHoldStart?'execution':'final-comparison'}>
     {example.clips.map((clip,index)=><DemoPanel key={clip.tile} {...{clip,index,pair,frame:f,assetBase}}/>)}
-    <AttentionTitle frame={f} text={example.title} cue={example.id} color={palette.policy}/>
+    <AttentionTitle frame={f} text={example.title} cue={example.id} color={palette.policy} headlineFontSize={example.headlineFontSize}/>
   </AbsoluteFill>;
 }
 
 export function CapabilityExamples({assetBase='./assets/'}){
   const palette=useFilmTheme();
   return <AbsoluteFill style={{background:palette.bg,color:palette.ink,fontFamily:'Arial, sans-serif'}}>
-    <Sequence durationInFrames={POLICY_RESULTS_INTRO_DURATION}><PolicyResultsIntro/></Sequence>
     {EXAMPLES.map(example=><Sequence key={example.id} from={example.start} durationInFrames={example.duration}>
       <Sequence durationInFrames={GRID_LEAD}>
         <PolicyGrid example={example} assetBase={assetBase}/>

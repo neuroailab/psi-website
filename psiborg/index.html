@@ -6,11 +6,10 @@
 <meta content="#0b1117" name="theme-color"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="PsiBorg is a universally promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model." name="description"/>
-<title>PsiBorg: A Universally Promptable Foundation Model for Robotics</title>
-<script>try { if (localStorage.getItem('psiborg-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (_) {}</script>
+<title>Robot Capabilities as Probabilistic Inference over Next Token Prediction</title>
 <link href="./styles.css?v=7b004a8a69b5" rel="stylesheet"/>
-<link href="./hero.css?v=0dd19a434c62" rel="stylesheet"/>
-<script defer="" src="./hero.js?v=ade3f2342bed"></script>
+<link href="./hero.css?v=9db81289c972" rel="stylesheet"/>
+<script defer="" src="./hero.js?v=fffa7c8537c8"></script>
 <link href="./carousel.css?v=5c0e8e53a78d" rel="stylesheet"/>
 <link rel="preload" as="image" href="./assets/capability-film/progress-1-final.png"/>
 <link rel="preload" as="image" href="./assets/capability-film/progress-3-final.png"/>
@@ -37,11 +36,11 @@
 <link rel="canonical" href="https://neuroailab.github.io/psi-website/psiborg/"/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="https://neuroailab.github.io/psi-website/psiborg/"/>
-<meta property="og:title" content="PsiBorg: A Universally Promptable Foundation Model for Robotics"/>
+<meta property="og:title" content="Robot Capabilities as Probabilistic Inference over Next Token Prediction"/>
 <meta property="og:description" content="PsiBorg is a universally promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model."/>
 <meta property="og:image" content="https://neuroailab.github.io/psi-website/psiborg/assets/capability-film/policy-grid-2x2.jpg"/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="PsiBorg: A Universally Promptable Foundation Model for Robotics"/>
+<meta name="twitter:title" content="Robot Capabilities as Probabilistic Inference over Next Token Prediction"/>
 <meta name="twitter:description" content="PsiBorg is a universally promptable foundation model trained on visual and robot experience. We study policy inference, simulation, and progress tracking through one probabilistic autoregressive model."/>
 </head>
 <body>
@@ -51,16 +50,17 @@
 </header>
 <main id="article">
 <header class="article-header">
-<h1><span class="article-title-line"><span class="title-name">PsiBorg:</span> A Universally Promptable Foundation Model for Robotics</span></h1>
+<h1><span class="article-title-line">Robot Capabilities as Probabilistic Inference over Next Token Prediction</span></h1>
 <!-- Add resource URLs and replace disabled buttons with anchors when available. -->
 <ul aria-label="PsiBorg resources" class="resource-links">
-<li><button aria-label="Code on GitHub, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"></path></svg><span class="resource-copy"><strong>Code</strong><small>GitHub</small></span><span class="resource-soon">Soon</span></button></li>
-<li><button aria-label="Paper on arXiv, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v6h5M8 13h8M8 17h6"></path></svg><span class="resource-copy"><strong>Paper</strong><small>arXiv</small></span><span class="resource-soon">Soon</span></button></li>
-<li><button aria-label="Model on Hugging Face, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"><rect height="12" rx="2" width="12" x="6" y="6"></rect><path d="M10 10h4v4h-4zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"></path></svg><span class="resource-copy"><strong>Model</strong><small>Hugging Face</small></span><span class="resource-soon">Soon</span></button></li>
-</ul><figure aria-label="PsiBorg capabilities in action" class="hero-feature">
+<li><button aria-label="Code on GitHub, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18"></path></svg><span class="resource-copy"><strong>Code</strong></span><span class="resource-soon">SOON</span></button></li>
+<li><button aria-label="Paper on arXiv, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8l-5-5Zm0 0v6h5M8 13h8M8 17h6"></path></svg><span class="resource-copy"><strong>Paper</strong></span><span class="resource-soon">SOON</span></button></li>
+<li><button aria-label="Model on Hugging Face, coming soon" class="resource-button" disabled="" type="button"><svg aria-hidden="true" class="resource-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewBox="0 0 24 24"><rect height="12" rx="2" width="12" x="6" y="6"></rect><path d="M10 10h4v4h-4zM9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"></path></svg><span class="resource-copy"><strong>Model</strong></span><span class="resource-soon">SOON</span></button></li>
+</ul>
+<figure aria-label="PsiBorg capabilities in action" class="hero-feature">
 <div aria-label="Pause PsiBorg animation" class="hero-feature-screen" id="hero-feature-player" role="button" tabindex="0"></div>
 <figcaption class="hero-feature-controls">
-<div class="hero-feature-timeline"><input aria-label="Seek main animation" aria-controls="hero-feature-player" class="hero-feature-seek" type="range" min="0" max="5712" step="1" value="0"/><output class="hero-feature-time" aria-live="off">0:00 / 2:38</output></div>
+<div class="hero-feature-timeline"><input aria-label="Seek main animation" aria-controls="hero-feature-player" class="hero-feature-seek" type="range" min="0" max="5442" step="1" value="0"/><output class="hero-feature-time" aria-live="off">0:00 / 2:31</output></div>
 <div class="hero-feature-toolbar"><nav aria-label="Animation chapters" class="hero-feature-chapters"><button type="button" data-chapter="Policy" aria-controls="hero-feature-player">Policy</button><button type="button" data-chapter="Simulation" aria-controls="hero-feature-player">Simulation</button><button type="button" data-chapter="Progress tracking" aria-controls="hero-feature-player">Progress</button></nav>
 </div>
 <span aria-live="polite" class="hero-feature-status"></span>
@@ -179,10 +179,44 @@
     button.addEventListener('click', () => {
       const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       applyTheme(theme);
-      try { localStorage.setItem('psiborg-theme', theme); } catch (_) {}
     });
   })();
   </script>
+
+<script>
+  (() => {
+    const figure = document.querySelector('.hero-feature');
+    const controls = figure.querySelector('.hero-feature-controls');
+    let scheduled = false;
+    const fitPlayer = () => {
+      scheduled = false;
+      // Document coordinates keep the player's size stable while scrolling.
+      const top = figure.getBoundingClientRect().top + window.scrollY;
+      const viewport = window.visualViewport;
+      const height = viewport && viewport.scale === 1 ? Math.min(innerHeight, viewport.height) : innerHeight;
+      const available = height - top - controls.getBoundingClientRect().height - 12;
+      const width = Math.max(1, Math.floor(available * 16 / 9));
+      if (figure.style.getPropertyValue('--hero-viewport-width') !== `${width}px`) {
+        figure.style.setProperty('--hero-viewport-width', `${width}px`);
+      }
+    };
+    const scheduleFit = () => {
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(fitPlayer);
+      }
+    };
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(scheduleFit);
+      [document.querySelector('.site-header'), document.querySelector('.article-header h1'), document.querySelector('.resource-links'), controls]
+        .forEach(element => observer.observe(element));
+    }
+    window.addEventListener('resize', scheduleFit);
+    window.visualViewport?.addEventListener('resize', scheduleFit);
+    document.fonts?.ready.then(scheduleFit);
+    fitPlayer();
+  })();
+</script>
 
 <script defer="" src="./carousel.js?v=a185194629b2"></script></body>
 </html>

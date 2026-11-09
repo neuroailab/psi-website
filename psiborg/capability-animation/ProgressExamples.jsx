@@ -1,8 +1,7 @@
 import React from 'react';
 import {useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,Sequence,interpolate,useCurrentFrame} from 'remotion';
-import {AttentionTitle,TITLE_CUE_DURATION,TITLE_FADE} from './AttentionTitle';
-import {NarrativeTitle} from './NarrativeTitle';
+import {TITLE_CUE_DURATION,TITLE_FADE,TITLE_HOLD} from './AttentionTitle';
 import {FrozenSourceFrame} from './OverviewBridge';
 import {Grid as OriginalGrid} from './full-film-original/Story';
 import {GRID_SELECTIONS,gridSlotBox,selectedGridBox,placeGridBox} from './FourExampleGrid.mjs';
@@ -11,8 +10,7 @@ export const PROGRESS_RESULTS_TIMING=Object.freeze({
   overview:36,highlight:18,zoom:36,lead:90,cue:TITLE_CUE_DURATION,hold:36,return:36,
 });
 export const PROGRESS_RESULT_PLAYBACK_RATE=.8;
-export const PROGRESS_RESULTS_INTRO_DURATION=108;
-export const PROGRESS_RESULTS_INTRO_TEXT='PsiBorg learns temporal distance to goal across diverse scenes';
+export const PROGRESS_RESULTS_TITLE='For any embodiment';
 export const PROGRESS_GRID_BOX=Object.freeze({left:224,top:122,width:832,height:476});
 export const PROGRESS_GRID_CONTENT=Object.freeze({width:1280,height:720});
 export const PROGRESS_GRID_SOURCE_FRAME=1751;
@@ -20,12 +18,12 @@ export const PROGRESS_EXAMPLE_PLAY_START=PROGRESS_RESULTS_TIMING.lead+PROGRESS_R
 const ASPECT=1024/1824;
 const GRID_SCALE=2/3;
 const definitions=[
-  {id:'human-videos',title:'In human videos',
+  {id:'human-videos',title:PROGRESS_RESULTS_TITLE,
     clips:[{tile:2,name:'progress-3',frames:77}]},
-  {id:'robot-embodiments',title:'And different robot embodiments',
+  {id:'robot-embodiments',title:PROGRESS_RESULTS_TITLE,
     clips:[{tile:0,name:'progress-1',frames:122},{tile:4,name:'progress-5',frames:150}]},
 ];
-let cursor=PROGRESS_RESULTS_INTRO_DURATION;
+let cursor=0;
 export const PROGRESS_EXAMPLES=definitions.map((example,index)=>{
   const playDuration=Math.ceil(Math.max(...example.clips.map(clip=>clip.frames))/PROGRESS_RESULT_PLAYBACK_RATE);
   const resultDuration=PROGRESS_RESULTS_TIMING.cue+playDuration+PROGRESS_RESULTS_TIMING.hold;
@@ -37,13 +35,8 @@ export const PROGRESS_EXAMPLES=definitions.map((example,index)=>{
   return result;
 });
 export const PROGRESS_EXAMPLES_DURATION=cursor;
-export const PROGRESS_CHAPTERS=[{label:'Temporal distance across scenes',frame:0},
-  ...PROGRESS_EXAMPLES.map((example,index)=>({label:index===0?'Human progress':'Robot embodiments',frame:example.start}))];
-export function ProgressResultsIntro(){
-  return <NarrativeTitle cue="progress-temporal-distance" kind="progress"
-    lines={['PsiBorg learns temporal distance to goal','across diverse scenes']}
-    duration={PROGRESS_RESULTS_INTRO_DURATION}/>;
-}
+export const PROGRESS_CHAPTERS=PROGRESS_EXAMPLES.map((example,index)=>(
+  {label:index===0?'Human progress':'Robot embodiments',frame:example.start}));
 const featuredClips=PROGRESS_EXAMPLES.flatMap(example=>example.clips.map(clip=>({...clip,exampleIndex:example.index})));
 const featuredTiles=new Set(featuredClips.map(clip=>clip.tile));
 const mix=(a,b,p)=>a+(b-a)*p;
@@ -131,13 +124,10 @@ function ProgressExampleStage({example,frame,assetBase,freezeMedia=false}){
     })}
     {frame<PROGRESS_RESULTS_TIMING.lead&&<AbsoluteFill data-progress-zoom-dimmer
       style={{pointerEvents:'none',zIndex:9,background:palette.bg,opacity:.72*ease(frame,81,89)}}/>}
-    {frame>=PROGRESS_RESULTS_TIMING.lead&&!returning&&<AttentionTitle frame={resultFrame}
-      text={example.title} cue={example.id} color={COLOR}/>}
-    {returning&&<div data-progress-return-title style={{position:'absolute',left:'50%',top:66,
-      width:1168,transform:'translate(-50%,-50%)',zIndex:10,fontSize:36,lineHeight:1.2,
-      fontWeight:650,letterSpacing:-.7,textAlign:'center',color:COLOR,opacity:1-ease(returnFrame,0,12)}}>
-      {example.title}
-    </div>}
+    {/* Preserve the paused cue and footage reveal without remounting a headline. */}
+    {frame>=PROGRESS_RESULTS_TIMING.lead&&!returning&&<AbsoluteFill data-title-dimmer={example.id}
+      style={{pointerEvents:'none',zIndex:10,background:palette.bg,
+        opacity:.72*(1-ease(resultFrame,TITLE_HOLD,TITLE_CUE_DURATION))}}/>}
   </AbsoluteFill>;
 }
 
@@ -153,10 +143,19 @@ export function ProgressResultsGrid({example=PROGRESS_EXAMPLES.at(-1),assetBase=
 }
 
 export function ProgressExamples({assetBase='./assets/'}){
+  const palette=useFilmTheme();
   return <AbsoluteFill>
-    <Sequence durationInFrames={PROGRESS_RESULTS_INTRO_DURATION}><ProgressResultsIntro/></Sequence>
     {PROGRESS_EXAMPLES.map(example=><Sequence key={example.id} from={example.start} durationInFrames={example.duration}>
       <ProgressExample example={example} assetBase={assetBase}/>
     </Sequence>)}
+    {/* One mounted headline spans both examples and their complete grid transition. */}
+    <div data-progress-persistent-title data-title-cue="progress-any-embodiment"
+      data-title-placement="headline" data-title-opacity={1}
+      style={{position:'absolute',left:'50%',top:66,width:1168,
+        transform:'translate(-50%,-50%)',zIndex:11,pointerEvents:'none',
+        fontFamily:'Arial, Helvetica, sans-serif',fontSize:36,lineHeight:1.2,
+        fontWeight:650,letterSpacing:-.7,textAlign:'center',color:palette.progress}}>
+      {PROGRESS_RESULTS_TITLE}
+    </div>
   </AbsoluteFill>;
 }
