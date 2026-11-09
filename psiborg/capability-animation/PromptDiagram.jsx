@@ -168,7 +168,8 @@ export function TokenGlyph({kind,color,compact,size}){
 export function TokenCard({item,box,frame,revealFrame,pattern,side,index,opacity=1,displayLabel,compactProgress=0}){
   const palette=useFilmTheme(),color=kinds(palette)[item.kind];
   const visible=opacity,label=displayLabel??item.label;
-  const words=label.split(' ');
+  const narrowCameraPose=item.kind==='campose'&&box.width<100;
+  const words=(narrowCameraPose?label.replace('CamPose ','Cam Pose'):label).split(' ');
   return <div data-prompt-token={`${pattern.id}-${side}-${index}`} data-token-kind={item.kind}
     data-token-label={label} data-token-source-label={item.label} data-token-side={side} data-token-reveal-frame={revealFrame}
     data-token-opacity={visible} data-token-center-x={box.left+box.width/2} data-token-center-y={box.top+box.height/2}
