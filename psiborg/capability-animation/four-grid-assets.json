@@ -51,67 +51,67 @@
       }
     },
     {
-      "source": "simulation-trim8-grid.mp4",
-      "source_sha256": "209d993c3c38b26f535f321993edacfa43702d306fff0baf1081fb5d18e4bc83",
       "output": "simulation-grid-2x2.mp4",
-      "output_sha256": "c62b530b2e1ee8d7358921541307a9355ca1e4398dd2af35835eb11ddd303217",
-      "tiles": [
-        0,
-        1,
-        4,
-        5
-      ],
+      "output_sha256": "5b27e1cedb9504cfa6083488e6ca357a599cc4be9f334a9a5543ecf9b92483fb",
       "metadata": {
         "width": 1248,
         "height": 714,
         "fps": "30/1",
         "frames": "2716",
         "duration": "90.533333",
-        "bytes": 14265252,
+        "bytes": 14522208,
+        "color_space": "bt709",
         "audio_streams": 0
-      }
-    },
-    {
-      "source": "simulation-trim8-grid.jpg",
-      "source_sha256": "1c54259c9dc2a41deebea1ab871bbefac8fcc6b201195006c45e7ef881083706",
-      "output": "simulation-grid-2x2.jpg",
-      "output_sha256": "3fced4aff2fa769b4f57182797c9c5e7629f8c93d54155291492c88108a3a1e2",
+      },
       "tiles": [
         0,
         1,
         4,
         5
       ],
+      "generation": "Independent loops of the four clean action-overlay clips; see simulation-action-overlays.json"
+    },
+    {
+      "output": "simulation-grid-2x2.jpg",
+      "output_sha256": "4c0cd2d836db836177ef73abab2aeb007e5038b52af85a3befdc1abb9679256d",
       "metadata": {
         "width": 1248,
         "height": 714,
         "fps": "25/1",
         "frames": null,
         "duration": "0.040000",
-        "bytes": 98578,
+        "bytes": 117336,
+        "color_space": "bt470bg",
         "audio_streams": 0
-      }
-    },
-    {
-      "source": "simulation-grid-return.png",
-      "source_sha256": "2f923c5bfbb7afd9fe007a1ed6a8ed84651db7f1c384dee2dd3930b5deb9071f",
-      "output": "simulation-grid-return-2x2.png",
-      "output_sha256": "3f659ab3fd4b7d7b587b94f90a3d791894fddc611d265f05cff5870951335b1b",
+      },
       "tiles": [
         0,
         1,
         4,
         5
       ],
+      "generation": "Independent loops of the four clean action-overlay clips; see simulation-action-overlays.json"
+    },
+    {
+      "output": "simulation-grid-return-2x2.png",
+      "output_sha256": "de2bcbedadad23145fc4cf67820099cfc3c93f654cf924a386d4acfd0901afd9",
       "metadata": {
         "width": 1248,
         "height": 714,
         "fps": "25/1",
         "frames": null,
         "duration": null,
-        "bytes": 1363054,
+        "bytes": 1136914,
+        "color_space": null,
         "audio_streams": 0
-      }
+      },
+      "tiles": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "generation": "Independent loops of the four clean action-overlay clips; see simulation-action-overlays.json"
     },
     {
       "source": "progress-grid.mp4",
@@ -179,30 +179,32 @@
     {
       "source": "carousel/simulation-2.mp4",
       "output": "simulation-2.mp4",
-      "source_sha256": "031ec4f7a1c835420e86f2c9821c8ce7334138ed25ef47f24986933371d15fc4",
-      "output_sha256": "031ec4f7a1c835420e86f2c9821c8ce7334138ed25ef47f24986933371d15fc4",
+      "source_sha256": "3374282a6cf9abed38d0bfbf98deface5a23483c741366ddd55dce0346c42b64",
+      "output_sha256": "3374282a6cf9abed38d0bfbf98deface5a23483c741366ddd55dce0346c42b64",
       "metadata": {
-        "width": 912,
-        "height": 512,
+        "width": 1920,
+        "height": 1080,
         "fps": "30/1",
         "frames": "144",
         "duration": "4.800000",
-        "bytes": 496227,
+        "bytes": 1572646,
+        "color_space": "bt709",
         "audio_streams": 0
       }
     },
     {
       "source": "carousel/simulation-2.jpg",
       "output": "simulation-2.jpg",
-      "source_sha256": "3475f91cd09e27ab3063d6f4f6a1c6d7c6f58bacbe4bec52d4bb843120f7ee9e",
-      "output_sha256": "3475f91cd09e27ab3063d6f4f6a1c6d7c6f58bacbe4bec52d4bb843120f7ee9e",
+      "source_sha256": "bd0b85f541dc3266bf842ad344e9d457d02938faf8f506625d45bfec9360a886",
+      "output_sha256": "bd0b85f541dc3266bf842ad344e9d457d02938faf8f506625d45bfec9360a886",
       "metadata": {
-        "width": 912,
-        "height": 512,
+        "width": 1920,
+        "height": 1080,
         "fps": "25/1",
         "frames": null,
         "duration": "0.040000",
-        "bytes": 22482,
+        "bytes": 136378,
+        "color_space": "bt470bg",
         "audio_streams": 0
       }
     },

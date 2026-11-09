@@ -35,4 +35,22 @@ owns the shared routing, seeded reveal and capability emphasis.
 
 `training-sequences.json` records exact, positive-weight sequences from the final saved PSI0.5 v5 32k resume recipe (`abc_v5_32k_resume1060612.yaml`), including its SHA-256, original line numbers and mode weights. Each displayed prompt is a prefix of that literal sequence; its prediction is the remaining suffix. RGB, action, depth, flow and camera pose are represented across the bank. `c` is camera pose, `d` is depth, and `dt` remains temporal distance in the fixed progress capability. We do not imply that action and camera pose occur together in a configured sequence.
 
-`FourExampleGrid.mjs` selects four existing catalog indices per 2×2 grid: Policy [0,1,5,4], Simulation [0,1,4,5], Progress [2,0,4,3]. Policy's alternate-goal companion (7) still appears during its paired zoom. All carousel examples, goals, predictions and catalog IDs remain intact. The new `*-grid-2x2` composites and return snapshots preserve the old source timing. Regenerate them with `python3 rebuild-four-grid-assets.py --help` for options.
+`FourExampleGrid.mjs` selects four existing catalog indices per 2×2 grid: Policy [0,1,5,4], Simulation [0,1,4,5], Progress [2,0,4,3]. Policy's alternate-goal companion (7) still appears during its paired zoom. All carousel examples, goals, predictions and catalog IDs remain intact. The `*-grid-2x2` composites and return snapshots preserve the old source timing. `rebuild-four-grid-assets.py` reconstructs the original grids; after running it, restore the current simulation overlays with the command below.
+
+The four simulation recordings now include their supplied conditioning-action
+charts. `refresh-simulation-action-overlays.py` extracts the clean windows from
+the colleague's `simulation.mp4` montage, excluding its crossfades and final hold.
+Existing clips retain 144/144/396/144 frames, and the simulation grid still loops
+each recording independently from frame zero over 2716 frames. Its return image
+uses grid frame 1714. The clips keep their native 1920×1080 detail and BT.709
+matrix; the Results carousel uses the complete frame. The separate recorded
+observation/action atlases used to explain the prompt remain unchanged.
+
+```sh
+python3 refresh-simulation-action-overlays.py --source /path/to/simulation.mp4 \
+  --work-dir /tmp/psiborg-simulation-actions --install
+```
+
+`simulation-action-overlays.json` records the verified montage hash, exact frame
+windows, installed outputs and clocks. These charts are baked into the supplied
+recordings; the website does not generate or infer new action commands.
