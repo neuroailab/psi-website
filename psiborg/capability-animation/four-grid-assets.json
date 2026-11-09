@@ -1,0 +1,240 @@
+{
+  "cell": [
+    618,
+    350
+  ],
+  "gap": [
+    12,
+    14
+  ],
+  "assets": [
+    {
+      "source": "policy-grid.mp4",
+      "source_sha256": "c2c02a7ec9a287cb96b8f9c900b83b1e000fc2d8ac02a30265f33a3399f968be",
+      "output": "policy-grid-2x2.mp4",
+      "output_sha256": "9d253b5daab57af573a1cad4e58aa0cbbf3461015fb36437577c2eeda9bbb97d",
+      "tiles": [
+        0,
+        1,
+        5,
+        4
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "30/1",
+        "frames": "1991",
+        "duration": "66.366667",
+        "bytes": 19573076,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "policy-grid.jpg",
+      "source_sha256": "fd7141b8ca966341bf159ac1ffe2ac10165016d521747786e33cc8345fe3b668",
+      "output": "policy-grid-2x2.jpg",
+      "output_sha256": "5a0fcc3a18b86e9effb33f028e9d3e44632bcc7bc980b68aafe881ea2b15a2ad",
+      "tiles": [
+        0,
+        1,
+        5,
+        4
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "25/1",
+        "frames": null,
+        "duration": "0.040000",
+        "bytes": 123875,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "simulation-trim8-grid.mp4",
+      "source_sha256": "209d993c3c38b26f535f321993edacfa43702d306fff0baf1081fb5d18e4bc83",
+      "output": "simulation-grid-2x2.mp4",
+      "output_sha256": "c62b530b2e1ee8d7358921541307a9355ca1e4398dd2af35835eb11ddd303217",
+      "tiles": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "30/1",
+        "frames": "2716",
+        "duration": "90.533333",
+        "bytes": 14265252,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "simulation-trim8-grid.jpg",
+      "source_sha256": "1c54259c9dc2a41deebea1ab871bbefac8fcc6b201195006c45e7ef881083706",
+      "output": "simulation-grid-2x2.jpg",
+      "output_sha256": "3fced4aff2fa769b4f57182797c9c5e7629f8c93d54155291492c88108a3a1e2",
+      "tiles": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "25/1",
+        "frames": null,
+        "duration": "0.040000",
+        "bytes": 98578,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "simulation-grid-return.png",
+      "source_sha256": "2f923c5bfbb7afd9fe007a1ed6a8ed84651db7f1c384dee2dd3930b5deb9071f",
+      "output": "simulation-grid-return-2x2.png",
+      "output_sha256": "3f659ab3fd4b7d7b587b94f90a3d791894fddc611d265f05cff5870951335b1b",
+      "tiles": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "25/1",
+        "frames": null,
+        "duration": null,
+        "bytes": 1363054,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "progress-grid.mp4",
+      "source_sha256": "ada7f0d1df1b71c32d21604fd54becc55325cc8efe20b846c3b1cda97f5e34d1",
+      "output": "progress-grid-2x2.mp4",
+      "output_sha256": "e0fd4ea6e58b24990c756070b5cd2b39782fbb93ac3bd65584477e710b92f532",
+      "tiles": [
+        2,
+        0,
+        4,
+        3
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "30/1",
+        "frames": "1864",
+        "duration": "62.133333",
+        "bytes": 14042971,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "progress-grid.jpg",
+      "source_sha256": "744a1e37be290fd89df498e94de1a51b8c3487fd17d616accb08f3a917e7c584",
+      "output": "progress-grid-2x2.jpg",
+      "output_sha256": "884417d2d0ffc8f1b0c4f31eb0650cad8b60d657673335af2737b07618a32c8f",
+      "tiles": [
+        2,
+        0,
+        4,
+        3
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "25/1",
+        "frames": null,
+        "duration": "0.040000",
+        "bytes": 129415,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "progress-grid-return.png",
+      "source_sha256": "cd7db0da60e00f30a04e376f6fb8a2830e2964c5879bffbff590a47755497952",
+      "output": "progress-grid-return-2x2.png",
+      "output_sha256": "31f09a6967a4c1c814f201e6f3d0062c4c0634eeb13ff2ec25db718a3bd819e1",
+      "tiles": [
+        2,
+        0,
+        4,
+        3
+      ],
+      "metadata": {
+        "width": 1248,
+        "height": 714,
+        "fps": "25/1",
+        "frames": null,
+        "duration": null,
+        "bytes": 909624,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "carousel/simulation-2.mp4",
+      "output": "simulation-2.mp4",
+      "source_sha256": "031ec4f7a1c835420e86f2c9821c8ce7334138ed25ef47f24986933371d15fc4",
+      "output_sha256": "031ec4f7a1c835420e86f2c9821c8ce7334138ed25ef47f24986933371d15fc4",
+      "metadata": {
+        "width": 912,
+        "height": 512,
+        "fps": "30/1",
+        "frames": "144",
+        "duration": "4.800000",
+        "bytes": 496227,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "carousel/simulation-2.jpg",
+      "output": "simulation-2.jpg",
+      "source_sha256": "3475f91cd09e27ab3063d6f4f6a1c6d7c6f58bacbe4bec52d4bb843120f7ee9e",
+      "output_sha256": "3475f91cd09e27ab3063d6f4f6a1c6d7c6f58bacbe4bec52d4bb843120f7ee9e",
+      "metadata": {
+        "width": 912,
+        "height": 512,
+        "fps": "25/1",
+        "frames": null,
+        "duration": "0.040000",
+        "bytes": 22482,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "carousel/progress-4.mp4",
+      "output": "progress-4.mp4",
+      "source_sha256": "7a07029842810a257b66961992030dd2cd1bcc864ebf7c5ac1ce8ab4ed2d4477",
+      "output_sha256": "7a07029842810a257b66961992030dd2cd1bcc864ebf7c5ac1ce8ab4ed2d4477",
+      "metadata": {
+        "width": 1824,
+        "height": 1024,
+        "fps": "30/1",
+        "frames": "117",
+        "duration": "3.900000",
+        "bytes": 4895894,
+        "audio_streams": 0
+      }
+    },
+    {
+      "source": "carousel/progress-4.jpg",
+      "output": "progress-4.jpg",
+      "source_sha256": "644767fc89c33e59a6a86c39f47e99724443be45c21ab6db90507cfcf26e291b",
+      "output_sha256": "644767fc89c33e59a6a86c39f47e99724443be45c21ab6db90507cfcf26e291b",
+      "metadata": {
+        "width": 1824,
+        "height": 1024,
+        "fps": "25/1",
+        "frames": null,
+        "duration": "0.040000",
+        "bytes": 194396,
+        "audio_streams": 0
+      }
+    }
+  ]
+}

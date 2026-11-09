@@ -5,6 +5,7 @@ import {AttentionTitle,TITLE_CUE_DURATION,TITLE_FADE} from './AttentionTitle';
 import {NarrativeTitle} from './NarrativeTitle';
 import {FrozenSourceFrame} from './OverviewBridge';
 import {Grid as OriginalGrid} from './full-film-original/Story';
+import {GRID_SELECTIONS,gridSlotBox,selectedGridBox,placeGridBox} from './FourExampleGrid.mjs';
 
 export const PROGRESS_RESULTS_TIMING=Object.freeze({
   overview:36,highlight:18,zoom:36,lead:90,cue:TITLE_CUE_DURATION,hold:36,return:36,
@@ -51,11 +52,7 @@ const ease=(frame,start,end)=>interpolate(frame,[start,end],[0,1],{
 });
 const lerpBox=(a,b,p)=>Object.fromEntries(['left','top','width','height'].map(key=>[key,mix(a[key],b[key],p)]));
 
-export const progressGridTileBox=tile=>({
-  left:PROGRESS_GRID_BOX.left+(tile%3)*420*GRID_SCALE,
-  top:PROGRESS_GRID_BOX.top+Math.floor(tile/3)*242*GRID_SCALE,
-  width:408*GRID_SCALE,height:230*GRID_SCALE,
-});
+export const progressGridTileBox=tile=>placeGridBox(selectedGridBox('progress',tile),PROGRESS_GRID_BOX);
 export const progressResultBox=(pair,index=0)=>pair
   ?{left:32+index*624,top:234,width:592,height:592*ASPECT}
   :{left:132,top:124,width:1016,height:1016*ASPECT};
@@ -83,17 +80,21 @@ function ProgressExampleStage({example,frame,assetBase,freezeMedia=false}){
   const resultFrame=frame-PROGRESS_RESULTS_TIMING.lead;
   return <AbsoluteFill data-progress-example={example.id} data-progress-example-frame={frame}
     data-progress-phase={phase} data-progress-grid={phase} data-progress-grid-source-frame={PROGRESS_GRID_SOURCE_FRAME}
+    data-grid-kind="progress" data-grid-tile-count={GRID_SELECTIONS.progress.length} data-grid-tiles={GRID_SELECTIONS.progress.join(',')}
     style={{background:palette.bg,fontFamily:'Arial, Helvetica, sans-serif'}}>
     <svg width="0" height="0" aria-hidden="true" style={{position:'absolute'}}>
       <defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-        {Array.from({length:9},(_,tile)=>!featuredTiles.has(tile)&&<rect key={tile}
-          x={(tile%3)*420} y={Math.floor(tile/3)*242} width="408" height="230" rx="8"/>)}
+        {GRID_SELECTIONS.progress.map((tile,slot)=>{
+          const box=gridSlotBox(slot);
+          return !featuredTiles.has(tile)&&<rect key={tile} data-background-tile={tile}
+            x={box.left} y={box.top} width={box.width} height={box.height} rx="8"/>;
+        })}
       </clipPath></defs>
     </svg>
     <div data-progress-base-grid style={{position:'absolute',left:PROGRESS_GRID_BOX.left,top:PROGRESS_GRID_BOX.top,
       width:1248,height:714,transform:`scale(${GRID_SCALE})`,transformOrigin:'top left',opacity:gridOpacity,
       clipPath:`url(#${clipId})`,...filmThemeVariables(palette)}}>
-      {freezeMedia?<Img src={`${assetBase}progress-grid-return.png`} style={{width:'100%',height:'100%',display:'block'}}/>
+      {freezeMedia?<Img src={`${assetBase}progress-grid-return-2x2.png`} style={{width:'100%',height:'100%',display:'block'}}/>
         :<FrozenSourceFrame frame={PROGRESS_GRID_SOURCE_FRAME}><OriginalGrid kind="progress"/></FrozenSourceFrame>}
     </div>
     {featuredClips.map(clip=>{

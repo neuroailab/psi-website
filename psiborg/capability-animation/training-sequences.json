@@ -1,0 +1,122 @@
+{
+  "source": {
+    "recipe": "abc_v5_32k_resume1060612.yaml",
+    "sha256": "27d22bbab09be9b29eb3c6d0498de44c421c68613a7acb2b3e6e7f26d964fa17",
+    "model": "PSI0.5 v5, context 32768",
+    "checkpointResume": 1060612,
+    "notation": {
+      "rgb": "RGB",
+      "a": "Action",
+      "d": "Depth",
+      "f": "Optical flow",
+      "c": "Camera pose"
+    }
+  },
+  "patterns": [
+    {
+      "id": "camera-conditioned",
+      "sequence": "rgb0,c01,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 1875,
+      "modeWeight": 0.021867881548974934
+    },
+    {
+      "id": "action-conditioned",
+      "sequence": "rgb0,a0,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 803,
+      "modeWeight": 0.25
+    },
+    {
+      "id": "depth-flow",
+      "sequence": "rgb0,d0,f01,d1,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 595,
+      "modeWeight": 0.25
+    },
+    {
+      "id": "camera-flow",
+      "sequence": "rgb0,c01,f01,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 1895,
+      "modeWeight": 0.021867881548974934
+    },
+    {
+      "id": "depth-action",
+      "sequence": "rgb0,d0,a0,d1,rgb1",
+      "promptTokens": 3,
+      "sourceLine": 11189,
+      "modeWeight": 0.3749999999999981
+    },
+    {
+      "id": "pose-estimation",
+      "sequence": "rgb0,rgb1,c01",
+      "promptTokens": 2,
+      "sourceLine": 1954,
+      "modeWeight": 0.004783599088838245
+    },
+    {
+      "id": "action-flow",
+      "sequence": "rgb0,a0,f01,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 872,
+      "modeWeight": 0.25
+    },
+    {
+      "id": "camera-depth-flow",
+      "sequence": "rgb0,d0,c01,f01,d1,rgb1",
+      "promptTokens": 3,
+      "sourceLine": 1968,
+      "modeWeight": 0.004783599088838245
+    },
+    {
+      "id": "depth-action-flow",
+      "sequence": "rgb0,d0,a0,f0_1,d1,rgb1",
+      "promptTokens": 3,
+      "sourceLine": 11641,
+      "modeWeight": 0.37499999999999495
+    },
+    {
+      "id": "camera-trajectory",
+      "sequence": "rgb0,c01,c12,rgb1,rgb2",
+      "promptTokens": 3,
+      "sourceLine": 1882,
+      "modeWeight": 0.001594533029612751
+    },
+    {
+      "id": "video-interpolation",
+      "sequence": "rgb0,rgb2,rgb1",
+      "promptTokens": 2,
+      "sourceLine": 1948,
+      "modeWeight": 0.004783599088838245
+    },
+    {
+      "id": "depth-prediction",
+      "sequence": "rgb0,d0",
+      "promptTokens": 1,
+      "sourceLine": 1946,
+      "modeWeight": 0.004783599088838245
+    },
+    {
+      "id": "action-continuation",
+      "sequence": "rgb0,rgb1,d1,a1,f1_2,d2,rgb2",
+      "promptTokens": 3,
+      "sourceLine": 11643,
+      "modeWeight": 0.007812499999999894
+    },
+    {
+      "id": "flow-estimation",
+      "sequence": "rgb0,rgb1,f01",
+      "promptTokens": 2,
+      "sourceLine": 1947,
+      "modeWeight": 0.004783599088838245
+    },
+    {
+      "id": "video-continuation",
+      "sequence": "rgb0,rgb1,rgb2",
+      "promptTokens": 1,
+      "sourceLine": 1869,
+      "modeWeight": 0.005466970387243724
+    }
+  ]
+}

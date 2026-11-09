@@ -2,10 +2,11 @@ import React, {useState, useCallback} from 'react';
 import {AbsoluteFill, Easing, Freeze, Img, Loop, OffthreadVideo, Sequence,
   getRemotionEnvironment, interpolate, spring, staticFile, useCurrentFrame} from 'remotion';
 import story from './story.json';
+import {GRID_ASSETS,GRID_SELECTIONS,GRID_GEOMETRY,gridSlotBox,selectedGridBox} from '../FourExampleGrid.mjs';
 
 export {story};
 const T = story.timing;
-const W = 1248, H = 714, LABEL_H = 132, TOP = 14;
+const W = GRID_GEOMETRY.width, H = GRID_GEOMETRY.height, LABEL_H = 132, TOP = 14;
 const OVERVIEW_SCALE = 620 / W;
 const kinds = ['policy', 'simulation', 'progress'];
 const headings = {
@@ -91,7 +92,7 @@ const videoStyle = {width: '100%', height: '100%', objectFit: 'contain', display
 
 function GridVideo({kind, playbackRate = 1, trimBefore = 0}) {
   const [ready, setReady] = useState(false);
-  const src = asset(story[kind + '_grid']), poster = src.replace(/\.mp4$/, '.jpg');
+  const src = asset(GRID_ASSETS[kind]), poster = src.replace(/\.mp4$/, '.jpg');
   const decoded = useCallback(video => {
     if (video.readyState >= 2 && video.videoWidth > 0) setReady(true);
   }, []);
@@ -128,23 +129,25 @@ function Placeholder() {
 function Feature({kind, f, cycle, color, sourceStart = 0, playbackRate = 1}) {
   const {tile, highlight, expand, play, collapse, end} = cycle;
   if (f < highlight || f >= end) return null;
+  const sourceBox = selectedGridBox(kind, tile);
+  if (!sourceBox) return null;
   const grow = ease(f, expand, 20) * (1 - ease(f, collapse, 18));
-  const x = (tile % 3) * 420, y = Math.floor(tile / 3) * 242;
+  const {left:x,top:y,width:tileWidth,height:tileHeight} = sourceBox;
   const outline = ease(f, highlight, 8) * (1 - ease(f, expand, 15));
   const reveal = ease(f, expand, 5) * (1 - ease(f, end - 5, 5));
   const spotlight = .34 * ease(f, highlight, 10) * (1 - ease(f, expand, 20));
   const featureBox = {position: 'absolute', left: mix(x, 0, grow), top: mix(y, 0, grow),
-    width: mix(408, W, grow), height: mix(230, H, grow), borderRadius: mix(8, 12, grow)};
+    width: mix(tileWidth, W, grow), height: mix(tileHeight, H, grow), borderRadius: mix(8, 12, grow)};
   return <>
     {spotlight > .001 && <div data-spotlight={tile} aria-hidden="true"
       style={{position: 'absolute', inset: 0, opacity: spotlight, pointerEvents: 'none'}}>
-      {Array.from({length: 9}, (_, index) => index !== tile && <div key={index}
-        style={{position: 'absolute', left: (index % 3) * 420, top: Math.floor(index / 3) * 242,
-          width: 408, height: 230, borderRadius: 8, background: 'var(--paper, #fbfaf7)'}}/>)}
+      {GRID_SELECTIONS[kind].map((index,slot) => index !== tile && <div key={index}
+        style={{position: 'absolute', ...gridSlotBox(slot),
+          borderRadius: 8, background: 'var(--paper, #fbfaf7)'}}/>)}
     </div>}
     <svg data-highlight={tile} style={{position: 'absolute', left: x - 4, top: y - 4,
-      width: 416, height: 238, overflow: 'visible', opacity: outline, pointerEvents: 'none'}}>
-      <rect x="2" y="2" width="412" height="234" rx="10" fill="none" stroke={color}
+      width: tileWidth+8, height: tileHeight+8, overflow: 'visible', opacity: outline, pointerEvents: 'none'}}>
+      <rect x="2" y="2" width={tileWidth+4} height={tileHeight+4} rx="10" fill="none" stroke={color}
         strokeWidth="2.5" strokeLinecap="round" pathLength="1" strokeDasharray="1"
         strokeDashoffset={1 - ease(f, highlight, 15)}/>
     </svg>
@@ -173,11 +176,16 @@ export function Grid({kind, sourceStart = 0, playbackRate = 1, snapshotSrc}) {
   return <>
     <svg width="0" height="0" aria-hidden="true" style={{position: 'absolute'}}>
       <defs><clipPath id={id} clipPathUnits="userSpaceOnUse">
-        {Array.from({length: 9}, (_, tile) => <rect key={tile} x={(tile % 3) * 420}
-          y={Math.floor(tile / 3) * 242} width="408" height="230" rx="8"/>)}
+        {GRID_SELECTIONS[kind].map((tile,slot) => {
+          const box=gridSlotBox(slot);
+          return <rect key={tile} data-baked-grid-tile={tile} x={box.left}
+            y={box.top} width={box.width} height={box.height} rx="8"/>;
+        })}
       </clipPath></defs>
     </svg>
-    <div style={{width: W, height: H, clipPath: `url(#${id})`}}>
+    <div data-grid-kind={kind} data-grid-tile-count={GRID_SELECTIONS[kind].length}
+      data-grid-tiles={GRID_SELECTIONS[kind].join(',')}
+      style={{width: W, height: H, clipPath: `url(#${id})`}}>
       {snapshotSrc ? <Img src={snapshotSrc} data-grid-snapshot={kind} style={videoStyle}/>
         : offset === 0 ? repeating : <>
         <Sequence durationInFrames={firstDuration} layout="none">
@@ -185,9 +193,8 @@ export function Grid({kind, sourceStart = 0, playbackRate = 1, snapshotSrc}) {
         </Sequence>
         <Sequence from={firstDuration} layout="none">{repeating}</Sequence>
       </>}
-      {kind === 'simulation' && story.simulation.map((clip, tile) => !clip?.asset &&
-        <div key={tile} style={{position: 'absolute', left: (tile % 3) * 420,
-          top: Math.floor(tile / 3) * 242, width: 408, height: 230}}><Placeholder/></div>)}
+      {kind === 'simulation' && GRID_SELECTIONS[kind].map((tile,slot) => !story.simulation[tile]?.asset &&
+        <div key={tile} style={{position: 'absolute', ...gridSlotBox(slot)}}><Placeholder/></div>)}
     </div>
   </>;
 }
@@ -199,7 +206,7 @@ export function Story({mobile = false, showFocusHeading = true, sourceStart = 0,
     color: 'var(--ink, #172a30)', overflow: 'hidden'}}>
     <AbsoluteFill style={{opacity: 1 - ease(f, story.duration_frames - 12, 11)}}>
       {layout.panels.filter(panel => panel.opacity > 0).map(({kind, own, opacity, left, top, scale}) => {
-        const cycle = story.chapters[kind].cycles.find(c => f >= c.highlight && f < c.end);
+        const cycle = story.chapters[kind].cycles.find(c => GRID_SELECTIONS[kind].includes(c.tile) && f >= c.highlight && f < c.end);
         const expansion = cycle ? ease(f, cycle.expand, 20) * (1 - ease(f, cycle.collapse, 18)) : 0;
         const titleEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 4, 24);
         const accentEntry = mobile ? 1 : ease(f, T[kind + '_in'] + 12, 28);

@@ -5,6 +5,7 @@ import {
 } from 'remotion';
 
 import {Story, asset, story, sourceFrameAt} from './Story';
+import {GRID_ASSETS,GRID_SELECTIONS} from '../FourExampleGrid.mjs';
 
 export const FPS = story.fps;
 export const DURATION = story.duration_frames;
@@ -103,10 +104,11 @@ function OpeningGrid({kind}) {
   const decoded = useCallback(video => {
     if (video.readyState >= 2 && video.videoWidth > 0) setReady(true);
   }, []);
-  const src = asset(story[kind + '_grid']);
+  const src = asset(GRID_ASSETS[kind]);
   const poster = src.replace(/\.mp4$/, '.jpg');
   const rendering = getRemotionEnvironment().isRendering;
   return <div data-opening-grid={kind} data-video-ready={ready}
+    data-grid-kind={kind} data-grid-tile-count={GRID_SELECTIONS[kind].length} data-grid-tiles={GRID_SELECTIONS[kind].join(',')}
     style={{position: 'relative', width: '100%', height: '100%'}}>
     <Loop durationInFrames={story.grid_frames?.[kind] || story.duration_frames} layout="none">
       <OffthreadVideo muted playsInline preload="auto" src={src} poster={poster}

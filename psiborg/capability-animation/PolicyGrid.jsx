@@ -2,6 +2,7 @@ import React from 'react';
 import {useFilmTheme} from './FilmTheme';
 import {AbsoluteFill,Easing,Freeze,Img,OffthreadVideo,interpolate,useCurrentFrame} from 'remotion';
 import manifest from './grid-media.json';
+import {GRID_SELECTIONS,POLICY_GRID_BOX,selectedGridBox,placeGridBox} from './FourExampleGrid.mjs';
 
 export const GRID_LEAD=90,GRID_RETURN=36,POLICY_PLAYBACK_RATE=.4;
 export const POLICY_GRID_PREVIEW_RATE=1/3;
@@ -11,7 +12,7 @@ const mix=(a,b,t)=>a+(b-a)*t;
 const ease=(frame,start,duration)=>interpolate(frame,[start,start+duration],[0,1],{
   extrapolateLeft:'clamp',extrapolateRight:'clamp',easing:Easing.inOut(Easing.cubic)});
 const lerpBox=(a,b,p)=>Object.fromEntries(['left','top','width','height'].map(k=>[k,mix(a[k],b[k],p)]));
-export const gridBox=tile=>({left:74+(tile%3)*382,top:36+Math.floor(tile/3)*(368*ASPECT+14),width:368,height:368*ASPECT});
+export const gridBox=tile=>placeGridBox(selectedGridBox('policy',tile),POLICY_GRID_BOX);
 export const exampleBox=(pair,index)=>pair?{left:32+index*624,top:230,width:592,height:592*ASPECT}:
   {left:184,top:152,width:912,height:512};
 export function exampleInset(pair,index){
@@ -23,12 +24,13 @@ function GridTile({clip,example,frame,returning,assetBase}){
   const palette=useFilmTheme();
   const selectedIndex=example.clips.findIndex(c=>c.tile===clip.tile);
   const selected=selectedIndex>=0,pair=example.clips.length===2;
+  const companion=!GRID_SELECTIONS.policy.includes(clip.tile);
   const source=gridBox(clip.tile),target=selected?exampleBox(pair,selectedIndex):source;
   const highlight=returning?1-ease(frame,0,GRID_RETURN-1):ease(frame,36,17);
   const zoom=returning?1-ease(frame,0,GRID_RETURN-1):ease(frame,54,35);
   const box=selected?lerpBox(source,target,zoom):source;
   const tileZoom=selected?zoom:0;
-  const opacity=selected?1:(1-.62*highlight)*(1-zoom);
+  const opacity=companion?zoom:selected?1:(1-.62*highlight)*(1-zoom);
   const margin=source.width*.025,goalWidth=source.width*.27;
   const gridGoal={left:margin,top:margin,width:goalWidth,height:goalWidth*ASPECT};
   const inset=selected?exampleInset(pair,selectedIndex):null;
@@ -40,8 +42,9 @@ function GridTile({clip,example,frame,returning,assetBase}){
   const goal=lerpBox(smallGoal,{left:0,top:0,width:box.width,height:box.height},reveal);
   const mediaFrame=returning?(selected?example.clips[selectedIndex].motion-1:Math.floor(Math.min(frame/1.5,35)*1.25)):Math.min(frame,53);
   const gridPlaybackRate=returning?POLICY_PLAYBACK_RATE:POLICY_GRID_PREVIEW_RATE;
-  const fontSize=mix(8,returning?(pair?13:14):(pair?13:19),tileZoom);
+  const fontSize=mix(12,returning?(pair?13:14):(pair?13:19),tileZoom);
   return <div data-grid-tile={clip.tile} data-selected={selected} data-media-frame={mediaFrame} data-grid-clock-start="0" data-grid-preview-playing={!returning&&frame<54}
+    data-grid-companion={companion}
     style={{position:'absolute',...box,opacity,zIndex:selected?2:1,borderRadius:mix(5,12,tileZoom),
       overflow:'hidden',background:palette.mediaSurface,boxShadow:selected?`0 0 0 ${3*highlight*(1-(returning?0:reveal))}px ${palette.policyAccent}`:'none'}}>
     <Freeze active={returning||frame>=54} frame={mediaFrame}>
@@ -63,9 +66,11 @@ export function PolicyGrid({example,assetBase='./assets/',returning=false}){
   const palette=useFilmTheme();
   const frame=useCurrentFrame();
   const phase=returning?'return':frame<36?'overview':frame<54?'highlight':'zoom';
+  const clips=manifest.clips.filter(clip=>GRID_SELECTIONS.policy.includes(clip.tile)||example.clips.some(item=>item.tile===clip.tile));
   return <AbsoluteFill data-policy-grid={phase} data-grid-example={example.id} data-grid-frame={frame}
+    data-grid-kind="policy" data-grid-tile-count={GRID_SELECTIONS.policy.length} data-grid-tiles={GRID_SELECTIONS.policy.join(',')}
     style={{background:palette.bg,fontFamily:'Arial, sans-serif'}}>
-    {manifest.clips.map(clip=><GridTile key={clip.tile} {...{clip,example,frame,returning,assetBase}}/>)}
+    {clips.map(clip=><GridTile key={clip.tile} {...{clip,example,frame,returning,assetBase}}/>)}
     {!returning&&<AbsoluteFill style={{pointerEvents:'none',zIndex:3,background:palette.bg,opacity:.72*ease(frame,81,8)}}/>}
     {returning&&<div data-return-title style={{position:'absolute',left:56,top:44,width:1168,zIndex:3,
       fontSize:36,lineHeight:1.2,fontWeight:650,letterSpacing:-.7,textAlign:'center',color:palette.policy,opacity:1-ease(frame,0,12)}}>

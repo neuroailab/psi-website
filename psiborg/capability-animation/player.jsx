@@ -6,6 +6,7 @@ import progress from './progress-data.json';
 import {PROGRESS_EXAMPLES} from './ProgressExamples';
 import policyGrid from './grid-media.json';
 import story from './full-film-original/story.json';
+import {GRID_SELECTIONS} from './FourExampleGrid.mjs';
 import {FullFilm, CHAPTERS, SECTIONS, DURATION, FPS, WIDTH, HEIGHT} from './FullFilm';
 
 const mount = document.getElementById('hero-feature-player');
@@ -24,6 +25,8 @@ function CapabilityPlayer() {
     const sources = [...new Set([
       ...policyGrid.clips.map(clip => `${mediaBase}${clip.video}`),
       ...story.feature_tiles.map(tile => new URL(`${mediaBase}${story.simulation[tile].asset.replace(/^assets\//, '')}`, document.baseURI).href),
+      ...GRID_SELECTIONS.simulation.map(tile => new URL(`${mediaBase}${story.simulation[tile].asset.replace(/^assets\//, '')}`, document.baseURI).href),
+      ...GRID_SELECTIONS.progress.map(tile => `${mediaBase}progress-${tile+1}.mp4`),
       `${mediaBase}${progress.source}`, ...PROGRESS_EXAMPLES.flatMap(example =>
         example.clips.map(clip => `${mediaBase}${clip.name}.mp4`)),
     ])];
@@ -60,7 +63,7 @@ function CapabilityPlayer() {
     let feedbackTimer, feedbackSequence = 0;
     let scrubbing = false, resumeAfterSeek = false, seekMode = null, seekFrame = null;
     window.psiHeroPlayer = player;
-    window.psiHeroFilm = {version: 15, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'prompting-opening-v15', chapters: CHAPTERS, sections: SECTIONS,
+    window.psiHeroFilm = {version: 16, playbackRate: PLAYBACK_RATE, wallDurationSeconds: DURATION / FPS / PLAYBACK_RATE, reviewRevision: 'four-examples-training-sequences-v16', chapters: CHAPTERS, sections: SECTIONS,
       duration: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
     mount.dataset.compositionWidth = WIDTH;
     mount.dataset.height = HEIGHT;

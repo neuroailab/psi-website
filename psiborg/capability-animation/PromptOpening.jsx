@@ -2,6 +2,7 @@ import React from 'react';
 import {AbsoluteFill,getRemotionEnvironment,staticFile,useCurrentFrame} from 'remotion';
 import {FilmThemeProvider,useFilmTheme,filmThemeVariables} from './FilmTheme';
 import {CapabilityOverview} from './CapabilityOverview';
+import {cyclingPatternAt} from './TrainingSequenceCycle.mjs';
 import {OPENING_TIMING,PROMPT_PATTERNS,CAPABILITY_PATTERNS,PromptDiagram,ModelMark,
   CapabilityTitleLabel,morphLogoBox,rowOpacityAt,visibleRowCountAt,fullyVisibleRowCountAt,openingPhaseAt,ease} from './PromptDiagram';
 
@@ -32,8 +33,11 @@ function OpeningContent(){
       textAlign:'center',fontSize:23,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>Prompt</div>
     <div data-prompt-column-label="output" style={{position:'absolute',left:776,top:94,width:456,
       textAlign:'center',fontSize:23,fontWeight:500,color:palette.muted,opacity:1-ease(frame,...OPENING_TIMING.columnLabelFade)}}>Predict</div>
-    {PROMPT_PATTERNS.map(pattern=><PromptDiagram key={pattern.id} pattern={pattern} frame={frame}
-      morph={pattern.capability===undefined?0:handoff} opacity={rowOpacityAt(pattern,frame)}/>)}
+    {PROMPT_PATTERNS.map(base=>{
+      const {pattern,opacity}=cyclingPatternAt(base,frame);
+      return <PromptDiagram key={base.id} pattern={pattern} frame={frame}
+        morph={base.capability===undefined?0:handoff} opacity={rowOpacityAt(base,frame)*opacity}/>;
+    })}
     <ModelMark kind="policy" src={markSrc} box={morphLogoBox(policy,handoff)}/>
     {morphStarted&&CAPABILITY_PATTERNS.slice(1).map(pattern=><ModelMark key={pattern.id} kind={pattern.id}
       src={markSrc} box={morphLogoBox(pattern,handoff)}/>)}

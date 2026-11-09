@@ -12,6 +12,7 @@ import {ProgressPrompt,PROGRESS_PROMPT_DURATION} from './ProgressPrompt';
 import {ProgressExamples,PROGRESS_EXAMPLES,PROGRESS_CHAPTERS,PROGRESS_EXAMPLES_DURATION,ProgressResultsGrid,PROGRESS_RESULTS_TIMING,PROGRESS_GRID_BOX} from './ProgressExamples';
 import story from './full-film-original/story.json';
 import {PromptOpening,DURATION as OPENING_DURATION,CHAPTERS as OPENING_CHAPTERS} from './PromptOpening';
+import {POLICY_GRID_BOX} from './FourExampleGrid.mjs';
 
 export {FPS,WIDTH,HEIGHT};
 export const INTRO_DURATION=OPENING_DURATION;
@@ -75,7 +76,7 @@ function OriginalSegment({sourceStart=0,showFocusHeading=false}){
   </div>;
 }
 
-const POLICY_CROP={left:74,top:36,width:1132,height:368*512/912*3+28};
+const POLICY_CROP=POLICY_GRID_BOX;
 const LEGACY_GRID_BOX={left:224,top:122,width:832,height:476};
 function GridReturn({kind,assetBase}){
   const palette=useFilmTheme();
@@ -91,7 +92,7 @@ function GridReturn({kind,assetBase}){
   </OverviewReturn>;
   return <OverviewReturn kind={kind} fromBox={LEGACY_GRID_BOX} contentWidth={1248} contentHeight={714}>
     <div style={{width:1248,height:714,...filmThemeVariables(palette)}}>
-      <OriginalGrid kind={kind} snapshotSrc={`${assetBase}simulation-grid-return.png`}/>
+      <OriginalGrid kind={kind} snapshotSrc={`${assetBase}simulation-grid-return-2x2.png`}/>
     </div>
   </OverviewReturn>;
 }

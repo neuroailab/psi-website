@@ -2,3 +2,5 @@
 .DS_Store
 blog/*.backup-*.html
 /*.png
+node_modules
+__pycache__/

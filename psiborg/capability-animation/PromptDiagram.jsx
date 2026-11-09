@@ -6,7 +6,7 @@ export const FPS=30,WIDTH=1280,HEIGHT=720;
 export const PATH_REVEAL_SEED=0x505349;
 export const PATH_REVEAL_STEP=5,PATH_REVEAL_FADE=5;
 export const OPENING_DURATIONS=Object.freeze({
-  pathReveal:45,allRows:165,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
+  pathReveal:45,allRows:330,focus:15,handoff:45,diagramPause:30,gridReveal:15,overviewHold:120,
 });
 const span=(start,duration)=>Object.freeze([start,start+duration]);
 const pathReveal=span(0,OPENING_DURATIONS.pathReveal);
@@ -114,7 +114,7 @@ export const ROW_LAYOUT=Object.freeze({firstCenterY:152,rowGap:52,labelLeft:14,l
   capabilityLabelWidth:310,labelFontSize:22,capabilityLabelFontSize:20,inputCenter:305,outputCenter:1004,
   inputWidth:130,outputWidth:92,inputGap:20,tokenGap:10,tokenHeight:42});
 const kinds=palette=>({rgb:palette.rgb,depth:palette.policyAccent,flow:palette.action,
-  action:palette.action,time:palette.time});
+  action:palette.action,time:palette.time,campose:palette.time});
 const rowY=pattern=>ROW_LAYOUT.firstCenterY+pattern.row*ROW_LAYOUT.rowGap;
 export const rowRevealOpacityAt=(pattern,frame)=>ease(frame,pattern.start,pattern.revealEnd);
 export function rowOpacityAt(pattern,frame){
@@ -155,6 +155,11 @@ export function TokenGlyph({kind,color,compact,size}){
     {kind==='time'&&<>
       <circle cx="24" cy="25" r="17" {...line}/>
       <path d="M24 14v12l9 5M19 3h10" {...line}/>
+    </>}
+    {kind==='campose'&&<>
+      <rect x="6" y="8" width="25" height="19" rx="4" {...line}/>
+      <path d="M31 14l10-5v17l-10-5M18 28v14m0-6 14 5m-14-5L7 41" {...line}/>
+      <circle cx="18" cy="17" r="5" {...line}/>
     </>}
   </svg>;
 }
@@ -261,6 +266,7 @@ export function PromptDiagram({pattern,frame,morph=0,opacity=1}){
   const overview=pattern.capability!==undefined&&morph>0;
   const compactProgress=overview?diagramRouteAt(morph).columns:0;
   return <AbsoluteFill data-prompt-pattern={pattern.id} data-prompt-row={pattern.row}
+    data-training-sequence={pattern.sequence} data-training-split={pattern.promptTokens}
     data-pattern-opacity={opacity} data-pattern-start={pattern.start} data-pattern-reveal-end={pattern.revealEnd}
     data-pattern-reveal-order={pattern.revealOrder} data-pattern-reveal-opacity={rowRevealOpacityAt(pattern,frame)}
     data-pattern-reveal-frames={pattern.revealFrames.join(',')} data-diagram-morph={morph}
