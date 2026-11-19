@@ -1,6 +1,8 @@
 # Robot Capabilities as Probabilistic Inference over Next Token Prediction
 
-Published research post: https://neuroailab.github.io/psi-website/psiborg/
+Published research post: https://neuroailab.github.io/psiborg/
+
+Edit the article HTML in neuroailab/psiborg. This directory hosts its media and scripts.
 
 The page integrates the many-path prompting animation, the three studied capabilities, and the accompanying policy, simulation, and progress results. Main animation: 5443 frames at 30 fps, presented at 1.2× speed (151.19 seconds). Sources are in capability-animation; `node capability-animation/build.mjs` builds hero.js after its dependencies are installed.
 
